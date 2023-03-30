@@ -15,7 +15,7 @@ namespace MCSMLauncher.requests
         /// </summary>
         protected string BaseUrl { get; }
 
-        public static HtmlWeb Handler { get; set; } = new HtmlWeb();
+        public static HtmlWeb Handler { get; } = new HtmlWeb();
 
         /// <summary>
         /// Main constructor for the AbstractBaseRequestHandler class.
@@ -36,6 +36,6 @@ namespace MCSMLauncher.requests
         /// to their direct download links.
         /// </summary>
         /// <returns>A Dictionary with a SnapshotName:VersionSite mapping</returns>
-        public abstract Dictionary<string, string> GetSnapshots();
+        public abstract Task<Dictionary<string, string>> GetSnapshots();
     }
 }

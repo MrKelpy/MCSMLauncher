@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.requests.mcversions.releases
+namespace MCSMLauncher.requests.mcversions
 {
     /// <summary>
     /// This class handles every request to the mcversions.net website, and works
@@ -26,10 +26,10 @@ namespace MCSMLauncher.requests.mcversions.releases
         {
             HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
-            var itemDivs = from div in document.DocumentNode.Descendants("div")
+            var itemsDiv = from div in document.DocumentNode.Descendants("div")
                 where div.HasClass("items") select div;
-
-            return MCVRequestParser.GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(0));
+            
+            return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemsDiv.ElementAt(0));
         }
 
         /// <summary>
@@ -37,14 +37,14 @@ namespace MCSMLauncher.requests.mcversions.releases
         /// to their download links.
         /// </summary>
         /// <returns>A Dictionary with a SnapshotName:VersionSite mapping</returns>
-        public override Dictionary<string, string> GetSnapshots()
+        public override async Task<Dictionary<string, string>> GetSnapshots()
         {
-            HtmlDocument document = Handler.Load(this.BaseUrl);
+            HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
             var itemDivs = from div in document.DocumentNode.Descendants("div")
                 where div.HasClass("items") select div;
 
-            return MCVRequestParser.GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(1));
+            return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(1));
         }
     }
 }

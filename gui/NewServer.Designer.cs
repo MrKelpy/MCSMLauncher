@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.NewServerLayout = new System.Windows.Forms.Panel();
-            this.CheckBoxSnapshots = new System.Windows.Forms.CheckBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.TextBoxConsoleOutput = new System.Windows.Forms.TextBox();
             this.ButtonBuild = new System.Windows.Forms.Button();
@@ -45,7 +44,6 @@
             // 
             // NewServerLayout
             // 
-            this.NewServerLayout.Controls.Add(this.CheckBoxSnapshots);
             this.NewServerLayout.Controls.Add(this.progressBar1);
             this.NewServerLayout.Controls.Add(this.TextBoxConsoleOutput);
             this.NewServerLayout.Controls.Add(this.ButtonBuild);
@@ -60,15 +58,6 @@
             this.NewServerLayout.Name = "NewServerLayout";
             this.NewServerLayout.Size = new System.Drawing.Size(800, 426);
             this.NewServerLayout.TabIndex = 2;
-            // 
-            // CheckBoxSnapshots
-            // 
-            this.CheckBoxSnapshots.Location = new System.Drawing.Point(96, 251);
-            this.CheckBoxSnapshots.Name = "CheckBoxSnapshots";
-            this.CheckBoxSnapshots.Size = new System.Drawing.Size(117, 18);
-            this.CheckBoxSnapshots.TabIndex = 10;
-            this.CheckBoxSnapshots.Text = "Include Snapshots";
-            this.CheckBoxSnapshots.UseVisualStyleBackColor = true;
             // 
             // progressBar1
             // 
@@ -126,7 +115,7 @@
             // 
             this.ComboBoxServerType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ComboBoxServerType.FormattingEnabled = true;
-            this.ComboBoxServerType.Items.AddRange(new object[] { "Vanilla", "Spigot", "Forge" });
+            this.ComboBoxServerType.Items.AddRange(new object[] { "Vanilla", "Vanilla Snapshots", "Spigot", "Forge" });
             this.ComboBoxServerType.Location = new System.Drawing.Point(96, 144);
             this.ComboBoxServerType.Name = "ComboBoxServerType";
             this.ComboBoxServerType.Size = new System.Drawing.Size(248, 21);
@@ -184,8 +173,6 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
-
-        private System.Windows.Forms.CheckBox CheckBoxSnapshots;
 
         #endregion
 

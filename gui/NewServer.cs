@@ -45,14 +45,20 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ComboBoxServerType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Gets the request handler for the selected server type
-            AbstractBaseRequestHandler handler = RequestHandlerFactory.GetRequestHandler(ComboBoxServerType.Text);
-
             // Prepares the server version box for the new server type version list
             ComboServerVersion.Enabled = true;
             ComboServerVersion.Items.Clear();
-            
-            // Adds the versions and snapshots (if applicable) to the server version box.
+
+            // Adds the versions and snapshots (if applicable) to the server version box. If the server type is not
+            // recognized, the versions box is disabled.
+            try
+            {
+                Dictionary<string, string> cache = ServerTypeVersionsFactory.GetCacheForType(ComboBoxServerType.Text);
+
+                foreach (KeyValuePair<string, string> item in cache)
+                    ComboServerVersion.Items.Add(item.Key);
+            }
+            catch (NullReferenceException) { ComboServerVersion.Enabled = false; }
         }
     }
 }

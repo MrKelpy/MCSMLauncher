@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace MCSMLauncher.requests.mcversions.releases
+namespace MCSMLauncher.requests.mcversions
 {
     /// <summary>
     /// This class takes in a certain scope of Html Nodes and parses them down
     /// in different ways in order to extract useful information from them.
     /// </summary>
-    public class MCVRequestParser
+    public class MCVRequestParser : IBaseRequestParser
     {
 
         /// <summary>
@@ -17,9 +17,10 @@ namespace MCSMLauncher.requests.mcversions.releases
         /// </summary>
         /// <param name="url">The url of the mcversions page to get the download link from</param>
         /// <returns>The direct download link for the server</returns>
-        public static string GetServerDirectDownloadLink(string url)
+        public async Task<string> GetServerDirectDownloadLink(string url)
         {
-            HtmlNode node = AbstractBaseRequestHandler.Handler.Load(url).DocumentNode;
+            HtmlNode node = (await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url)).DocumentNode;
+            
             string directLink = node.Descendants("a").First(x => x.HasClass("text-xs")).Attributes["href"].Value;
             return directLink.ToLower().Contains("server") ? directLink : null;
         }
@@ -31,7 +32,7 @@ namespace MCSMLauncher.requests.mcversions.releases
         /// <param name="baseUrl">The current url of the node</param>
         /// <param name="doc">The HtmlNode to parse</param>
         /// <returns>A Dictionary(string,string) containing the mappings</returns>
-        public static Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
+        public Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
         {
             Dictionary<string, string> mappings = new Dictionary<string, string>();
             
@@ -50,6 +51,9 @@ namespace MCSMLauncher.requests.mcversions.releases
                 string directLink = baseUrl + link;
 
                 mappings.Add(name, directLink);
+                
+                // Since there's no version with a server past 1.2.1, just break once we get to it.
+                if (name.Equals("1.2.1")) break;
             }
 
             return mappings;

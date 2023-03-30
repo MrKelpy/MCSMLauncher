@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MCSMLauncher.requests.mcversions.releases;
+using MCSMLauncher.requests.mcversions;
 using PgpsUtilsAEFC.forms.extensions;
 
 namespace MCSMLauncher.gui

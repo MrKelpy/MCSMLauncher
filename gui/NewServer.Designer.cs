@@ -30,7 +30,6 @@
         {
             this.NewServerLayout = new System.Windows.Forms.Panel();
             this.LabelServerNameError = new System.Windows.Forms.Label();
-            this.ProgressBarBuild = new System.Windows.Forms.ProgressBar();
             this.TextBoxConsoleOutput = new System.Windows.Forms.TextBox();
             this.ButtonBuild = new System.Windows.Forms.Button();
             this.ComboServerVersion = new System.Windows.Forms.ComboBox();
@@ -46,7 +45,6 @@
             // NewServerLayout
             // 
             this.NewServerLayout.Controls.Add(this.LabelServerNameError);
-            this.NewServerLayout.Controls.Add(this.ProgressBarBuild);
             this.NewServerLayout.Controls.Add(this.TextBoxConsoleOutput);
             this.NewServerLayout.Controls.Add(this.ButtonBuild);
             this.NewServerLayout.Controls.Add(this.ComboServerVersion);
@@ -70,15 +68,6 @@
             this.LabelServerNameError.Size = new System.Drawing.Size(248, 14);
             this.LabelServerNameError.TabIndex = 10;
             this.LabelServerNameError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // ProgressBarBuild
-            // 
-            this.ProgressBarBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ProgressBarBuild.Location = new System.Drawing.Point(72, 360);
-            this.ProgressBarBuild.Name = "ProgressBarBuild";
-            this.ProgressBarBuild.Size = new System.Drawing.Size(296, 32);
-            this.ProgressBarBuild.TabIndex = 9;
-            this.ProgressBarBuild.Visible = false;
             // 
             // TextBoxConsoleOutput
             // 
@@ -203,6 +192,5 @@
         private System.Windows.Forms.Button ButtonBuild;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.TextBox TextBoxConsoleOutput;
-        private System.Windows.Forms.ProgressBar ProgressBarBuild;
     }
 }

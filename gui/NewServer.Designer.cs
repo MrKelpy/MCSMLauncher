@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.NewServerLayout = new System.Windows.Forms.Panel();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.ProgressBarBuild = new System.Windows.Forms.ProgressBar();
             this.TextBoxConsoleOutput = new System.Windows.Forms.TextBox();
             this.ButtonBuild = new System.Windows.Forms.Button();
             this.ComboServerVersion = new System.Windows.Forms.ComboBox();
@@ -44,7 +44,7 @@
             // 
             // NewServerLayout
             // 
-            this.NewServerLayout.Controls.Add(this.progressBar1);
+            this.NewServerLayout.Controls.Add(this.ProgressBarBuild);
             this.NewServerLayout.Controls.Add(this.TextBoxConsoleOutput);
             this.NewServerLayout.Controls.Add(this.ButtonBuild);
             this.NewServerLayout.Controls.Add(this.ComboServerVersion);
@@ -59,14 +59,14 @@
             this.NewServerLayout.Size = new System.Drawing.Size(800, 426);
             this.NewServerLayout.TabIndex = 2;
             // 
-            // progressBar1
+            // ProgressBarBuild
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.progressBar1.Location = new System.Drawing.Point(72, 360);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(296, 32);
-            this.progressBar1.TabIndex = 9;
-            this.progressBar1.Visible = false;
+            this.ProgressBarBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.ProgressBarBuild.Location = new System.Drawing.Point(72, 360);
+            this.ProgressBarBuild.Name = "ProgressBarBuild";
+            this.ProgressBarBuild.Size = new System.Drawing.Size(296, 32);
+            this.ProgressBarBuild.TabIndex = 9;
+            this.ProgressBarBuild.Visible = false;
             // 
             // TextBoxConsoleOutput
             // 
@@ -100,6 +100,7 @@
             this.ComboServerVersion.Name = "ComboServerVersion";
             this.ComboServerVersion.Size = new System.Drawing.Size(248, 21);
             this.ComboServerVersion.TabIndex = 6;
+            this.ComboServerVersion.SelectedIndexChanged += new System.EventHandler(this.ComboServerVersion_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -148,6 +149,7 @@
             this.TextBoxServerName.Name = "TextBoxServerName";
             this.TextBoxServerName.Size = new System.Drawing.Size(248, 20);
             this.TextBoxServerName.TabIndex = 0;
+            this.TextBoxServerName.TextChanged += new System.EventHandler(this.TextBoxServerName_TextChanged);
             // 
             // menuStrip1
             // 
@@ -186,6 +188,6 @@
         private System.Windows.Forms.Button ButtonBuild;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.TextBox TextBoxConsoleOutput;
-        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.ProgressBar ProgressBarBuild;
     }
 }

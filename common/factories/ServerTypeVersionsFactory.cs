@@ -4,7 +4,7 @@ using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.common
+namespace MCSMLauncher.common.factories
 {
     /// <summary>
     /// This class implements a factory method to return the correct caches to the different server types
@@ -22,19 +22,19 @@ namespace MCSMLauncher.common
         {
             Section versionCache = FileSystem.GetFirstSectionNamed("versioncache");
 
-            if (serverType.ToLower().Equals("vanilla"))
-                return FileToDictionary(versionCache.GetFirstFileNamed(Constants.VANILLA_RELEASES_CACHE_FILENAME));
-            
-            if (serverType.ToLower().Equals("vanilla snapshots"))
-                return FileToDictionary(versionCache.GetFirstFileNamed(Constants.VANILLA_SNAPSHOTS_CACHE_FILENAME));
-            
-            if (serverType.ToLower().Equals("spigot"))
-                return FileToDictionary(versionCache.GetFirstFileNamed(Constants.SPIGOT_RELEASES_CACHE_FILENAME));
-
-            if (serverType.ToLower().Equals("forge"))
-                return FileToDictionary(versionCache.GetFirstFileNamed(Constants.FORGE_RELEASES_CACHE_FILENAME));
-
-            return null;
+            switch (serverType.ToLower())
+            {
+                case "vanilla":
+                    return FileToDictionary(versionCache.GetFirstFileNamed(Constants.VANILLA_RELEASES_CACHE_FILENAME));
+                case "vanilla snapshots":
+                    return FileToDictionary(versionCache.GetFirstFileNamed(Constants.VANILLA_SNAPSHOTS_CACHE_FILENAME));
+                case "spigot":
+                    return FileToDictionary(versionCache.GetFirstFileNamed(Constants.SPIGOT_RELEASES_CACHE_FILENAME));
+                case "forge":
+                    return FileToDictionary(versionCache.GetFirstFileNamed(Constants.FORGE_RELEASES_CACHE_FILENAME));
+                default:
+                    return null;
+            }
         }
 
         /// <summary>

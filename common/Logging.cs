@@ -45,7 +45,7 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The current logging session, based on the current date.
         /// </summary>
-        public string LoggingSession { get; set; } = DateTime.Now.ToString("yyyy.MM.dd.hh.mm.ss");
+        public string LoggingSession { get; set; } = DateTime.Now.ToString("yyyy.MM.dd.HH.mm.ss");
 
         /// <summary>
         /// Main constructor for the logging class, initializes the logging path.
@@ -121,17 +121,19 @@ namespace MCSMLauncher.common
         private string[] _buildFormats(string message, string level)
         {
             string[] formats = new string[2];
+            string caller = new StackTrace().GetFrame(5).GetMethod().ReflectedType?.Name + "." +
+                            new StackTrace().GetFrame(5).GetMethod().Name;
 
             formats[0] = ConsoleLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))
                 .Replace("%LEVEL%", level)
-                .Replace("%CALLER%", new StackTrace().GetFrame(1).GetMethod().Name)
+                .Replace("%CALLER%", caller)
                 .Replace("%MESSAGE%", message);
             
             formats[1] = FileLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))
                 .Replace("%LEVEL%", level)
-                .Replace("%CALLER%", new StackTrace().GetFrame(1).GetMethod().Name)
+                .Replace("%CALLER%", caller)
                 .Replace("%MESSAGE%", message);
 
             return formats;

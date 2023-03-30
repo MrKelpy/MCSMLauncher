@@ -16,7 +16,7 @@ namespace MCSMLauncher.requests
         protected string BaseUrl { get; }
 
         public static HtmlWeb Handler { get; } = new HtmlWeb();
-
+ 
         /// <summary>
         /// Main constructor for the AbstractBaseRequestHandler class.
         /// Sets the URL and the handler.

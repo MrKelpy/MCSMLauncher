@@ -55,9 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="common\Constants.cs" />
+    <Compile Include="common\factories\ServerTypeVersionsFactory.cs" />
     <Compile Include="common\Logging.cs" />
     <Compile Include="common\NetworkTester.cs" />
-    <Compile Include="common\ServerTypeVersionsFactory.cs" />
     <Compile Include="gui\LoadingScreen.cs">
       <SubType>Form</SubType>
     </Compile>

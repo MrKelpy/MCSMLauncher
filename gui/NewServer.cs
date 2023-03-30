@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
+using MCSMLauncher.common.factories;
 using MCSMLauncher.requests;
 
 namespace MCSMLauncher.gui
@@ -60,5 +61,23 @@ namespace MCSMLauncher.gui
             }
             catch (NullReferenceException) { ComboServerVersion.Enabled = false; }
         }
+
+        /// <summary>
+        /// When a version is selected, unlocks the build button if and only if the server name field
+        /// is also filled.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void ComboServerVersion_SelectedIndexChanged(object sender, EventArgs e) =>
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0;
+
+        /// <summary>
+        /// When the server name is written into, unlocks the build button, if and only if the server version
+        /// is selected.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void TextBoxServerName_TextChanged(object sender, EventArgs e) =>
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Text.Length > 0;
     }
 }

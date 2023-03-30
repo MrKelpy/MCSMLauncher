@@ -21,7 +21,7 @@ namespace MCSMLauncher.common
                 return reply != null && reply.Status == IPStatus.Success;
             }
             // There are many, many exceptions that can be thrown from a ping, so just catch them all.
-            catch { return false; }
+            catch  { return false; }
         }
     }
 }

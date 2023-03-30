@@ -2,7 +2,9 @@
 using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using MCSMLauncher.common;
 
 // ReSharper disable InconsistentNaming
 
@@ -24,12 +26,22 @@ namespace MCSMLauncher.requests.mcversions
         /// <returns>A Dictionary with a VersionName:VersionSite mapping</returns>
         public override async Task<Dictionary<string, string>> GetVersions()
         {
-            HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
+            try
+            {
+                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
-            var itemsDiv = from div in document.DocumentNode.Descendants("div")
-                where div.HasClass("items") select div;
-            
-            return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemsDiv.ElementAt(0));
+                var itemsDiv = from div in document.DocumentNode.Descendants("div")
+                    where div.HasClass("items")
+                    select div;
+
+                return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemsDiv.ElementAt(0));
+            }
+            catch (Exception e)
+            {
+                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla versions.");
+                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
+                return null;
+            }
         }
 
         /// <summary>
@@ -39,12 +51,22 @@ namespace MCSMLauncher.requests.mcversions
         /// <returns>A Dictionary with a SnapshotName:VersionSite mapping</returns>
         public override async Task<Dictionary<string, string>> GetSnapshots()
         {
-            HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
+            try
+            {
+                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
-            var itemDivs = from div in document.DocumentNode.Descendants("div")
-                where div.HasClass("items") select div;
+                var itemDivs = from div in document.DocumentNode.Descendants("div")
+                    where div.HasClass("items")
+                    select div;
 
-            return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(1));
+                return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(1));
+            }
+            catch (Exception e)
+            {
+                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla snapshot versions.");
+                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
+                return null;
+            }
         }
     }
 }

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using MCSMLauncher.common;
 
 namespace MCSMLauncher.requests.spigot
 {
@@ -20,12 +23,22 @@ namespace MCSMLauncher.requests.spigot
         /// <returns>A Dictionary with a VersionName:VersionSite mapping</returns>
         public override async Task<Dictionary<string, string>> GetVersions()
         {
-            HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
+            try
+            {
+                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
-            var columnDiv = from div in document.DocumentNode.Descendants("div")
-                where div.HasClass("col-md-12") select div;
+                var columnDiv = from div in document.DocumentNode.Descendants("div")
+                    where div.HasClass("col-md-12")
+                    select div;
 
-            return new SpigotRequestParser().GetVersionUrlMap(this.BaseUrl, columnDiv.ElementAt(0));
+                return new SpigotRequestParser().GetVersionUrlMap(this.BaseUrl, columnDiv.ElementAt(0));
+            }
+            catch (Exception e)
+            {
+                Logging.LOGGER.Info("An error happened whilst trying to retrieve the spigot versions.");
+                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
+                return null;
+            }
         }
 
         /// <summary>

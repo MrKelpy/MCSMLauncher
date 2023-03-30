@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.NewServerLayout = new System.Windows.Forms.Panel();
+            this.LabelServerNameError = new System.Windows.Forms.Label();
             this.ProgressBarBuild = new System.Windows.Forms.ProgressBar();
             this.TextBoxConsoleOutput = new System.Windows.Forms.TextBox();
             this.ButtonBuild = new System.Windows.Forms.Button();
@@ -44,6 +45,7 @@
             // 
             // NewServerLayout
             // 
+            this.NewServerLayout.Controls.Add(this.LabelServerNameError);
             this.NewServerLayout.Controls.Add(this.ProgressBarBuild);
             this.NewServerLayout.Controls.Add(this.TextBoxConsoleOutput);
             this.NewServerLayout.Controls.Add(this.ButtonBuild);
@@ -58,6 +60,16 @@
             this.NewServerLayout.Name = "NewServerLayout";
             this.NewServerLayout.Size = new System.Drawing.Size(800, 426);
             this.NewServerLayout.TabIndex = 2;
+            // 
+            // LabelServerNameError
+            // 
+            this.LabelServerNameError.BackColor = System.Drawing.Color.Transparent;
+            this.LabelServerNameError.ForeColor = System.Drawing.Color.Firebrick;
+            this.LabelServerNameError.Location = new System.Drawing.Point(96, 87);
+            this.LabelServerNameError.Name = "LabelServerNameError";
+            this.LabelServerNameError.Size = new System.Drawing.Size(248, 14);
+            this.LabelServerNameError.TabIndex = 10;
+            this.LabelServerNameError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ProgressBarBuild
             // 
@@ -90,6 +102,7 @@
             this.ButtonBuild.TabIndex = 7;
             this.ButtonBuild.Text = "Build Server";
             this.ButtonBuild.UseVisualStyleBackColor = true;
+            this.ButtonBuild.Click += new System.EventHandler(this.ButtonBuild_Click);
             // 
             // ComboServerVersion
             // 
@@ -175,6 +188,8 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Label LabelServerNameError;
 
         #endregion
 

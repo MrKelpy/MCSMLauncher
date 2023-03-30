@@ -55,7 +55,7 @@ namespace MCSMLauncher.common.factories
                 result.Add(split[0].Trim(), split[1].Trim());
             }
             
-            return result;
+            return result.Count > 0 ? result : null;
         }
         
     }

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.requests;
+using PgpsUtilsAEFC.common;
 
 namespace MCSMLauncher.gui
 {
@@ -46,9 +47,12 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ComboBoxServerType_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (ComboBoxServerType.Text == "") return;
+            
             // Prepares the server version box for the new server type version list
             ComboServerVersion.Enabled = true;
             ComboServerVersion.Items.Clear();
+            ComboServerVersion.ForeColor = Color.Black;
 
             // Adds the versions and snapshots (if applicable) to the server version box. If the server type is not
             // recognized, the versions box is disabled.
@@ -59,7 +63,41 @@ namespace MCSMLauncher.gui
                 foreach (KeyValuePair<string, string> item in cache)
                     ComboServerVersion.Items.Add(item.Key);
             }
-            catch (NullReferenceException) { ComboServerVersion.Enabled = false; }
+            
+            // If we can't find any versions for the server type, a null reference exception will be thrown.
+            // In that case, block the version selection with a message.
+            catch (NullReferenceException)
+            {
+                Logging.LOGGER.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.", LoggingType.FILE);
+                ComboServerVersion.Items.Add(@"Couldn't load any versions for this server type.");
+                ComboServerVersion.ForeColor = Color.Firebrick;
+                ComboServerVersion.SelectedIndex = 0;
+                ComboServerVersion.Enabled = ButtonBuild.Enabled = false;
+            }
+        }
+        
+        /// <summary>
+        /// Builds the server according to the type and version selected.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void ButtonBuild_Click(object sender, EventArgs e)
+        {
+            Section serversSection = Constants.FileSystem.AddSection("servers");
+            LabelServerNameError.Visible = false;
+            
+            // Prevent two servers from having the same name
+            if (serversSection.GetAllSections().Any(x => x.Name == TextBoxServerName.Text))
+            {
+                LabelServerNameError.Text = @"A server with that name already exists.";
+                return;
+            }
+
+            serversSection.AddSection(TextBoxServerName.Text);
+            
+            
+            TextBoxServerName.Text = string.Empty;
+            ComboBoxServerType.Text = ComboServerVersion.Text = null;
         }
 
         /// <summary>
@@ -69,7 +107,7 @@ namespace MCSMLauncher.gui
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
         private void ComboServerVersion_SelectedIndexChanged(object sender, EventArgs e) =>
-            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0;
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Enabled;
 
         /// <summary>
         /// When the server name is written into, unlocks the build button, if and only if the server version
@@ -78,6 +116,6 @@ namespace MCSMLauncher.gui
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
         private void TextBoxServerName_TextChanged(object sender, EventArgs e) =>
-            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Text.Length > 0;
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Text.Length > 0 && ComboServerVersion.Enabled;
     }
 }

@@ -30,7 +30,7 @@ namespace MCSMLauncher
             catch (Exception e)
             {
                 Logging.LOGGER.Fatal($@"An unexpected error occured and the program was forced to exit.");
-                Logging.LOGGER.Fatal(e.StackTrace, LoggingType.FILE);
+                Logging.LOGGER.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
             }
         }
     }

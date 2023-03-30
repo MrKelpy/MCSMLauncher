@@ -35,12 +35,12 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The logging format for the console logs.
         /// </summary>
-        public string ConsoleLoggingFormat { get; set; } = "[%DATE%] [%LEVEL%] | (%CALLER%): %MESSAGE%";
+        public string ConsoleLoggingFormat { get; set; } = "[%DATE%] [%LEVEL%]: %MESSAGE%";
             
         /// <summary>
         /// The logging format for the console logs.
         /// </summary>
-        public string FileLoggingFormat { get; set; } = "[%DATE%] [%LEVEL%] | (%CALLER%): %MESSAGE%";
+        public string FileLoggingFormat { get; set; } = "[%DATE%] [%LEVEL%]: %MESSAGE%";
 
         /// <summary>
         /// The current logging session, based on the current date.
@@ -121,19 +121,15 @@ namespace MCSMLauncher.common
         private string[] _buildFormats(string message, string level)
         {
             string[] formats = new string[2];
-            string caller = new StackTrace().GetFrame(5).GetMethod().ReflectedType?.Name + "." +
-                            new StackTrace().GetFrame(5).GetMethod().Name;
 
             formats[0] = ConsoleLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))
                 .Replace("%LEVEL%", level)
-                .Replace("%CALLER%", caller)
                 .Replace("%MESSAGE%", message);
             
             formats[1] = FileLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))
                 .Replace("%LEVEL%", level)
-                .Replace("%CALLER%", caller)
                 .Replace("%MESSAGE%", message);
 
             return formats;

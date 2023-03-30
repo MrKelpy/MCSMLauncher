@@ -81,10 +81,17 @@ namespace MCSMLauncher.gui
             string forgeReleasesPath = versionCache.AddDocument(Constants.FORGE_RELEASES_CACHE_FILENAME);
             
             // Writes the caches into their files
-            FileUtils.DumpToFile(vanillaReleasesPath, vanillaReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
-            FileUtils.DumpToFile(vanillaSnapshotsPath, vanillaSnapshots.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
-            FileUtils.DumpToFile(spigotReleasesPath, spigotReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
-            FileUtils.DumpToFile(forgeReleasesPath, forgeReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+            FileUtils.DumpToFile(vanillaReleasesPath, vanillaReleases == null ? new List<string>() : 
+                vanillaReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+            
+            FileUtils.DumpToFile(vanillaSnapshotsPath, vanillaSnapshots == null ? new List<string>() : 
+                vanillaSnapshots.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+            
+            FileUtils.DumpToFile(spigotReleasesPath, spigotReleases == null ? new List<string>() : 
+                spigotReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+            
+            FileUtils.DumpToFile(forgeReleasesPath, forgeReleases == null ? new List<string>() : 
+                forgeReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
         }
     }
 }

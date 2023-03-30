@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using MCSMLauncher.common;
 
 namespace MCSMLauncher.requests.forge
 {
@@ -20,8 +24,17 @@ namespace MCSMLauncher.requests.forge
         /// <returns>A Dictionary with a VersionName:VersionSite mapping</returns>
         public override async Task<Dictionary<string, string>> GetVersions()
         {
-            HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
-            return new ForgeRequestParser().GetVersionUrlMap(this.BaseUrl, document.DocumentNode);
+            try
+            {
+                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
+                return new ForgeRequestParser().GetVersionUrlMap(this.BaseUrl, document.DocumentNode);
+            }
+            catch (Exception e)
+            {
+                Logging.LOGGER.Info("An error happened whilst trying to retrieve the forge versions.");
+                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace);
+                return null;
+            }
         }
 
         /// <summary>

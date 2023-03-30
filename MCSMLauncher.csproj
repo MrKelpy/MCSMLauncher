@@ -55,6 +55,7 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="common\builders\IServerBuilder.cs" />
         <Compile Include="common\Constants.cs" />
         <Compile Include="common\factories\RequestParserFactory.cs" />
         <Compile Include="common\factories\ServerTypeVersionsFactory.cs" />
@@ -140,12 +141,6 @@
         <Content Include="assets\icon.ico" />
         <Content Include="assets\loader.gif" />
         <Content Include="assets\LoadingScreen.png" />
-        <Content Include="Resources\loader.gif" />
-        <Content Include="Resources\LoadingSands.gif" />
-        <Content Include="Resources\LoadingSands1.gif" />
-        <Content Include="Resources\LoadingScreen.png" />
-        <Content Include="Resources\LoadingScreen1.png" />
-        <Content Include="Resources\LoadingScreen2.png" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

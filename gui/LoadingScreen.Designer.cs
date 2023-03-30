@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Drawing;
 
 namespace MCSMLauncher.gui
 {
@@ -40,7 +41,7 @@ namespace MCSMLauncher.gui
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox1.Image = global::filemanagement.Properties.Resources.loader;
+            this.pictureBox1.Image = Bitmap.FromFile("../../assets/loader.gif");
             this.pictureBox1.Location = new System.Drawing.Point(722, 376);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(66, 62);
@@ -60,7 +61,7 @@ namespace MCSMLauncher.gui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::filemanagement.Properties.Resources.LoadingScreen;
+            this.BackgroundImage = Bitmap.FromFile("../../assets/LoadingScreen.png");
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.LabelStatus);

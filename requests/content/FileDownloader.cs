@@ -26,7 +26,7 @@ namespace MCSMLauncher.requests.content
         public static async Task DownloadFileAsync(string path, string url)
         {
             Logging.LOGGER.Info($"Preparing to download {url} into {path}");
-            using Stream DownloadStream = await Client.GetStreamAsync(url);
+            using var DownloadStream = await Client.GetStreamAsync(url);
             using FileStream fileStream = new FileStream(path, FileMode.CreateNew);
             
             await DownloadStream.CopyToAsync(fileStream);

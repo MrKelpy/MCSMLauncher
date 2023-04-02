@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
+using MCSMLauncher.requests.content;
 using MCSMLauncher.requests.forge;
 using MCSMLauncher.requests.mcversions;
 using MCSMLauncher.requests.spigot;
@@ -17,7 +21,7 @@ namespace MCSMLauncher.gui
     /// This form serves as a loading screen for the launcher, which gets displayed as the launcher prepares
     /// to be used.
     /// </summary>
-    public partial class LoadingScreen : Form
+    public sealed partial class LoadingScreen : Form
     {
         /// <summary>
         /// Main constructor for the LoadingScreen form. Prepares everything for the loading screen to be displayed, and for
@@ -27,6 +31,9 @@ namespace MCSMLauncher.gui
         {
             InitializeComponent();
             CenterToScreen();
+  
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
+            BackgroundImage = Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.BackgroundLink"))));
             FileSystem.AddSection("versioncache");
         }
         
@@ -40,17 +47,11 @@ namespace MCSMLauncher.gui
         private async void LoadingScreen_Load(object sender, EventArgs e)
         {
             // Keeps checking if an internet connection exists, and only continues if so.
-            while (true)
-            {
-                Logging.LOGGER.Info(@"Checking for an internet connection...");
-                if (NetworkTester.IsWifiConnected()) break;
-                LabelStatus.Text = @"Could not connect to the internet. Retrying...";
-                await Task.Delay(2 * 1000);
-            }
+            await NetworkTester.RecurrentTestAsync(LabelStatus);
 
             // Updates the cache and stops the loading phase.
-            await this.UpdateVersionCache();
-            this.Close();
+            await UpdateVersionCache();
+            Close();
         }
 
         /// <summary>

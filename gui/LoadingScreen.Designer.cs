@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel;
+using System.Configuration;
 using System.Drawing;
+using System.IO;
+using PgpsUtilsAEFC.common;
+using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui
 {
-    partial class LoadingScreen
+    sealed partial class LoadingScreen
     {
         /// <summary>
         /// Required designer variable.
@@ -33,21 +37,20 @@ namespace MCSMLauncher.gui
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadingScreen));
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.PictureBoxLoading = new System.Windows.Forms.PictureBox();
             this.LabelStatus = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).BeginInit();
             this.SuspendLayout();
             // 
-            // pictureBox1
+            // PictureBoxLoading
             // 
-            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox1.Image = Bitmap.FromFile("../../assets/loader.gif");
-            this.pictureBox1.Location = new System.Drawing.Point(722, 376);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(66, 62);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.PictureBoxLoading.BackColor = System.Drawing.Color.Transparent;
+            this.PictureBoxLoading.Location = new System.Drawing.Point(722, 376);
+            this.PictureBoxLoading.Name = "PictureBoxLoading";
+            this.PictureBoxLoading.Size = new System.Drawing.Size(66, 62);
+            this.PictureBoxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.PictureBoxLoading.TabIndex = 0;
+            this.PictureBoxLoading.TabStop = false;
             // 
             // LabelStatus
             // 
@@ -61,23 +64,22 @@ namespace MCSMLauncher.gui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = Bitmap.FromFile("../../assets/LoadingScreen.png");
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.LabelStatus);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.PictureBoxLoading);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoadingScreen";
             this.Text = "LoadingScreen";
             this.Load += new System.EventHandler(this.LoadingScreen_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).EndInit();
             this.ResumeLayout(false);
         }
 
         private System.Windows.Forms.Label LabelStatus;
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox PictureBoxLoading;
 
         #endregion
     }

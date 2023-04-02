@@ -23,6 +23,7 @@ namespace MCSMLauncher
 
             try
             {
+                Application.Run(new PreLoadingScreen());
                 Application.Run(new LoadingScreen());
                 Application.Run(new Mainframe());
             }

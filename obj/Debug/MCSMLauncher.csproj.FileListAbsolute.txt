@@ -17,3 +17,4 @@ C:\dev\C#\MCSMLauncher\bin\Debug\HtmlAgilityPack.dll
 C:\dev\C#\MCSMLauncher\bin\Debug\HtmlAgilityPack.pdb
 C:\dev\C#\MCSMLauncher\bin\Debug\HtmlAgilityPack.xml
 C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.LoadingScreen.resources
+C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.PreLoadingScreen.resources

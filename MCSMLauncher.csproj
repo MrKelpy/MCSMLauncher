@@ -61,6 +61,12 @@
         <Compile Include="common\factories\ServerTypeVersionsFactory.cs" />
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\NetworkTester.cs" />
+        <Compile Include="gui\PreLoadingScreen.cs">
+          <SubType>Form</SubType>
+        </Compile>
+        <Compile Include="gui\PreLoadingScreen.Designer.cs">
+          <DependentUpon>PreLoadingScreen.cs</DependentUpon>
+        </Compile>
         <Compile Include="gui\LoadingScreen.cs">
             <SubType>Form</SubType>
         </Compile>
@@ -102,6 +108,9 @@
         <Compile Include="requests\mcversions\MCVRequestParser.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
+        <EmbeddedResource Include="gui\PreLoadingScreen.resx">
+          <DependentUpon>PreLoadingScreen.cs</DependentUpon>
+        </EmbeddedResource>
         <EmbeddedResource Include="gui\LoadingScreen.resx">
             <DependentUpon>LoadingScreen.cs</DependentUpon>
         </EmbeddedResource>
@@ -136,11 +145,6 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="App.config" />
-    </ItemGroup>
-    <ItemGroup>
-        <Content Include="assets\icon.ico" />
-        <Content Include="assets\loader.gif" />
-        <Content Include="assets\LoadingScreen.png" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

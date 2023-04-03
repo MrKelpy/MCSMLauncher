@@ -73,6 +73,7 @@ namespace MCSMLauncher.gui
             {
                 if (assets?.GetAllFiles().Length != configLength) throw new ArgumentException();
                 foreach (string filepath in assets.GetAllFiles()) using (var _ = new Bitmap(filepath)) { }
+                Close();
                 return;
                 
             } catch (ArgumentException) {} // ignored
@@ -86,11 +87,11 @@ namespace MCSMLauncher.gui
             for (var index = 0; index < configLength; index++)
             {
                 var settingKey = ConfigurationManager.AppSettings.AllKeys[index];
-                this.SetDownloadingAssetName($"Downloading {settingKey}...");
 
                 string filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
                 string filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
                 
+                this.SetDownloadingAssetName(filename);
                 await FileDownloader.DownloadFileAsync(filepath, ConfigurationManager.AppSettings.Get(settingKey));
             }
             

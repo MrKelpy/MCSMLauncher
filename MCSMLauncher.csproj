@@ -38,7 +38,7 @@
             <HintPath>packages\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
         </Reference>
         <Reference Include="PgpsUtilsAEFC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-            <HintPath>packages\MrKelpy.PgpsUtilsAEFC.1.1.8\lib\net472\PgpsUtilsAEFC.dll</HintPath>
+          <HintPath>packages\MrKelpy.PgpsUtilsAEFC.1.1.12\lib\net472\PgpsUtilsAEFC.dll</HintPath>
         </Reference>
         <Reference Include="System" />
         <Reference Include="System.Configuration" />

@@ -32,8 +32,8 @@ namespace MCSMLauncher.gui
             InitializeComponent();
             CenterToScreen();
   
-            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
-            BackgroundImage = Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.BackgroundLink"))));
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
+            BackgroundImage = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.BackgroundLink"))));
             FileSystem.AddSection("versioncache");
         }
         

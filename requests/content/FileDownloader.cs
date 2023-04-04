@@ -26,10 +26,10 @@ namespace MCSMLauncher.requests.content
         public static async Task DownloadFileAsync(string path, string url)
         {
             Logging.LOGGER.Info($"Preparing to download {url} into {path}");
-            using var DownloadStream = await Client.GetStreamAsync(url);
+            using var downloadStream = await Client.GetStreamAsync(url);
             using FileStream fileStream = new FileStream(path, FileMode.CreateNew);
             
-            await DownloadStream.CopyToAsync(fileStream);
+            await downloadStream.CopyToAsync(fileStream);
             Logging.LOGGER.Info($"Finished downloading the content from {url}");
         }
     }

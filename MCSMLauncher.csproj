@@ -57,8 +57,7 @@
     <ItemGroup>
         <Compile Include="common\builders\IServerBuilder.cs" />
         <Compile Include="common\Constants.cs" />
-        <Compile Include="common\factories\RequestParserFactory.cs" />
-        <Compile Include="common\factories\ServerTypeVersionsFactory.cs" />
+        <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\NetworkTester.cs" />
         <Compile Include="gui\PreLoadingScreen.cs">

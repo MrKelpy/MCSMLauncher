@@ -34,11 +34,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private async void PreLoadingScreen_Load(object sender, EventArgs e)
         {
-            // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkTester.RecurrentTestAsync(LabelDownloadingAsset);
-            
             // Downloads the initial assets
-            try { await this.DownloadInitialAssets(); }
+            try { await DownloadInitialAssets(); }
             catch (Exception err)
             {
                 Logging.LOGGER.Fatal($@"An unexpected error occured and the program was forced to exit.");
@@ -73,10 +70,12 @@ namespace MCSMLauncher.gui
             {
                 if (assets?.GetAllFiles().Length != configLength) throw new ArgumentException();
                 foreach (string filepath in assets.GetAllFiles()) using (var _ = new Bitmap(filepath)) { }
-                Close();
-                return;
+                Close(); return;
                 
             } catch (ArgumentException) {} // ignored
+            
+            // Keeps checking if an internet connection exists, and only continues if so.
+            await NetworkTester.RecurrentTestAsync(LabelDownloadingAsset);
             
             // Resets the assets folder just in case
             FileSystem.RemoveSection(assets?.Name);
@@ -91,8 +90,9 @@ namespace MCSMLauncher.gui
                 string filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
                 string filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
                 
-                this.SetDownloadingAssetName(filename);
+                SetDownloadingAssetName(filename);
                 await FileDownloader.DownloadFileAsync(filepath, ConfigurationManager.AppSettings.Get(settingKey));
+                ProgressBarDownload.Value = (int) ((((double)index + 1) / configLength) * 100);
             }
             
             Close();

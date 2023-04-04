@@ -58,7 +58,7 @@ namespace MCSMLauncher.gui
             // recognized, the versions box is disabled.
             try
             {
-                Dictionary<string, string> cache = ServerTypeVersionsFactory.GetCacheForType(ComboBoxServerType.Text);
+                Dictionary<string, string> cache = new ServerTypeMappingsFactory().GetCacheContentsForType(ComboBoxServerType.Text);
 
                 foreach (KeyValuePair<string, string> item in cache)
                     ComboServerVersion.Items.Add(item.Key);

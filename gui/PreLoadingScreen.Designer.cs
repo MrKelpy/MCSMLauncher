@@ -32,29 +32,42 @@ namespace MCSMLauncher.gui
         private void InitializeComponent()
         {
             this.LabelDownloadingAsset = new System.Windows.Forms.Label();
+            this.ProgressBarDownload = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // LabelDownloadingAsset
             // 
-            this.LabelDownloadingAsset.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LabelDownloadingAsset.Location = new System.Drawing.Point(0, 0);
+            this.LabelDownloadingAsset.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.LabelDownloadingAsset.Name = "LabelDownloadingAsset";
-            this.LabelDownloadingAsset.Size = new System.Drawing.Size(484, 110);
+            this.LabelDownloadingAsset.Size = new System.Drawing.Size(726, 96);
             this.LabelDownloadingAsset.TabIndex = 0;
             this.LabelDownloadingAsset.Text = "Downloading Assets...";
             this.LabelDownloadingAsset.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // ProgressBarDownload
+            // 
+            this.ProgressBarDownload.Location = new System.Drawing.Point(39, 110);
+            this.ProgressBarDownload.MarqueeAnimationSpeed = 400;
+            this.ProgressBarDownload.Name = "ProgressBarDownload";
+            this.ProgressBarDownload.Size = new System.Drawing.Size(654, 47);
+            this.ProgressBarDownload.TabIndex = 1;
+            // 
             // PreLoadingScreen
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 110);
+            this.ClientSize = new System.Drawing.Size(726, 169);
+            this.Controls.Add(this.ProgressBarDownload);
             this.Controls.Add(this.LabelDownloadingAsset);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "PreLoadingScreen";
             this.Load += new System.EventHandler(this.PreLoadingScreen_Load);
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.ProgressBar ProgressBarDownload;
 
         private System.Windows.Forms.Label LabelDownloadingAsset;
 

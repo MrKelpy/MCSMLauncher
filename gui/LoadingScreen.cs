@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
+using MCSMLauncher.common.factories;
 using MCSMLauncher.requests.content;
 using MCSMLauncher.requests.forge;
 using MCSMLauncher.requests.mcversions;
@@ -60,39 +61,20 @@ namespace MCSMLauncher.gui
         /// </summary>
         private async Task UpdateVersionCache()
         {
-            // TODO: Fix this horrible code
-            
-            LabelStatus.Text = Logging.LOGGER.Info(@"Updating the vanilla versions cache...");
-            var vanillaReleases = await new MCVRequestHandler().GetVersions();
-            
-            LabelStatus.Text = Logging.LOGGER.Info(@"Updating the vanilla snapshots versions cache...");
-            var vanillaSnapshots = await new MCVRequestHandler().GetSnapshots();
-            
-            LabelStatus.Text = Logging.LOGGER.Info(@"Updating the spigot versions cache...");
-            var spigotReleases = await new SpigotRequestHandler().GetVersions();
-            
-            LabelStatus.Text = Logging.LOGGER.Info(@"Updating the forge versions cache...");
-            var forgeReleases = await new ForgeRequestHandler().GetVersions();
+            ServerTypeMappingsFactory mappingsFactory = new ServerTypeMappingsFactory();
 
-            // Adds the version cache files into the versioncache section
-            Section versionCache = FileSystem.GetFirstSectionNamed("versioncache");
-            string vanillaReleasesPath = versionCache.AddDocument(Constants.VANILLA_RELEASES_CACHE_FILENAME);
-            string vanillaSnapshotsPath = versionCache.AddDocument(Constants.VANILLA_SNAPSHOTS_CACHE_FILENAME);
-            string spigotReleasesPath = versionCache.AddDocument(Constants.SPIGOT_RELEASES_CACHE_FILENAME);
-            string forgeReleasesPath = versionCache.AddDocument(Constants.FORGE_RELEASES_CACHE_FILENAME);
-            
-            // Writes the caches into their files
-            FileUtils.DumpToFile(vanillaReleasesPath, vanillaReleases == null ? new List<string>() : 
-                vanillaReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
-            
-            FileUtils.DumpToFile(vanillaSnapshotsPath, vanillaSnapshots == null ? new List<string>() : 
-                vanillaSnapshots.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
-            
-            FileUtils.DumpToFile(spigotReleasesPath, spigotReleases == null ? new List<string>() : 
-                spigotReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
-            
-            FileUtils.DumpToFile(forgeReleasesPath, forgeReleases == null ? new List<string>() : 
-                forgeReleases.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+            // Iterates through every server type, and updates the cache for each one.
+            foreach (string serverType in mappingsFactory.GetSupportedServerTypes())
+            {
+                LabelStatus.Text = Logging.LOGGER.Info(@$"Updating the {serverType} cache...");
+                
+                var versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
+                string cachePath = mappingsFactory.GetCacheFileFor(serverType);
+                
+                // Writes the cache into its correct cache filepath, in the format "version>url".
+                FileUtils.DumpToFile(cachePath, versions == null ? new List<string>() : 
+                    versions.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+            }
         }
     }
 }

@@ -19,6 +19,12 @@ namespace MCSMLauncher.common.builders.abstraction
     /// </summary>
     public abstract class AbstractServerBuilder
     {
+        
+        /// <summary>
+        /// The console object to update with the logs.
+        /// </summary>
+        protected TextBox Console => NewServer.INSTANCE.TextBoxConsoleOutput;
+        
         /// <summary>
         /// Main method for the server building process. Starts off all the operations.
         /// </summary>

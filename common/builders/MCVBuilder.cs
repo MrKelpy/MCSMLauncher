@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.builders.abstraction;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
 using MCSMLauncher.requests.content;
+using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
+using static MCSMLauncher.common.Constants;
 using PgpsUtilsAEFC.utils;
 
 namespace MCSMLauncher.common.builders
@@ -31,20 +36,36 @@ namespace MCSMLauncher.common.builders
         /// in the end.
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
-        /// <param name="serverPath">The path of the server file to run</param>
+        /// <param name="serverJarPath">The path of the server file to run</param>
         /// <returns>A Task to allow the method to be awaited</returns>
-        public Task RunAndCloseSilently(string serverPath)
+        public override async Task RunAndCloseSilently(string serverJarPath)
         {
-            throw new System.NotImplementedException();
-        }
+            // Builds the command to run the server and runs it.
+            string cmd = "java -Xmx1024M -Xms1024M -jar " + serverJarPath + " --nogui";
+            Console.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
+            Process proc = CommandUtils.RunCommand(cmd);
+            
+            while (!proc.StandardOutput.EndOfStream)
+            {
+                // Read the output line by line, and wait for the "Done" line to be printed.
+                await Task.Delay(100);
+                string line = await proc.StandardOutput.ReadLineAsync();
+                if (line != null && !line.Contains("Done")) continue;
+                
+                Console.AppendText(Logging.LOGGER.Info("Server is DONE, killing process") + Environment.NewLine);
+                break;
+            }
+            
+            // Waits asynchronously for the process to exit and then disposes it.
+            await proc.WaitForExitAsync();
+            proc.Dispose();
 
-        /// <summary>
-        /// Agrees to the eula by replacing the eula=false line in the file to eula=true.
-        /// </summary>
-        /// <param name="eulaPath">The path to the eula.txt file</param>
-        public void AgreeToEula(string eulaPath)
-        {
-            throw new System.NotImplementedException();
+            // Finds the world folder and deletes it.
+            List<string> directories = serverJarPath.Split(Path.DirectorySeparatorChar).ToList();
+            string serverName = directories[directories.IndexOf("servers") + 1];
+            FileSystem.GetFirstSectionNamed("servers").GetFirstSectionNamed(serverName).RemoveSection("world");
+            
+            Console.AppendText(Logging.LOGGER.Info("Silent run completed."));
         }
     }
 }

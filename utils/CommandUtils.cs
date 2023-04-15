@@ -22,9 +22,11 @@ namespace MCSMLauncher.utils
             ProcessStartInfo startInfo = new ProcessStartInfo 
             { 
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "cmd.exe",
                 RedirectStandardOutput = true,
-                Arguments = "/C " + cmd
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                FileName = "cmd.exe",
+                Arguments = $"/C {cmd}"
             };
             
             // Assigns the startInfo to the process and starts it.

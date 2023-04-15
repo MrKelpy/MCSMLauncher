@@ -37,7 +37,9 @@ namespace MCSMLauncher.gui
         {
             InitializeComponent();
             
+            // Loads the images for the form
             PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
+            FolderBrowserButton.Image = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
             
             // Sets the server types inside the server type box
             ComboBoxServerType.Items.AddRange(new ServerTypeMappingsFactory().GetSupportedServerTypes()
@@ -119,7 +121,7 @@ namespace MCSMLauncher.gui
             }
 
             ToggleControlsState(false);
-            IServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+            AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
             await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
             ToggleControlsState(true);
             

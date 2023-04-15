@@ -62,6 +62,7 @@
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\NetworkTester.cs" />
+        <Compile Include="extensions\ProcessExtensions.cs" />
         <Compile Include="gui\PreLoadingScreen.cs">
           <SubType>Form</SubType>
         </Compile>

@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.NewServerLayout = new System.Windows.Forms.Panel();
+            this.FolderBrowserButton = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.PictureBoxLoading = new System.Windows.Forms.PictureBox();
             this.LabelServerNameError = new System.Windows.Forms.Label();
             this.TextBoxConsoleOutput = new System.Windows.Forms.TextBox();
@@ -40,12 +43,16 @@
             this.label1 = new System.Windows.Forms.Label();
             this.TextBoxServerName = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.NewServerLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).BeginInit();
             this.SuspendLayout();
             // 
             // NewServerLayout
             // 
+            this.NewServerLayout.Controls.Add(this.FolderBrowserButton);
+            this.NewServerLayout.Controls.Add(this.comboBox1);
+            this.NewServerLayout.Controls.Add(this.label4);
             this.NewServerLayout.Controls.Add(this.PictureBoxLoading);
             this.NewServerLayout.Controls.Add(this.LabelServerNameError);
             this.NewServerLayout.Controls.Add(this.TextBoxConsoleOutput);
@@ -62,6 +69,38 @@
             this.NewServerLayout.Name = "NewServerLayout";
             this.NewServerLayout.Size = new System.Drawing.Size(1200, 668);
             this.NewServerLayout.TabIndex = 2;
+            // 
+            // FolderBrowserButton
+            // 
+            this.FolderBrowserButton.Location = new System.Drawing.Point(144, 455);
+            this.FolderBrowserButton.Name = "FolderBrowserButton";
+            this.FolderBrowserButton.Size = new System.Drawing.Size(42, 42);
+            this.FolderBrowserButton.TabIndex = 14;
+            this.FolderBrowserButton.UseVisualStyleBackColor = true;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.Enabled = false;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(193, 463);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(321, 28);
+            this.comboBox1.TabIndex = 13;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // label4
+            // 
+            this.label4.BackColor = System.Drawing.Color.Transparent;
+            this.label4.Location = new System.Drawing.Point(144, 413);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(372, 49);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Java Version";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // PictureBoxLoading
             // 
@@ -204,6 +243,12 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.FolderBrowserDialog FolderBrowser;
+        private System.Windows.Forms.Button FolderBrowserButton;
+
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox comboBox1;
 
         private System.Windows.Forms.PictureBox PictureBoxLoading;
 

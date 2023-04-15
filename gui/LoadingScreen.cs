@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -75,6 +76,18 @@ namespace MCSMLauncher.gui
                 FileUtils.DumpToFile(cachePath, versions == null ? new List<string>() : 
                     versions.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
             }
+        }
+
+        /// <summary>
+        /// Cancels the loading phase and closes the application if the user manages to close the app.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void LoadingScreen_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // ReSharper disable once SimplifyLinqExpressionUseAll
+            if (!(new StackTrace().GetFrames() ?? Array.Empty<StackFrame>()).Any(x => x.GetMethod().Name == "Close")) 
+                Environment.Exit(1);
         }
     }
 }

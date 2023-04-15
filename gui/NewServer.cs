@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
+using MCSMLauncher.common.builders.abstraction;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.requests;
 using PgpsUtilsAEFC.common;
+using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui
 {
@@ -31,6 +36,12 @@ namespace MCSMLauncher.gui
         private NewServer()
         {
             InitializeComponent();
+            
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
+            
+            // Sets the server types inside the server type box
+            ComboBoxServerType.Items.AddRange(new ServerTypeMappingsFactory().GetSupportedServerTypes()
+                .Select(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x)).ToArray<object>());
         }
 
         /// <summary>
@@ -38,6 +49,18 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <returns>A Panel representing this form's layout.</returns>
         public Panel GetLayout() => this.NewServerLayout;
+        
+        /// <summary>
+        /// Toggles the state of the controls on the form, switching between the loading state, where
+        /// the user can't interact with the form, and the normal state, where the user can.
+        /// </summary>
+        /// <param name="enabled">Whether or not the user can interact with the controls.</param>
+        public void ToggleControlsState(bool enabled)
+        {
+            TextBoxServerName.Enabled = ComboServerVersion.Enabled = ComboBoxServerType.Enabled 
+                = ButtonBuild.Visible = enabled;
+            PictureBoxLoading.Visible = !enabled;
+        }
 
         /// <summary>
         /// Unlocks or changes the contents of the server version box based on the selected
@@ -50,6 +73,7 @@ namespace MCSMLauncher.gui
             if (ComboBoxServerType.Text == "") return;
             
             // Prepares the server version box for the new server type version list
+            ButtonBuild.Enabled = false;
             ComboServerVersion.Enabled = true;
             ComboServerVersion.Items.Clear();
             ComboServerVersion.ForeColor = Color.Black;
@@ -81,7 +105,7 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void ButtonBuild_Click(object sender, EventArgs e)
+        private async void ButtonBuild_Click(object sender, EventArgs e)
         {
             Section serversSection = Constants.FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
@@ -90,11 +114,14 @@ namespace MCSMLauncher.gui
             if (serversSection.GetAllSections().Any(x => x.Name == TextBoxServerName.Text))
             {
                 LabelServerNameError.Text = @"A server with that name already exists.";
+                LabelServerNameError.Visible = true;
                 return;
             }
 
-            serversSection.AddSection(TextBoxServerName.Text);
-            
+            ToggleControlsState(false);
+            IServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+            await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+            ToggleControlsState(true);
             
             TextBoxServerName.Text = string.Empty;
             ComboBoxServerType.Text = ComboServerVersion.Text = null;
@@ -115,7 +142,11 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void TextBoxServerName_TextChanged(object sender, EventArgs e) =>
-            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Text.Length > 0 && ComboServerVersion.Enabled;
+        private void TextBoxServerName_TextChanged(object sender, EventArgs e)
+        {
+            LabelServerNameError.Visible = false;
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Text.Length > 0 &&
+                                  ComboServerVersion.Enabled;
+        }
     }
 }

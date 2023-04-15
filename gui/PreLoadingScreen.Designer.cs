@@ -63,6 +63,7 @@ namespace MCSMLauncher.gui
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "PreLoadingScreen";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PreLoadingScreen_FormClosing);
             this.Load += new System.EventHandler(this.PreLoadingScreen_Load);
             this.ResumeLayout(false);
         }

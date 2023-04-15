@@ -55,8 +55,10 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="common\builders\IServerBuilder.cs" />
+        <Compile Include="common\builders\abstraction\AbstractServerBuilder.cs" />
+        <Compile Include="common\builders\MCVBuilder.cs" />
         <Compile Include="common\Constants.cs" />
+        <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\NetworkTester.cs" />
@@ -107,6 +109,7 @@
         <Compile Include="requests\mcversions\MCVRequestParser.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
+        <Compile Include="utils\CommandUtils.cs" />
         <EmbeddedResource Include="gui\PreLoadingScreen.resx">
           <DependentUpon>PreLoadingScreen.cs</DependentUpon>
         </EmbeddedResource>

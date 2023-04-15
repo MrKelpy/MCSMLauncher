@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
+using MCSMLauncher.common.builders.abstraction;
 using MCSMLauncher.requests;
-using MCSMLauncher.requests.forge;
-using MCSMLauncher.requests.mcversions;
-using MCSMLauncher.requests.spigot;
-using static MCSMLauncher.common.Constants;
 using PgpsUtilsAEFC.utils;
 
 namespace MCSMLauncher.common.factories
@@ -12,48 +9,8 @@ namespace MCSMLauncher.common.factories
     /// This factory class aims to provide every handler, parser and cache file path for every
     /// server type based on the requirements.
     /// </summary>
-    public class ServerTypeMappingsFactory
+    public partial class ServerTypeMappingsFactory
     {
-
-        /// <summary>
-        /// The dictionary containing the values for every server type supported.
-        /// </summary>
-        private Dictionary<string, Dictionary<string, object>> Mappings { get; } =
-            new Dictionary<string, Dictionary<string, object>>()
-            {
-                {
-                    "vanilla", new Dictionary<string, object>()
-                    {
-                        { "handler", new MCVRequestHandler() },
-                        { "parser", new MCVRequestParser() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") },
-                    }
-                },
-                {
-                    "vanilla snapshots", new Dictionary<string, object>()
-                    {
-                        { "handler", new MCVRequestHandler() },
-                        { "parser", new MCVRequestParser() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }, 
-                    }
-                },
-                {
-                    "spigot", new Dictionary<string, object>()
-                    {
-                        { "handler", new SpigotRequestHandler() },
-                        { "parser", new SpigotRequestParser() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }, 
-                    }
-                },
-                {
-                    "forge", new Dictionary<string, object>()
-                    {
-                        { "handler", new ForgeRequestHandler() },
-                        { "parser", new ForgeRequestParser() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") },
-                    }
-                },
-            };
         
         /// <summary>
         /// Gets the request handler for the given server type. If the server type is not supported,
@@ -72,6 +29,15 @@ namespace MCSMLauncher.common.factories
         /// <returns>An instance of IBaseRequestParser mapped to the server type</returns>
         public IBaseRequestParser GetParserFor(string serverType) =>
             Mappings.ContainsKey(serverType.ToLower()) ? (IBaseRequestParser) Mappings[serverType.ToLower()]["parser"] : null;
+        
+        /// <summary>
+        /// Gets the server builder for the given server type. If the server type is not supported,
+        /// return null.
+        /// </summary>
+        /// <param name="serverType">The server type to return the builder for</param>
+        /// <returns></returns>
+        public AbstractServerBuilder GetBuilderFor(string serverType) =>
+            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractServerBuilder) Mappings[serverType.ToLower()]["builder"] : null;
         
         /// <summary>
         /// Gets the cache file path for the given server type. If the server type is not supported,

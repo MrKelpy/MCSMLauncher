@@ -30,7 +30,7 @@
         {
             this.NewServerLayout = new System.Windows.Forms.Panel();
             this.FolderBrowserButton = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.ComboBoxJavaVersion = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.PictureBoxLoading = new System.Windows.Forms.PictureBox();
             this.LabelServerNameError = new System.Windows.Forms.Label();
@@ -51,7 +51,7 @@
             // NewServerLayout
             // 
             this.NewServerLayout.Controls.Add(this.FolderBrowserButton);
-            this.NewServerLayout.Controls.Add(this.comboBox1);
+            this.NewServerLayout.Controls.Add(this.ComboBoxJavaVersion);
             this.NewServerLayout.Controls.Add(this.label4);
             this.NewServerLayout.Controls.Add(this.PictureBoxLoading);
             this.NewServerLayout.Controls.Add(this.LabelServerNameError);
@@ -77,18 +77,17 @@
             this.FolderBrowserButton.Size = new System.Drawing.Size(42, 42);
             this.FolderBrowserButton.TabIndex = 14;
             this.FolderBrowserButton.UseVisualStyleBackColor = true;
+            this.FolderBrowserButton.Click += new System.EventHandler(this.FolderBrowserButton_Click);
             // 
-            // comboBox1
+            // ComboBoxJavaVersion
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.Enabled = false;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(193, 463);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(321, 28);
-            this.comboBox1.TabIndex = 13;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.ComboBoxJavaVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.ComboBoxJavaVersion.FormattingEnabled = true;
+            this.ComboBoxJavaVersion.Location = new System.Drawing.Point(193, 463);
+            this.ComboBoxJavaVersion.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ComboBoxJavaVersion.Name = "ComboBoxJavaVersion";
+            this.ComboBoxJavaVersion.Size = new System.Drawing.Size(321, 28);
+            this.ComboBoxJavaVersion.TabIndex = 13;
             // 
             // label4
             // 
@@ -100,7 +99,6 @@
             this.label4.TabIndex = 12;
             this.label4.Text = "Java Version";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // PictureBoxLoading
             // 
@@ -248,7 +246,7 @@
         private System.Windows.Forms.Button FolderBrowserButton;
 
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox comboBox1;
+        public System.Windows.Forms.ComboBox ComboBoxJavaVersion;
 
         private System.Windows.Forms.PictureBox PictureBoxLoading;
 

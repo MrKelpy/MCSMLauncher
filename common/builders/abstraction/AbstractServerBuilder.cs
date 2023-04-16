@@ -63,14 +63,18 @@ namespace MCSMLauncher.common.builders.abstraction
             string serverJarPath = await InstallServer(serverInstallerJar);
             
             // Runs the server once and closes it, in order to create the first files.
-            await RunAndCloseSilently(serverJarPath);
+            if (await RunAndCloseSilently(serverJarPath) == 1)
+            {
+                FileSystem.RemoveSection("servers/" + serverName);
+                return;
+            }
             
             // Agrees to the EULA
             console.AppendText(Logging.LOGGER.Info($"Agreeing to the EULA") + Environment.NewLine);
             this.AgreeToEula(FileSystem.GetFirstFileNamed("eula.txt"));
 
             // Runs the server once and closes it, in order to create the rest of the server files.
-            await RunAndCloseSilently(serverJarPath);
+            if (await RunAndCloseSilently(serverJarPath) == 1) return;
             
             console.AppendText(Logging.LOGGER.Info($"Finished building the server.") + Environment.NewLine);
         }
@@ -85,7 +89,7 @@ namespace MCSMLauncher.common.builders.abstraction
             
             // Replaces the eula=false line with eula=true
             for (var i = 0; i < lines.Count; i++)
-                if (lines[i].Equals("eula=false")) lines[i] = "eula=true";
+                if (lines[i].Trim().Equals("eula=false")) lines[i] = "eula=true";
             
             FileUtils.DumpToFile(eulaPath, lines);
         }
@@ -104,7 +108,7 @@ namespace MCSMLauncher.common.builders.abstraction
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
-        /// <returns>A Task to allow the method to be awaited</returns>
-        public abstract Task RunAndCloseSilently(string serverJarPath);
+        /// <returns>A Task with a code letting the user know if an error happened</returns>
+        public abstract Task<int> RunAndCloseSilently(string serverJarPath);
     }
 }

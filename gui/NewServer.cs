@@ -30,6 +30,17 @@ namespace MCSMLauncher.gui
         public static NewServer INSTANCE { get; } = new NewServer();
 
         /// <summary>
+        /// The list of invalid server names, used to check if the server name is valid.
+        /// These names are reserved by Windows for special folders.
+        /// </summary>
+        private List<string> InvalidServerNames { get; } = new List<string>()
+        {
+            "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", 
+            "COM7", "COM8", "COM9", "COM0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", 
+            "LPT6", "LPT7", "LPT8", "LPT9", "LPT0"
+        };
+
+        /// <summary>
         /// Main constructor for the NewServer form. Private in order to enforce the usage
         /// of the instance declared above.
         /// </summary>
@@ -44,6 +55,19 @@ namespace MCSMLauncher.gui
             // Sets the server types inside the server type box
             ComboBoxServerType.Items.AddRange(new ServerTypeMappingsFactory().GetSupportedServerTypes()
                 .Select(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x)).ToArray<object>());
+            
+            // Checks all the java versions available in Program Files and sets them in the java version box
+            string programFilesJavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
+            string programFilesX86JavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
+            
+            if (Directory.Exists(programFilesJavaPath)) 
+                ComboBoxJavaVersion.Items.AddRange(Directory.GetDirectories(programFilesJavaPath).ToArray<object>());
+            
+            if (Directory.Exists(programFilesX86JavaPath))
+                ComboBoxJavaVersion.Items.AddRange(Directory.GetDirectories(programFilesX86JavaPath).ToArray<object>());
+            
+            // Automatically selects the first java version if there is one
+            ComboBoxJavaVersion.SelectedIndex = ComboBoxJavaVersion.Items.Count > 0 ? 0 : -1;
         }
 
         /// <summary>
@@ -60,7 +84,7 @@ namespace MCSMLauncher.gui
         public void ToggleControlsState(bool enabled)
         {
             TextBoxServerName.Enabled = ComboServerVersion.Enabled = ComboBoxServerType.Enabled 
-                = ButtonBuild.Visible = enabled;
+                = ComboBoxJavaVersion.Enabled = ButtonBuild.Visible = enabled;
             PictureBoxLoading.Visible = !enabled;
         }
 
@@ -109,8 +133,26 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private async void ButtonBuild_Click(object sender, EventArgs e)
         {
-            Section serversSection = Constants.FileSystem.AddSection("servers");
+            Section serversSection = FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
+            TextBoxConsoleOutput.Clear();
+            TextBoxConsoleOutput.ForeColor = Color.Black;
+
+            // Prevents invalid characters in the server name
+            if (TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains))
+            {
+                LabelServerNameError.Text = @"Invalid characters in server name.";
+                LabelServerNameError.Visible = true;
+                return;
+            }
+            
+            // Prevents invalid server names
+            if (InvalidServerNames.Any(x => x.ToUpper().Equals(TextBoxServerName.Text.ToUpper())))
+            {
+                LabelServerNameError.Text = @"Invalid server name.";
+                LabelServerNameError.Visible = true;
+                return;
+            }
             
             // Prevent two servers from having the same name
             if (serversSection.GetAllSections().Any(x => x.Name == TextBoxServerName.Text))
@@ -124,9 +166,6 @@ namespace MCSMLauncher.gui
             AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
             await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
             ToggleControlsState(true);
-            
-            TextBoxServerName.Text = string.Empty;
-            ComboBoxServerType.Text = ComboServerVersion.Text = null;
         }
 
         /// <summary>
@@ -149,6 +188,18 @@ namespace MCSMLauncher.gui
             LabelServerNameError.Visible = false;
             ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Text.Length > 0 &&
                                   ComboServerVersion.Enabled;
+        }
+
+        /// <summary>
+        /// Brings up the folder browser dialog, allowing the user to select
+        /// their preferred java version folder.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void FolderBrowserButton_Click(object sender, EventArgs e)
+        {
+            DialogResult result = FolderBrowser.ShowDialog();
+            if (result == DialogResult.OK) ComboBoxJavaVersion.SelectedItem = FolderBrowser.SelectedPath;
         }
     }
 }

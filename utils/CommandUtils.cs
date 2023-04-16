@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 
 namespace MCSMLauncher.utils
 {
@@ -12,9 +13,11 @@ namespace MCSMLauncher.utils
         /// <summary>
         /// Runs a command in the CMD application.
         /// </summary>
+        /// <param name="procname">The name of the process to be run</param>
         /// <param name="cmd">The command to run</param>
+        /// <param name="workingDirectory">The working directory of the process</param>
         /// <returns>The process started</returns>
-        public static Process RunCommand(string cmd)
+        public static Process RunCommand(string procname, string cmd, string workingDirectory = null)
         {
             // Creates a new process with the command line arguments to run the command, in a hidden
             // window.
@@ -22,11 +25,13 @@ namespace MCSMLauncher.utils
             ProcessStartInfo startInfo = new ProcessStartInfo 
             { 
                 WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 CreateNoWindow = true,
                 UseShellExecute = false,
-                FileName = "cmd.exe",
-                Arguments = $"/C {cmd}"
+                WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory(),
+                FileName = procname,
+                Arguments = cmd
             };
             
             // Assigns the startInfo to the process and starts it.

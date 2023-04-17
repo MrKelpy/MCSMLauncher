@@ -25,10 +25,10 @@ namespace MCSMLauncher
             {
                 Application.Run(new PreLoadingScreen());
                 Application.Run(new LoadingScreen());
-                Application.Run(new Mainframe());
+                Application.Run(Mainframe.INSTANCE);
             }
             // Logs whatever fatal issue happens as a last resource.
-            catch (Exception e)
+            catch (ArithmeticException e)
             {
                 Logging.LOGGER.Fatal($@"An unexpected error occured and the program was forced to exit.");
                 Logging.LOGGER.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.FILE);

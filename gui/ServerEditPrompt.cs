@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using MCSMLauncher.common;
+using MCSMLauncher.common.models;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 
@@ -29,6 +32,7 @@ namespace MCSMLauncher.gui
             InitializeComponent();
             this.ServerSection = serverSection;
             this.LoadToForm(this.PropertiesToDictionary());
+            this.ActiveControl = null;
         }
 
         /// <summary>
@@ -39,9 +43,12 @@ namespace MCSMLauncher.gui
         {
             Dictionary<string, string> formInformation = new Dictionary<string, string>();
             
-            Controls.OfType<Control>().Where(x => x.GetType() != typeof(CheckBox)).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Text));
-            Controls.OfType<CheckBox>().Where(x => x.Tag != null).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Checked.ToString().ToLower()));
-
+            // Iterates through all the controls in the form and adds the tag and text of each control, excluding
+            // the ones without tags
+            Controls.OfType<Control>().Where(x => x.GetType() != typeof(CheckBox) && x.Tag != null && x.Tag.ToString() != string.Empty).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Text));
+            Controls.OfType<CheckBox>().Where(x => x.Tag != null && x.Tag.ToString() != string.Empty).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Checked.ToString().ToLower()));
+            if (!CheckBoxSpawnProtection.Checked) formInformation["spawn-protection"] = "0";
+            
             return formInformation;
         }
 
@@ -56,7 +63,8 @@ namespace MCSMLauncher.gui
             foreach (KeyValuePair<string,string> item in dictionaryToLoad)
             {
                 // Finds the control with the same tag as the key in the dictionary
-                Control control = Controls.OfType<Control>().First(x => x.Tag.ToString().Equals(item.Key));
+                Control control = Controls.OfType<Control>().Where(x => x.Tag != null).FirstOrDefault(x => x.Tag.ToString().Equals(item.Key));
+                if (control == null) continue;
                 
                 // If the control is a checkbox, we have to parse the value to a boolean, otherwise we
                 // just set the text of the control to the value.
@@ -65,6 +73,9 @@ namespace MCSMLauncher.gui
                 else
                     control.Text = item.Value;
             }
+            
+            CheckBoxSpawnProtection.Checked = int.Parse(dictionaryToLoad["spawn-protection"]) > 0;
+            TextBoxServerName.Text = Path.GetFileName(ServerSection.Name);
         }
 
         /// <summary>
@@ -74,15 +85,26 @@ namespace MCSMLauncher.gui
         private Dictionary<string, string> PropertiesToDictionary()
         {
             Dictionary<string, string> propertiesDictionary = new Dictionary<string, string>();
-            string filepath = ServerSection.GetFirstFileNamed("server.properties");
-            if (filepath == null) return propertiesDictionary;
+            string propertiesPath = ServerSection.GetFirstFileNamed("server.properties");
+            string settingsPath = ServerSection.GetFirstFileNamed("server_settings.xml");
+            
+            if (propertiesPath == null) return propertiesDictionary;
             
             // Reads the file line by line, and adds the key and value to the dictionary.
-            foreach (string line in FileUtils.ReadFromFile(filepath))
+            foreach (string line in FileUtils.ReadFromFile(propertiesPath))
             {
+                if (line.StartsWith("#") || line.StartsWith("server-port")) continue;
                 string[] splitLine = line.Split('=');
                 propertiesDictionary.Add(splitLine[0], splitLine[1]);
             }
+            
+            // If the server_settings.xml file exists, deserialize it and add the values to the dictionary. 
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            
+            info.GetType().GetProperties().Where(x => x.Name.ToLower() != "port")
+                .ToList().ForEach(x => propertiesDictionary.Add(x.Name.ToLower(), x.GetValue(info)?.ToString() ?? ""));
+            
+            propertiesDictionary.Add("server-port", info.Port.ToString());
 
             return propertiesDictionary;
         }
@@ -91,20 +113,34 @@ namespace MCSMLauncher.gui
         /// Loads the current form's properties into the server.properties file.
         /// </summary>
         /// <param name="dictionaryToLoad">The dictionary to load into the form</param>
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         private void LoadToProperties(Dictionary<string, string> dictionaryToLoad)
         {
-            string filepath = ServerSection.GetFirstFileNamed("server.properties");
-            if (filepath == null) return;
-            List<string> propertiesFile = FileUtils.ReadFromFile(filepath);
+            string propertiesFilepath = ServerSection.GetFirstFileNamed("server.properties");
+            string settingsFilepath = ServerSection.GetFirstFileNamed("server_settings.xml");
+            
+            if (propertiesFilepath == null) return;
+            List<string> propertiesFile = FileUtils.ReadFromFile(propertiesFilepath);
             
             // Iterates through the dictionary and replaces the line in the file with the same key
             foreach (KeyValuePair<string,string> property in dictionaryToLoad)
             {
                 int lineIndex = propertiesFile.FindIndex(x => x.StartsWith(property.Key));
+                if (lineIndex == -1) continue;
                 propertiesFile[lineIndex] = $"{property.Key}={property.Value}";
             }
+
+            // Loads the information from the form into the ServerInformation object and serializes it again
+            ServerInformation updatedServerInformation = XMLUtils.DeserializeFromFile<ServerInformation>(settingsFilepath);
+            updatedServerInformation.Port = int.Parse(dictionaryToLoad["server-port"]);
+            updatedServerInformation.Ram = int.Parse(dictionaryToLoad["ram"]);
+            updatedServerInformation.PlayerdataBackupsPath = dictionaryToLoad["playerdatabackupspath"];
+            updatedServerInformation.ServerBackupsPath = dictionaryToLoad["serverbackupspath"];
+            
+            File.Delete(settingsFilepath);
             
             // Writes the new edited file contents to disk.
+            XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath, updatedServerInformation);
             FileUtils.DumpToFile(ServerSection.GetFirstFileNamed("server.properties"), propertiesFile);
         }
 
@@ -122,6 +158,20 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ButtonSave_Click(object sender, EventArgs e)
         {
+            // Renames the server's folder to the new name if it changed.
+            string newServerSectionPath = Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+
+            if (ServerSection.SectionFullPath != newServerSectionPath)
+            {
+                ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
+                Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
+
+                // Updates the ServerSection property to the new path.
+                ServerSection = Constants.FileSystem.AddSection("servers/" + TextBoxServerName.Text);
+                ServerList.INSTANCE.AddServerToList(ServerSection);
+            }
+
+            // Loads the properties into the server.properties and settings files and closes the form.
             this.LoadToProperties(this.FormToDictionary());
             this.Close();
         }

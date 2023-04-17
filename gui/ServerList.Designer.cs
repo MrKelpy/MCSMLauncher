@@ -174,7 +174,7 @@
         private System.Windows.Forms.DataGridViewButtonColumn Edit;
         private System.Windows.Forms.DataGridViewButtonColumn Play;
 
-        private System.Windows.Forms.DataGridView GridServerList;
+        public System.Windows.Forms.DataGridView GridServerList;
 
         #endregion
 

@@ -37,7 +37,7 @@ namespace MCSMLauncher.common.models
         /// <summary>
         /// The path to the directory where the backups should be stored at.
         /// </summary>
-        public string BackupsPath { get; set; }
+        public string ServerBackupsPath { get; set; }
         
         /// <summary>
         /// The path to the directory where the playerdata backups should be stored at.

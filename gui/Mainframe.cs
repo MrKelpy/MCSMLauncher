@@ -17,10 +17,17 @@ namespace MCSMLauncher.gui
     /// </summary>
     public partial class Mainframe : Form
     {
+        
         /// <summary>
-        /// Main constructor for the Mainframe. Loads up the server list.
+        /// The singleton instance of the Mainframe.
         /// </summary>
-        public Mainframe()
+        public static Mainframe INSTANCE { get; } = new Mainframe();
+        
+        /// <summary>
+        /// Main constructor for the Mainframe. Loads up the server list. Private to enforce the
+        /// singleton pattern.
+        /// </summary>
+        private Mainframe()
         {
             InitializeComponent();
             this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());

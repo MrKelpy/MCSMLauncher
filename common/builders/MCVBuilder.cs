@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,6 @@ using MCSMLauncher.common.factories;
 using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
 using MCSMLauncher.requests.content;
-using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 using PgpsUtilsAEFC.utils;
@@ -39,49 +39,56 @@ namespace MCSMLauncher.common.builders
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
         /// <returns>A Task to allow the method to be awaited</returns>
+        [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
         public override async Task<int> RunAndCloseSilently(string serverJarPath)
         {
             // Creates a new process to run the server silently, and waits for it to finish.
-            Process proc = CommandUtils.RunCommand($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"", $"-jar {serverJarPath} --nogui", Path.GetDirectoryName(serverJarPath));
-            Console.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
-            
-            proc.Kill();
-            return 2;
-            
-            // If an error happens, prints it and returns 1.
-            if (proc.StandardError.Peek() != -1)
-            {
-                Console.Clear(); Console.ForeColor = Color.Firebrick;
+            Process proc = CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"", $"-jar {serverJarPath} --nogui", Path.GetDirectoryName(serverJarPath));
+            OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
 
-                while (!proc.StandardError.EndOfStream)
-                    Console.AppendText(Logging.LOGGER.Error(await proc.StandardError.ReadLineAsync()) + Environment.NewLine);
+            // Reads through both of the STDERR and STDOUT outputs, logging them.
+            int terminationCode = -1;
 
-                return 1;
-            }
-            
-            while (!proc.StandardOutput.EndOfStream)
+            // Handles the processing of the output. When finished, kills the process and return the termination code 0.
+            proc.OutputDataReceived += (sender, e) =>
             {
-                // Read the output line by line, and wait for the "Done" line to be printed.
-                await Task.Delay(100);
+                Logging.LOGGER.Info(e.Data);
+                if (e.Data != null && !e.Data.ToLower().Contains("done")) return;
                 
-                string line = await proc.StandardOutput.ReadLineAsync();
-                Logging.LOGGER.Info(line);
-                if (line != null && !line.Contains("Done")) continue;
+                terminationCode = 0;
+                if (e.Data != null) proc.Kill();
+            };
+
+            // Handles the processing of the error output. When finished, kills the process and return the termination code 1.
+            proc.ErrorDataReceived += (sender, e) =>
+            {
+                if (e.Data.Trim() == string.Empty) return; 
                 
-                Console.AppendText(Logging.LOGGER.Info("Server is DONE, killing process") + Environment.NewLine);
-                break;
-            }
+                // Updates the console TextBox with the error message. For this, since it is a different thread, we need to invoke the method.
+                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.Clear(); }));
+                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.ForeColor = Color.Firebrick; }));
+                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Error(e.Data) + Environment.NewLine); }));
+                
+                terminationCode = 1;
+                if (e.Data != null) proc.Kill();
+            };
             
-            // Kills the process and disposes it.
-            proc.Kill();
+            // Waits for the termination of the process by the OutputDataReceived event or ErrorDataReceived event.
+            proc.Start();
+            proc.BeginErrorReadLine();
+            proc.BeginOutputReadLine();
+            await proc.WaitForExitAsync();
+            
+            // Disposes of the process and checks if the termination code is 1. If so, return 1.
             proc.Dispose();
+            if (terminationCode == 1) return 1;
 
             // Finds the world folder and deletes it.
             List<string> directories = serverJarPath.Split(Path.DirectorySeparatorChar).ToList();
             string serverName = directories[directories.IndexOf("servers") + 1];
             FileSystem.GetFirstSectionNamed("servers").GetFirstSectionNamed(serverName).RemoveSection("world");
             
-            Console.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
             return 0;
         }
     }

@@ -62,13 +62,15 @@ namespace MCSMLauncher.gui
                 {
                     Type = "unknown",
                     Version = "Unknown",
-                    BackupsPath = section.AddSection("backups/server").SectionFullPath,
+                    ServerBackupsPath = section.AddSection("backups/server").SectionFullPath,
                     PlayerdataBackupsPath = section.AddSection("backups/playerdata").SectionFullPath,
                     Port = 25565,
                     Ram = 1024,
                     JavaRuntimePath = "java"
                 });
-                GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed("unknown.png")), "Unknown", section.Name, "Offline");
+                GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed("unknown.png")), "Unknown",
+                    Path.GetFileName(section.Name), "Offline");
+                
                 return;
             } 
             
@@ -81,7 +83,7 @@ namespace MCSMLauncher.gui
             string typeImagePath = FileSystem.GetFirstSectionNamed("assets")
                 .GetFirstFileNamed(info.Type.Split(' ')[0].ToLower() + ".png");
             
-            GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, section.Name, "Offline");
+            GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name), "Offline");
         }
 
         /// <summary>

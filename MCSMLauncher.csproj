@@ -111,7 +111,6 @@
         <Compile Include="requests\mcversions\MCVRequestParser.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
-        <Compile Include="utils\CommandUtils.cs" />
         <EmbeddedResource Include="gui\PreLoadingScreen.resx">
           <DependentUpon>PreLoadingScreen.cs</DependentUpon>
         </EmbeddedResource>

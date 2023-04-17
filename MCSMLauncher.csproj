@@ -38,7 +38,7 @@
             <HintPath>packages\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
         </Reference>
         <Reference Include="PgpsUtilsAEFC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <HintPath>packages\MrKelpy.PgpsUtilsAEFC.1.1.12\lib\net472\PgpsUtilsAEFC.dll</HintPath>
+          <HintPath>packages\MrKelpy.PgpsUtilsAEFC.1.1.13\lib\net472\PgpsUtilsAEFC.dll</HintPath>
         </Reference>
         <Reference Include="System" />
         <Reference Include="System.Configuration" />
@@ -61,6 +61,7 @@
         <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
         <Compile Include="common\Logging.cs" />
+        <Compile Include="common\models\ServerInformation.cs" />
         <Compile Include="common\NetworkTester.cs" />
         <Compile Include="extensions\ProcessExtensions.cs" />
         <Compile Include="gui\PreLoadingScreen.cs">
@@ -122,6 +123,9 @@
         </EmbeddedResource>
         <EmbeddedResource Include="gui\NewServer.resx">
             <DependentUpon>NewServer.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="gui\ServerEditPrompt.resx">
+          <DependentUpon>ServerEditPrompt.cs</DependentUpon>
         </EmbeddedResource>
         <EmbeddedResource Include="gui\ServerList.resx">
             <DependentUpon>ServerList.cs</DependentUpon>

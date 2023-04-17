@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.common.models;
 using MCSMLauncher.gui;
 using MCSMLauncher.requests.content;
 using PgpsUtilsAEFC.common;
@@ -17,6 +19,7 @@ namespace MCSMLauncher.common.builders.abstraction
     /// This interface implements contracts for the methods that should be implemented in each
     /// ServerBuilder.
     /// </summary>
+    [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public abstract class AbstractServerBuilder
     {
         
@@ -61,6 +64,22 @@ namespace MCSMLauncher.common.builders.abstraction
             Section serverSection = FileSystem.GetFirstSectionNamed("servers").GetFirstSectionNamed(serverName);
             string serverInstallerJar = serverSection.GetAllFiles().FirstOrDefault(x => x.Contains("server") && x.EndsWith(".jar"));
             string serverJarPath = await InstallServer(serverInstallerJar);
+            
+            // Creates the server_settings.xml file, marks it as hidden and serializes the ServerInformation object into it
+            string serverSettingsPath = Path.Combine(serverSection.SectionFullPath, "server_settings.xml");
+            ServerInformation serverInformation = new ServerInformation()
+            {
+                Type = serverType,
+                Version = serverVersion,
+                BackupsPath = serverSection.AddSection("backups/server").SectionFullPath,
+                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath,
+                Port = 25565,
+                Ram = 1024,
+                JavaRuntimePath = NewServer.INSTANCE.ComboBoxJavaVersion.Text
+            };
+            
+            XMLUtils.SerializeToFile<ServerInformation>(serverSettingsPath, serverInformation);
+            File.SetAttributes(serverSettingsPath, File.GetAttributes(serverSettingsPath) | FileAttributes.Hidden);
             
             // Runs the server once and closes it, in order to create the first files.
             if (await RunAndCloseSilently(serverJarPath) == 1)

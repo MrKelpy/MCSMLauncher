@@ -44,7 +44,10 @@ namespace MCSMLauncher.common.builders
             // Creates a new process to run the server silently, and waits for it to finish.
             Process proc = CommandUtils.RunCommand($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"", $"-jar {serverJarPath} --nogui", Path.GetDirectoryName(serverJarPath));
             Console.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
-
+            
+            proc.Kill();
+            return 2;
+            
             // If an error happens, prints it and returns 1.
             if (proc.StandardError.Peek() != -1)
             {
@@ -55,7 +58,6 @@ namespace MCSMLauncher.common.builders
 
                 return 1;
             }
-            proc.StandardError.Close();
             
             while (!proc.StandardOutput.EndOfStream)
             {

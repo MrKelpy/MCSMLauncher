@@ -18,3 +18,4 @@ C:\dev\C#\MCSMLauncher\bin\Debug\HtmlAgilityPack.xml
 C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.LoadingScreen.resources
 C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.PreLoadingScreen.resources
 C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.ServerEditPrompt.resources
+C:\dev\C#\MCSMLauncher\bin\Debug\PgpsUtilsAEFC.dll

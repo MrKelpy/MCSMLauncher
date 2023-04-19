@@ -70,8 +70,8 @@ namespace MCSMLauncher.gui
             // If one of them is, or assets has no files, then continue. 
             try
             {
-                if (assets?.GetAllFiles().Length != configLength) throw new ArgumentException();
-                foreach (string filepath in assets.GetAllFiles()) using (var _ = new Bitmap(filepath)) { }
+                if (assets?.GetAllDocuments().Length != configLength) throw new ArgumentException();
+                foreach (string filepath in assets.GetAllDocuments()) using (var _ = new Bitmap(filepath)) { }
                 Close(); return;
                 
             } catch (ArgumentException) {} // ignored

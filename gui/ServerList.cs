@@ -32,14 +32,25 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// Main constructor for the ServerList form. Private to enforce the singleton model.
         /// </summary>
-        private ServerList()
-        {
-            InitializeComponent();
+        private ServerList() => InitializeComponent();
 
-            // Iterates over every server in the servers section, reads their settings file, and adds them
-            // to the list.
-            foreach (Section serverSection in FileSystem.AddSection("servers").GetAllTopLevelSections())
-                this.AddServerToList(serverSection);
+        /// <summary>
+        /// Refreshes the grid asynchronously, clearing everything and reading all of the existing
+        /// servers, re-adding them into the grid.
+        /// </summary>
+        public async Task RefreshGridAsync()
+        {
+            // Iterates over every server in the servers section and creates an addition task for them
+            GridServerList.Rows.Clear();
+            
+            // Creates a list of tasks invoking AddServerToList in the original thread, sorted.
+            List<Section> sections = FileSystem.AddSection("servers").GetAllTopLevelSections().ToList();
+            List<Task> taskList = sections.Select(AddServerToListAsync).ToList();
+
+            await Task.WhenAll(taskList);
+            
+            // Sort the servers by version
+            GridServerList.Sort(GridServerList.Columns[1], ListSortDirection.Descending);
         }
 
         /// <summary>
@@ -47,12 +58,29 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <returns>A Panel representing this form's layout.</returns>
         public Panel GetLayout() => this.ServerListLayout;
+        
+        /// <summary>
+        /// Checks if a given server name already exists inside the Grid
+        /// </summary>
+        /// <param name="serverName">The server name to check for</param>
+        /// <returns>Whether or not the server name exists in the grid</returns>
+        public bool ExistsInGrid(string serverName)
+        {
+            foreach (DataGridViewRow row in GridServerList.Rows)
+                if (row.Cells[2].Value.ToString().Equals(serverName)) return true;
+
+            return false;
+        }
 
         /// <summary>
         /// Adds a server to the server list given the server section.
         /// </summary>
+        /// <param name="section">The section to add into the server list</param>
         public void AddServerToList(Section section)
         {
+            // Prevents server duplicates from being displayed
+            if (this.ExistsInGrid(section.SimpleName)) return;
+            
             // First checks if the server settings file exists, and if it doesn't, adds the server to the
             // list as "Unknown", creating the settings file.
             string settingsPath = Path.Combine(section.SectionFullPath, "server_settings.xml");
@@ -68,9 +96,14 @@ namespace MCSMLauncher.gui
                     Ram = 1024,
                     JavaRuntimePath = "java"
                 });
-                GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstFileNamed("unknown.png")), "Unknown",
-                    Path.GetFileName(section.Name), "Offline");
-                
+
+                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate()
+                {
+                    GridServerList.Rows.Add(
+                        Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed("unknown.png")),
+                        "Unknown",
+                        Path.GetFileName(section.Name), "Offline");
+                }));
                 return;
             } 
             
@@ -81,10 +114,20 @@ namespace MCSMLauncher.gui
             // We have to parse the type to get the first word, since there could be snapshots of the type,
             // making the type similar to "serverType snapshots".
             string typeImagePath = FileSystem.GetFirstSectionNamed("assets")
-                .GetFirstFileNamed(info.Type.Split(' ')[0].ToLower() + ".png");
-            
-            GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name), "Offline");
+                .GetFirstDocumentNamed(info.Type.Split(' ')[0].ToLower() + ".png");
+
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate()
+            {
+                GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name),
+                    "Offline");
+            }));
         }
+
+        /// <summary>
+        /// Performs an addition to the server list asynchronously.
+        /// </summary>
+        /// <param name="section">The section to add into the server list</param>
+        public async Task AddServerToListAsync(Section section) => await Task.Run(() => AddServerToList(section)); 
 
         /// <summary>
         /// Removes a server from the server list given the server name.
@@ -103,6 +146,12 @@ namespace MCSMLauncher.gui
                 }
             }
         }
+
+        /// <summary>
+        /// Removes a server from the server list asynchronously.
+        /// </summary>
+        /// <param name="serverName">The name of the server to remove from the list</param>
+        public async Task RemoveFromListAsync(string serverName) => await Task.Run(() => RemoveFromList(serverName));
 
         /// <summary>
         /// De-selects the selected row in the server list, so that the selections won't pollute the screen.

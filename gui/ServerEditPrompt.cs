@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,6 +11,7 @@ using MCSMLauncher.common;
 using MCSMLauncher.common.models;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
+using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui
 {
@@ -30,22 +33,34 @@ namespace MCSMLauncher.gui
         public ServerEditPrompt(Section serverSection)
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterParent;
             this.ServerSection = serverSection;
             this.LoadToForm(this.PropertiesToDictionary());
-            this.ActiveControl = null;
+            
+            ButtonFolderBrowsing.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
+            ButtonFolderBrowsing2.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
+            ButtonFolderBrowsing3.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
         }
+        
+        /// <summary>
+        /// Switches the focus to the first label in the form when the form is loaded, so that nothing
+        /// is selected.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void ServerEditPrompt_Load(object sender, EventArgs e) => this.ActiveControl = label1;
 
         /// <summary>
         /// Collects all the information from the form and returns it as a dictionary.
         /// </summary>
         /// <returns>A dictionary containing all of the settings in the form as a dictionary</returns>
-        private Dictionary<string, string> FormToDictionary()
+        public Dictionary<string, string> FormToDictionary()
         {
             Dictionary<string, string> formInformation = new Dictionary<string, string>();
             
             // Iterates through all the controls in the form and adds the tag and text of each control, excluding
             // the ones without tags
-            Controls.OfType<Control>().Where(x => x.GetType() != typeof(CheckBox) && x.Tag != null && x.Tag.ToString() != string.Empty).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Text));
+            Controls.OfType<Control>().Where(x => x.GetType() != typeof(CheckBox) && x.GetType() != typeof(Button) && x.Tag != null && x.Tag.ToString() != string.Empty).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Text));
             Controls.OfType<CheckBox>().Where(x => x.Tag != null && x.Tag.ToString() != string.Empty).ToList().ForEach(x => formInformation.Add(x.Tag.ToString(), x.Checked.ToString().ToLower()));
             if (!CheckBoxSpawnProtection.Checked) formInformation["spawn-protection"] = "0";
             
@@ -58,12 +73,12 @@ namespace MCSMLauncher.gui
         /// Text, Combo and Numeric box.
         /// </summary>
         /// <param name="dictionaryToLoad">The dictionary to load into the form</param>
-        private void LoadToForm(Dictionary<string, string> dictionaryToLoad)
+        public void LoadToForm(Dictionary<string, string> dictionaryToLoad)
         {
             foreach (KeyValuePair<string,string> item in dictionaryToLoad)
             {
                 // Finds the control with the same tag as the key in the dictionary
-                Control control = Controls.OfType<Control>().Where(x => x.Tag != null).FirstOrDefault(x => x.Tag.ToString().Equals(item.Key));
+                Control control = Controls.OfType<Control>().Where(x => x.GetType() != typeof(Button) && x.Tag != null).FirstOrDefault(x => x.Tag.ToString().Equals(item.Key));
                 if (control == null) continue;
                 
                 // If the control is a checkbox, we have to parse the value to a boolean, otherwise we
@@ -73,20 +88,20 @@ namespace MCSMLauncher.gui
                 else
                     control.Text = item.Value;
             }
-            
-            CheckBoxSpawnProtection.Checked = int.Parse(dictionaryToLoad["spawn-protection"]) > 0;
-            TextBoxServerName.Text = Path.GetFileName(ServerSection.Name);
+
+            CheckBoxSpawnProtection.Checked = dictionaryToLoad.ContainsKey("spawn-protection") && int.Parse(dictionaryToLoad["spawn-protection"]) > 0;
+            TextBoxServerName.Text = ServerSection.SimpleName;
         }
 
         /// <summary>
         /// Reads the properties file and returns a dictionary with the key and value of each line.
         /// </summary>
         /// <returns>A dictionary containing the key:val's of the properties file</returns>
-        private Dictionary<string, string> PropertiesToDictionary()
+        public Dictionary<string, string> PropertiesToDictionary()
         {
             Dictionary<string, string> propertiesDictionary = new Dictionary<string, string>();
-            string propertiesPath = ServerSection.GetFirstFileNamed("server.properties");
-            string settingsPath = ServerSection.GetFirstFileNamed("server_settings.xml");
+            string propertiesPath = ServerSection.GetFirstDocumentNamed("server.properties");
+            string settingsPath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
             
             if (propertiesPath == null) return propertiesDictionary;
             
@@ -114,10 +129,10 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="dictionaryToLoad">The dictionary to load into the form</param>
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        private void LoadToProperties(Dictionary<string, string> dictionaryToLoad)
+        public void LoadToProperties(Dictionary<string, string> dictionaryToLoad)
         {
-            string propertiesFilepath = ServerSection.GetFirstFileNamed("server.properties");
-            string settingsFilepath = ServerSection.GetFirstFileNamed("server_settings.xml");
+            string propertiesFilepath = ServerSection.GetFirstDocumentNamed("server.properties");
+            string settingsFilepath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
             
             if (propertiesFilepath == null) return;
             List<string> propertiesFile = FileUtils.ReadFromFile(propertiesFilepath);
@@ -141,7 +156,7 @@ namespace MCSMLauncher.gui
             
             // Writes the new edited file contents to disk.
             XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath, updatedServerInformation);
-            FileUtils.DumpToFile(ServerSection.GetFirstFileNamed("server.properties"), propertiesFile);
+            FileUtils.DumpToFile(ServerSection.GetFirstDocumentNamed("server.properties"), propertiesFile);
         }
 
         /// <summary>
@@ -161,7 +176,7 @@ namespace MCSMLauncher.gui
             // Renames the server's folder to the new name if it changed.
             string newServerSectionPath = Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
 
-            if (ServerSection.SectionFullPath != newServerSectionPath)
+            if (!ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
             {
                 ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
                 Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
@@ -196,9 +211,29 @@ namespace MCSMLauncher.gui
                 return;
             
             // Removes the server from the list, deletes the directory and closes the form.
-            ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
-            Directory.Delete(ServerSection.SectionFullPath, true);
-            this.Close();
+            try
+            {
+                Directory.Delete(ServerSection.SectionFullPath, true);
+                ServerList.INSTANCE.RemoveFromList(ServerSection.SimpleName);
+                this.Close();
+            }
+            catch (Exception exception)
+            { MessageBox.Show(@"An error occurred while deleting the server: " + exception.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
+        /// <summary>
+        /// Opens a folder browser dialog bound to a given TextBox in its Tag, and allows the user to select
+        /// a folder to use as the server's backup path.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void ButtonFolderBrowsing_Click(object sender, EventArgs e)
+        {
+            Button button = (Button) sender;
+            TextBox boundTextBox = Controls.OfType<TextBox>().First(x => x.Tag.ToString() == button.Tag.ToString());
+            
+            DialogResult result = FolderBrowser.ShowDialog();
+            if (result == DialogResult.OK) boundTextBox.Text = FolderBrowser.SelectedPath;
         }
     }
 }

@@ -41,8 +41,8 @@ namespace MCSMLauncher.gui
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
-            this.FolderBrowserButton = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.ButtonFolderBrowsing = new System.Windows.Forms.Button();
+            this.ButtonFolderBrowsing2 = new System.Windows.Forms.Button();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -65,9 +65,10 @@ namespace MCSMLauncher.gui
             this.ButtonSave = new System.Windows.Forms.Button();
             this.NumericSpawnProtection = new System.Windows.Forms.NumericUpDown();
             this.ButtonDeleteServer = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.ButtonFolderBrowsing3 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
+            this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericSpawnProtection)).BeginInit();
@@ -163,23 +164,27 @@ namespace MCSMLauncher.gui
             this.textBox6.TabIndex = 12;
             this.textBox6.Tag = "playerdatabackupspath";
             // 
-            // FolderBrowserButton
+            // ButtonFolderBrowsing
             // 
-            this.FolderBrowserButton.Location = new System.Drawing.Point(182, 215);
-            this.FolderBrowserButton.Margin = new System.Windows.Forms.Padding(2);
-            this.FolderBrowserButton.Name = "FolderBrowserButton";
-            this.FolderBrowserButton.Size = new System.Drawing.Size(28, 27);
-            this.FolderBrowserButton.TabIndex = 15;
-            this.FolderBrowserButton.UseVisualStyleBackColor = true;
+            this.ButtonFolderBrowsing.Location = new System.Drawing.Point(182, 215);
+            this.ButtonFolderBrowsing.Margin = new System.Windows.Forms.Padding(2);
+            this.ButtonFolderBrowsing.Name = "ButtonFolderBrowsing";
+            this.ButtonFolderBrowsing.Size = new System.Drawing.Size(28, 28);
+            this.ButtonFolderBrowsing.TabIndex = 15;
+            this.ButtonFolderBrowsing.Tag = "serverbackupspath";
+            this.ButtonFolderBrowsing.UseVisualStyleBackColor = true;
+            this.ButtonFolderBrowsing.Click += new System.EventHandler(this.ButtonFolderBrowsing_Click);
             // 
-            // button1
+            // ButtonFolderBrowsing2
             // 
-            this.button1.Location = new System.Drawing.Point(182, 274);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(28, 27);
-            this.button1.TabIndex = 16;
-            this.button1.UseVisualStyleBackColor = true;
+            this.ButtonFolderBrowsing2.Location = new System.Drawing.Point(182, 274);
+            this.ButtonFolderBrowsing2.Margin = new System.Windows.Forms.Padding(2);
+            this.ButtonFolderBrowsing2.Name = "ButtonFolderBrowsing2";
+            this.ButtonFolderBrowsing2.Size = new System.Drawing.Size(28, 28);
+            this.ButtonFolderBrowsing2.TabIndex = 16;
+            this.ButtonFolderBrowsing2.Tag = "playerdatabackupspath";
+            this.ButtonFolderBrowsing2.UseVisualStyleBackColor = true;
+            this.ButtonFolderBrowsing2.Click += new System.EventHandler(this.ButtonFolderBrowsing_Click);
             // 
             // checkBox1
             // 
@@ -409,14 +414,16 @@ namespace MCSMLauncher.gui
             this.ButtonDeleteServer.UseVisualStyleBackColor = false;
             this.ButtonDeleteServer.Click += new System.EventHandler(this.ButtonDeleteServer_Click);
             // 
-            // button2
+            // ButtonFolderBrowsing3
             // 
-            this.button2.Location = new System.Drawing.Point(182, 334);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(28, 27);
-            this.button2.TabIndex = 41;
-            this.button2.UseVisualStyleBackColor = true;
+            this.ButtonFolderBrowsing3.Location = new System.Drawing.Point(182, 332);
+            this.ButtonFolderBrowsing3.Margin = new System.Windows.Forms.Padding(2);
+            this.ButtonFolderBrowsing3.Name = "ButtonFolderBrowsing3";
+            this.ButtonFolderBrowsing3.Size = new System.Drawing.Size(28, 28);
+            this.ButtonFolderBrowsing3.TabIndex = 41;
+            this.ButtonFolderBrowsing3.Tag = "javaruntimepath";
+            this.ButtonFolderBrowsing3.UseVisualStyleBackColor = true;
+            this.ButtonFolderBrowsing3.Click += new System.EventHandler(this.ButtonFolderBrowsing_Click);
             // 
             // label11
             // 
@@ -442,7 +449,7 @@ namespace MCSMLauncher.gui
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(436, 369);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.ButtonFolderBrowsing3);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.ButtonDeleteServer);
@@ -465,8 +472,8 @@ namespace MCSMLauncher.gui
             this.Controls.Add(this.ComboBoxGamemode);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.FolderBrowserButton);
+            this.Controls.Add(this.ButtonFolderBrowsing2);
+            this.Controls.Add(this.ButtonFolderBrowsing);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.label6);
@@ -481,6 +488,7 @@ namespace MCSMLauncher.gui
             this.Location = new System.Drawing.Point(15, 15);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ServerEditPrompt";
+            this.Load += new System.EventHandler(this.ServerEditPrompt_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericSpawnProtection)).EndInit();
@@ -488,7 +496,9 @@ namespace MCSMLauncher.gui
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.FolderBrowserDialog FolderBrowser;
+
+        private System.Windows.Forms.Button ButtonFolderBrowsing3;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox textBox3;
 
@@ -524,8 +534,8 @@ namespace MCSMLauncher.gui
 
         private System.Windows.Forms.CheckBox checkBox1;
 
-        private System.Windows.Forms.Button FolderBrowserButton;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ButtonFolderBrowsing;
+        private System.Windows.Forms.Button ButtonFolderBrowsing2;
 
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.Label label6;

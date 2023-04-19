@@ -39,9 +39,7 @@
             // MenuBar
             // 
             this.MenuBar.BackColor = System.Drawing.Color.Gainsboro;
-            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.NewServerToolStripMenuItem,
-            this.ServersToolStripMenuItem});
+            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem });
             this.MenuBar.Location = new System.Drawing.Point(0, 0);
             this.MenuBar.Name = "MenuBar";
             this.MenuBar.Size = new System.Drawing.Size(800, 24);
@@ -88,7 +86,6 @@
             this.MenuBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

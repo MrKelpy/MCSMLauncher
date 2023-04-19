@@ -49,8 +49,8 @@ namespace MCSMLauncher.gui
             InitializeComponent();
             
             // Loads the images for the form
-            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
-            FolderBrowserButton.Image = Image.FromFile(FileSystem.GetFirstFileNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
+            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
             
             // Sets the server types inside the server type box
             ComboBoxServerType.Items.AddRange(new ServerTypeMappingsFactory().GetSupportedServerTypes()
@@ -135,11 +135,11 @@ namespace MCSMLauncher.gui
         {
             Section serversSection = FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
-            TextBoxConsoleOutput.Clear();
-            TextBoxConsoleOutput.ForeColor = Color.Black;
+            RichTextBoxConsoleOutput.Clear();
+            RichTextBoxConsoleOutput.ForeColor = Color.Black;
 
             // Prevents invalid characters in the server name
-            if (TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains))
+            if (TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains) || TextBoxServerName.Text.Contains(' '))
             {
                 LabelServerNameError.Text = @"Invalid characters in server name.";
                 LabelServerNameError.Visible = true;
@@ -155,16 +155,22 @@ namespace MCSMLauncher.gui
             }
             
             // Prevent two servers from having the same name
-            if (serversSection.GetAllSections().Any(x => x.Name == TextBoxServerName.Text))
+            if (serversSection.GetAllSections().Any(x => x.SimpleName == TextBoxServerName.Text))
             {
                 LabelServerNameError.Text = @"A server with that name already exists.";
                 LabelServerNameError.Visible = true;
                 return;
             }
 
+            // Starts to build the server, first disabling the controls so the user can't interact with them,
+            // then building the server, and finally re-enabling the controls.
             ToggleControlsState(false);
-            AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
-            await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+            try
+            {
+                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+            } 
+            catch (Exception err) { MessageBox.Show(@"An error occurred while building the server: " + err.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             ToggleControlsState(true);
         }
 

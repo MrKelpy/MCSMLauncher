@@ -53,7 +53,7 @@ namespace MCSMLauncher.requests.mcversions
                 mappings.Add(name, directLink);
                 
                 // Since there's no version with a server past 1.2.1, just break once we get to it.
-                if (name.Equals("1.2.1")) break;
+                if (name.Equals("1.3.1")) break;
             }
 
             return mappings;

@@ -38,16 +38,23 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void NewServerToolStripMenuItem_Click(object sender, EventArgs e) =>
+        private void NewServerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
             this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+        }
 
         /// <summary>
         /// Switches the current layout into the Server List's.
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void ServersToolStripMenuItem_Click(object sender, EventArgs e) =>
+        private async void ServersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
             this.MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
+            await ServerList.INSTANCE.RefreshGridAsync();
+        }
 
         /// <summary>
         /// Keeps the rest of the forms synchronized size-wise to the mainframe.
@@ -56,5 +63,6 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_SizeChanged(object sender, EventArgs e) =>
             NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = this.Size;
+
     }
 }

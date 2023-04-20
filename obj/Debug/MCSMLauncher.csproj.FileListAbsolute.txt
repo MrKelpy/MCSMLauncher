@@ -19,3 +19,5 @@ C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.LoadingScreen.resources
 C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.PreLoadingScreen.resources
 C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.ServerEditPrompt.resources
 C:\dev\C#\MCSMLauncher\bin\Debug\PgpsUtilsAEFC.dll
+C:\dev\C#\MCSMLauncher\bin\Debug\System.CodeDom.dll
+C:\dev\C#\MCSMLauncher\bin\Debug\System.CodeDom.xml

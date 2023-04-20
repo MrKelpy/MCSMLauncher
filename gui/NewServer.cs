@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,6 +16,7 @@ using MCSMLauncher.common;
 using MCSMLauncher.common.builders.abstraction;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.requests;
+using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 
@@ -131,6 +134,7 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
+        [SuppressMessage("ReSharper", "LocalizableElement")]
         private async void ButtonBuild_Click(object sender, EventArgs e)
         {
             Section serversSection = FileSystem.AddSection("servers");
@@ -165,12 +169,8 @@ namespace MCSMLauncher.gui
             // Starts to build the server, first disabling the controls so the user can't interact with them,
             // then building the server, and finally re-enabling the controls.
             ToggleControlsState(false);
-            try
-            {
-                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
-                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
-            } 
-            catch (Exception err) { MessageBox.Show(@"An error occurred while building the server: " + err.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+            await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
             ToggleControlsState(true);
         }
 

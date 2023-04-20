@@ -15,9 +15,9 @@ namespace MCSMLauncher.requests.mcversions
     /// together with MCVReleaseRequestParser in order to parse the information in a way that 
     /// returns useful data.
     /// </summary>
-    public class MCVRequestHandler : AbstractBaseRequestHandler
+    public class MCVSnapshotsRequestHandler : AbstractBaseRequestHandler
     {
-        public MCVRequestHandler() : base("https://mcversions.net") {}
+        public MCVSnapshotsRequestHandler() : base("https://mcversions.net") {}
 
         /// <summary>
         /// Accesses the website and parses out all the existent version names mapped
@@ -25,31 +25,6 @@ namespace MCSMLauncher.requests.mcversions
         /// </summary>
         /// <returns>A Dictionary with a VersionName:VersionSite mapping</returns>
         public override async Task<Dictionary<string, string>> GetVersions()
-        {
-            try
-            {
-                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
-
-                var itemsDiv = from div in document.DocumentNode.Descendants("div")
-                    where div.HasClass("items")
-                    select div;
-
-                return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemsDiv.ElementAt(0));
-            }
-            catch (Exception e)
-            {
-                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla versions.");
-                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Accesses the website and parses out all the existent snapshot names mapped
-        /// to their download links.
-        /// </summary>
-        /// <returns>A Dictionary with a SnapshotName:VersionSite mapping</returns>
-        public override async Task<Dictionary<string, string>> GetSnapshots()
         {
             try
             {

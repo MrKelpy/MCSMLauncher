@@ -21,7 +21,7 @@ namespace MCSMLauncher.requests.forge
         {
             HtmlDocument document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url);
             HtmlNode downloadsDiv = document.DocumentNode.SelectSingleNode("//div[@class=\"downloads\"]");
-            string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div[2]/div/i/small").InnerText;
+            string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small").InnerText.Replace(" ", "");
 
             return $"https://maven.minecraftforge.net/net/minecraftforge/forge/{recommendedForgeVersion}/forge-{recommendedForgeVersion}-installer.jar";
         }

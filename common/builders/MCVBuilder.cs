@@ -19,7 +19,7 @@ using PgpsUtilsAEFC.utils;
 namespace MCSMLauncher.common.builders
 {
     /// <summary>
-    /// This class implements the server building methods for the vanilla releases. 
+    /// This class implements the server building methods for the vanilla releases and snapshots. 
     /// </summary>
     public class MCVBuilder : AbstractServerBuilder
     {
@@ -33,7 +33,7 @@ namespace MCSMLauncher.common.builders
             Task.Run(() => serverInstallerPath);
 
         /// <summary>
-        /// Main constructor for the MCVBuilder class. Defines the start-up arguments for the server.
+        /// Main constructor for the ForgeBuilder class. Defines the start-up arguments for the server.
         /// </summary>
         public MCVBuilder() : base("-jar %SERVER_JAR% --nogui") { }
     }

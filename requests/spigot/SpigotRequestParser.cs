@@ -51,6 +51,8 @@ namespace MCSMLauncher.requests.spigot
                 
                 if (value == null) continue;
                 mappings.Add(key, value);
+                
+                if (key == "1.7.10") break;
             }
 
             return mappings;

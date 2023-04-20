@@ -13,6 +13,7 @@ using MCSMLauncher.requests.content;
 using MCSMLauncher.requests.forge;
 using MCSMLauncher.requests.mcversions;
 using MCSMLauncher.requests.spigot;
+using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
@@ -49,7 +50,7 @@ namespace MCSMLauncher.gui
         private async void LoadingScreen_Load(object sender, EventArgs e)
         {
             // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkTester.RecurrentTestAsync(LabelStatus);
+            await NetworkUtils.RecurrentTestAsync(LabelStatus);
 
             // Updates the cache and stops the loading phase.
             await UpdateVersionCache();

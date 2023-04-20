@@ -36,12 +36,5 @@ namespace MCSMLauncher.requests.forge
                 return null;
             }
         }
-
-        /// <summary>
-        /// Accesses the website and parses out all the existent snapshot names mapped
-        /// to their direct download links.
-        /// </summary>
-        /// <returns>A Dictionary with a SnapshotName:VersionSite mapping</returns>
-        public override Task<Dictionary<string, string>> GetSnapshots() => null;
     }
 }

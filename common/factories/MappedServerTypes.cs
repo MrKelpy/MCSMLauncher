@@ -32,8 +32,9 @@ namespace MCSMLauncher.common.factories
                 {
                     "vanilla snapshots", new Dictionary<string, object>()
                     {
-                        { "handler", new MCVRequestHandler() },
+                        { "handler", new MCVSnapshotsRequestHandler() },
                         { "parser", new MCVRequestParser() },
+                        { "builder", new MCVBuilder() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }, 
                     }
                 },
@@ -42,6 +43,7 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new SpigotRequestHandler() },
                         { "parser", new SpigotRequestParser() },
+                        { "builder", new SpigotBuilder() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }, 
                     }
                 },
@@ -50,6 +52,7 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new ForgeRequestHandler() },
                         { "parser", new ForgeRequestParser() },
+                        { "builder", new ForgeBuilder() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") },
                     }
                 },

@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.factories;
@@ -26,25 +25,14 @@ namespace MCSMLauncher.common.builders.abstraction
     /// </summary>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
-    public abstract class AbstractServerBuilder
+    public abstract class AbstractServerBuilder : AbstractCommandProcessing
     {
-        
-        /// <summary>
-        /// The console object to update with the logs.
-        /// </summary>
-        protected RichTextBox OutputConsole => NewServer.INSTANCE.RichTextBoxConsoleOutput;
-
-        /// <summary>
-        /// The termination code for a server execution, to be used by the processing events
-        /// </summary>
-        protected int TerminationCode { get; set; } = -1;
-        
         /// <summary>
         /// The startup arguments to be used by the methods that start up the server.
         /// Variables:
         ///     > %SERVER_JAR%: The path to the server.jar file
         /// </summary>
-        private string StartupArguments { get; set; }
+        protected string StartupArguments { get; set; }
 
         /// <summary>
         /// Main constructor for the AbstractServerBuilder class, sets the startup arguments
@@ -52,6 +40,18 @@ namespace MCSMLauncher.common.builders.abstraction
         /// </summary>
         /// <param name="startupArguments">The start</param>
         protected AbstractServerBuilder(string startupArguments) => this.StartupArguments = startupArguments;
+
+        /// <summary>
+        /// Accesses the given file and returns the section based on its parent folder.
+        /// </summary>
+        /// <param name="filepath">The filepath to get the section for</param>
+        /// <returns>A Section object for the directory the file is located in</returns>
+        protected Section GetSectionFromFile(string filepath)
+        {
+            List<string> directories = filepath.Split(Path.DirectorySeparatorChar).ToList();
+            string serverName = directories[directories.IndexOf("servers") + 1];
+            return FileSystem.GetFirstSectionNamed("servers/" + serverName);
+        }
         
         /// <summary>
         /// Main method for the server building process. Starts off all the operations.
@@ -62,27 +62,24 @@ namespace MCSMLauncher.common.builders.abstraction
         /// <returns>A Task to allow the method to be awaited</returns>
         public async Task Build(string serverName, string serverType, string serverVersion)
         {
-            // Gets the console object to update it with the logs
-            RichTextBox console = NewServer.INSTANCE.RichTextBoxConsoleOutput;
-            console.Clear();
-
             // Ensures that there's a clean section for the server to be built on
-            console.AppendText(Logging.LOGGER.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
+            OutputConsole.Clear();
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
             
             Section serversSection = FileSystem.GetFirstSectionNamed("servers");
             serversSection.RemoveSection(serverName);
             Section currentServerSection = serversSection.AddSection(serverName);
             
-            console.AppendText(Logging.LOGGER.Info($"Created a new {serverName} section.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Created a new {serverName} section.") + Environment.NewLine);
 
             // Gets the direct download link for the server jar based on the version and type
             ServerTypeMappingsFactory multiFactory = new ServerTypeMappingsFactory();
             string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
             string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(downloadLink);
-            console.AppendText(Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
             
             // Downloads the server jar into the server folder
-            console.AppendText(Logging.LOGGER.Info($"Downloading the server.jar...") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Downloading the server.jar...") + Environment.NewLine);
             await FileDownloader.DownloadFileAsync(Path.Combine(currentServerSection.SectionFullPath, "server.jar"), directDownloadLink);
             
             // Gets the server.jar file path and installs the server
@@ -118,7 +115,7 @@ namespace MCSMLauncher.common.builders.abstraction
 
             if (File.Exists(eulaPath))
             {
-                console.AppendText(Logging.LOGGER.Info($"Agreeing to the EULA") + Environment.NewLine);
+                OutputConsole.AppendText(Logging.LOGGER.Info($"Agreeing to the EULA") + Environment.NewLine);
                 this.AgreeToEula(eulaPath);
             }
             
@@ -131,7 +128,7 @@ namespace MCSMLauncher.common.builders.abstraction
             }
 
             await ServerList.INSTANCE.AddServerToListAsync(serverSection);
-            console.AppendText(Logging.LOGGER.Info($"Finished building the server.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Finished building the server.") + Environment.NewLine);
         }
 
         /// <summary>
@@ -157,7 +154,7 @@ namespace MCSMLauncher.common.builders.abstraction
         /// <param name="args">The java args to run the jar with</param>
         /// <param name="workingDirectory">The working directory of the process</param>
         /// <returns>The process started</returns>
-        private static Process CreateProcess(string java, string args, string workingDirectory = null)
+        protected static Process CreateProcess(string java, string args, string workingDirectory = null)
         {
             // Creates a new process with the command line arguments to run the command, in a hidden
             // window.
@@ -186,7 +183,7 @@ namespace MCSMLauncher.common.builders.abstraction
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        private async Task<int> RunAndCloseSilently(string serverJarPath)
+        protected virtual async Task<int> RunAndCloseSilently(string serverJarPath)
         {
             // Creates a new process to run the server silently, and waits for it to finish.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
@@ -194,9 +191,7 @@ namespace MCSMLauncher.common.builders.abstraction
             OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
             
             // Gets the server section from the path of the jar being run
-            List<string> directories = serverJarPath.Split(Path.DirectorySeparatorChar).ToList();
-            string serverName = directories[directories.IndexOf("servers") + 1];
-            Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
+            Section serverSection = this.GetSectionFromFile(serverJarPath);
             
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             if (serverSection.GetFirstDocumentNamed("server.properties") != null)
@@ -239,39 +234,12 @@ namespace MCSMLauncher.common.builders.abstraction
         }
 
         /// <summary>
-        /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,
-        /// and separate them by WARN, ERROR, and INFO messages, calling the appropriate methods.
-        /// </summary>
-        /// <param name="sender">The event sender</param>
-        /// <param name="e">The event arguments</param>
-        /// <param name="proc">The running process of the server</param>
-        private void ProcessMergedData(object sender, DataReceivedEventArgs e, Process proc)
-        {
-            if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
-            Match matches = Regex.Match(e.Data.Trim(), @"^(?:\[[^\]]+\] \[[^\]]+\]: |[\d-]+ [\d:]+ \[[^\]]+\] )(.+)$", RegexOptions.Multiline);
-
-            try
-            {
-                string typeSection = matches.Groups[0].Captures[0].Value;
-                string message = matches.Groups[1].Captures[0].Value;
-                
-                if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
-                if (typeSection.Contains("WARN")) ProcessWarningMessages(message, proc);
-                if (typeSection.Contains("ERROR")) ProcessErrorMessages(message, proc);
-                return;
-
-            } catch (ArgumentOutOfRangeException) { }
-            
-            ProcessOtherMessages(e.Data, proc);
-        }
-
-        /// <summary>
         /// Processes any INFO messages received from the server jar.
         /// </summary>
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>0 - The server.jar fired a normal info message</terminationCode>
-        protected void ProcessInfoMessages(string message, Process proc)
+        protected override void ProcessInfoMessages(string message, Process proc)
         {
             TerminationCode = TerminationCode != 1 ? 0 : 1;
             if (message.ToLower().Contains("preparing level")) proc.Kill();
@@ -287,13 +255,13 @@ namespace MCSMLauncher.common.builders.abstraction
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>1 - The server.jar fired an error. If fired last, stop the build.</terminationCode>
-        protected void ProcessErrorMessages(string message, Process proc)
+        protected override void ProcessErrorMessages(string message, Process proc)
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Firebrick; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine); }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = !message.Contains("server.properties") ? 1 : TerminationCode;
-        }
+        } 
         
         /// <summary>
         /// Processes any WARN messages received from the server jar.
@@ -303,7 +271,7 @@ namespace MCSMLauncher.common.builders.abstraction
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
-        protected void ProcessWarningMessages(string message, Process proc)
+        protected override void ProcessWarningMessages(string message, Process proc)
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.OrangeRed; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine); }));
@@ -321,12 +289,12 @@ namespace MCSMLauncher.common.builders.abstraction
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
-        protected void ProcessOtherMessages(string message, Process proc)
+        protected override void ProcessOtherMessages(string message, Process proc)
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine); }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
-            TerminationCode = TerminationCode != 1 && !message.ToLower().Contains("error") ? 3 : 1;
+            TerminationCode = TerminationCode != 1 && !message.ToLower().Split(' ').Contains("error") ? 3 : 1;
         }
 
         /// <summary>

@@ -43,7 +43,7 @@ namespace MCSMLauncher.gui
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.ButtonFolderBrowsing = new System.Windows.Forms.Button();
             this.ButtonFolderBrowsing2 = new System.Windows.Forms.Button();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.CheckBoxCracked = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -186,16 +186,16 @@ namespace MCSMLauncher.gui
             this.ButtonFolderBrowsing2.UseVisualStyleBackColor = true;
             this.ButtonFolderBrowsing2.Click += new System.EventHandler(this.ButtonFolderBrowsing_Click);
             // 
-            // checkBox1
+            // CheckBoxCracked
             // 
-            this.checkBox1.Location = new System.Drawing.Point(228, 34);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(70, 29);
-            this.checkBox1.TabIndex = 17;
-            this.checkBox1.Tag = "online-mode";
-            this.checkBox1.Text = "Cracked";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.CheckBoxCracked.Location = new System.Drawing.Point(228, 34);
+            this.CheckBoxCracked.Margin = new System.Windows.Forms.Padding(2);
+            this.CheckBoxCracked.Name = "CheckBoxCracked";
+            this.CheckBoxCracked.Size = new System.Drawing.Size(70, 29);
+            this.CheckBoxCracked.TabIndex = 17;
+            this.CheckBoxCracked.Tag = "online-mode";
+            this.CheckBoxCracked.Text = "Cracked";
+            this.CheckBoxCracked.UseVisualStyleBackColor = true;
             // 
             // checkBox2
             // 
@@ -460,7 +460,7 @@ namespace MCSMLauncher.gui
             this.Controls.Add(this.checkBox7);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.ButtonOpenServerFolder);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.CheckBoxCracked);
             this.Controls.Add(this.numericUpDown3);
             this.Controls.Add(this.checkBox5);
             this.Controls.Add(this.label4);
@@ -532,7 +532,7 @@ namespace MCSMLauncher.gui
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label8;
 
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox CheckBoxCracked;
 
         private System.Windows.Forms.Button ButtonFolderBrowsing;
         private System.Windows.Forms.Button ButtonFolderBrowsing2;

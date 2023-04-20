@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.content;
+using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 
@@ -77,7 +78,7 @@ namespace MCSMLauncher.gui
             } catch (ArgumentException) {} // ignored
             
             // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkTester.RecurrentTestAsync(LabelDownloadingAsset);
+            await NetworkUtils.RecurrentTestAsync(LabelDownloadingAsset);
             
             // Resets the assets folder just in case
             FileSystem.RemoveSection(assets?.Name);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
@@ -15,6 +16,9 @@ namespace MCSMLauncher.requests
         /// </summary>
         protected string BaseUrl { get; }
 
+        /// <summary>
+        /// The HTML Handler to perform the requests with.
+        /// </summary>
         public static HtmlWeb Handler { get; } = new HtmlWeb();
  
         /// <summary>
@@ -30,12 +34,5 @@ namespace MCSMLauncher.requests
         /// </summary>
         /// <returns>A Dictionary with a VersionName:VersionSite mapping</returns>
         public abstract Task<Dictionary<string, string>> GetVersions();
-        
-        /// <summary>
-        /// Accesses the website and parses out all the existent snapshot names mapped
-        /// to their direct download links.
-        /// </summary>
-        /// <returns>A Dictionary with a SnapshotName:VersionSite mapping</returns>
-        public abstract Task<Dictionary<string, string>> GetSnapshots();
     }
 }

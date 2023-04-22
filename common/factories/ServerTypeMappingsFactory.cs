@@ -26,9 +26,9 @@ namespace MCSMLauncher.common.factories
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the parser for</param>
-        /// <returns>An instance of IBaseRequestParser mapped to the server type</returns>
-        public IBaseRequestParser GetParserFor(string serverType) =>
-            Mappings.ContainsKey(serverType.ToLower()) ? (IBaseRequestParser) Mappings[serverType.ToLower()]["parser"] : null;
+        /// <returns>An instance of AbstractBaseRequestParser mapped to the server type</returns>
+        public AbstractBaseRequestParser GetParserFor(string serverType) =>
+            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractBaseRequestParser) Mappings[serverType.ToLower()]["parser"] : null;
         
         /// <summary>
         /// Gets the server builder for the given server type. If the server type is not supported,

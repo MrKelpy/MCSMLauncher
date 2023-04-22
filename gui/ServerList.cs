@@ -28,11 +28,15 @@ namespace MCSMLauncher.gui
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
         public static ServerList INSTANCE { get; } = new ServerList();
-        
+
         /// <summary>
         /// Main constructor for the ServerList form. Private to enforce the singleton model.
         /// </summary>
-        private ServerList() => InitializeComponent();
+        private ServerList()
+        {
+            InitializeComponent();
+            Task.Run(RefreshGridAsync);
+        }
 
         /// <summary>
         /// Refreshes the grid asynchronously, clearing everything and reading all of the existing
@@ -50,7 +54,9 @@ namespace MCSMLauncher.gui
             await Task.WhenAll(taskList);
             
             // Sort the servers by version
-            GridServerList.Sort(GridServerList.Columns[1], ListSortDirection.Descending);
+            GridServerList.Sort(Comparer<DataGridViewRow>.Create((a, b) =>
+                new Version(b.Cells[1].Value.ToString() is var cell && cell != "Unknown" ? cell : "0.0.0")
+                    .CompareTo(new Version(a.Cells[1].Value.ToString() is var cell2 && cell2 != "Unknown" ? cell2 : "0.0.0"))));
         }
 
         /// <summary>

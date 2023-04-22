@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.builders.abstraction;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.common.models;
 using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
 using MCSMLauncher.requests.content;
@@ -44,6 +45,7 @@ namespace MCSMLauncher.common.builders
             // Set the output and error data handlers
             forgeBuildingProcess.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
             forgeBuildingProcess.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
+            TerminationCode = 0;
             
             // Start the process
             forgeBuildingProcess.Start();
@@ -53,13 +55,13 @@ namespace MCSMLauncher.common.builders
             
             // Returns the path to the server.jar file, which in this case, is a forge file.
             serverSection.RemoveDocument("server.jar");
-            return serverSection.GetAllDocuments().First(x => Path.GetFileName(x).Contains("forge") && Path.GetFileName(x).Contains("server") && Path.GetFileName(x).EndsWith("jar"));
+            return serverSection.GetAllDocuments().First(x => Path.GetFileName(x).Contains("forge") && Path.GetFileName(x).EndsWith("jar"));
         }
 
         /// <summary>
         /// Main constructor for the ForgeBuilder class. Defines the start-up arguments for the server.
         /// </summary>
-        public ForgeBuilder() : base("-jar -Xms1024M -Xmx1024M %SERVER_JAR% --nogui") { }
+        public ForgeBuilder() : base("-jar -Xmx1024M -Xms1024M %SERVER_JAR% nogui") { }
         
         /// <summary>
         /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,
@@ -72,9 +74,9 @@ namespace MCSMLauncher.common.builders
         {
             if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
             
-            if (e.Data.Contains("INFO") || e.Data.Contains("LOADING")) ProcessInfoMessages(e.Data, proc);
+            if (e.Data.Contains("ERROR") || e.Data.StartsWith("Exception")) ProcessErrorMessages(e.Data, proc);
             else if (e.Data.Contains("WARN")) ProcessWarningMessages(e.Data, proc);
-            else if (e.Data.Contains("ERROR")) ProcessErrorMessages(e.Data, proc);
+            else if (e.Data.Contains("INFO") || e.Data.Contains("LOADING")) ProcessInfoMessages(e.Data, proc);
             else ProcessOtherMessages(e.Data, proc);
         }
         
@@ -104,31 +106,37 @@ namespace MCSMLauncher.common.builders
         protected override async Task<int> RunAndCloseSilently(string serverJarPath)
         {
             // Due to how forge works, we need to generate a run.bat file to run the forge.
-            string runCommand = $"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java {StartupArguments}";
             Section serverSection = this.GetSectionFromFile(serverJarPath);
             serverSection.AddDocument("server.properties");  // Adds the server properties just in case
 
-            // Creates the run.bat file if it doesn't already exist, with simple running params
-            string runFilepath = serverSection.GetFirstDocumentNamed("run.bat");
-            if (!File.Exists(runFilepath))
-            {
-                string forgeFilepath = serverSection.GetAllDocuments().First(x => Path.GetFileName(x).Contains("forge") && Path.GetFileName(x).Contains("server") && Path.GetFileName(x).EndsWith("jar"));
-                File.WriteAllText(runFilepath, runCommand.Replace("%SERVER_JAR%", forgeFilepath));
-            }
+            // Gets the java runtime and creates the run command from it
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(serverSection.GetFirstDocumentNamed("server_settings.xml"));
+            string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
 
-            // Gets the run.bat file and adds --nogui to the end of the java command
+            // Creates the run.bat file if it doesn't already exist, with simple running params
+            string runFilepath = Path.Combine(serverSection.SectionFullPath, "run.bat"); 
+            if (!File.Exists(runFilepath))
+                File.WriteAllText(runFilepath, runCommand.Replace("%SERVER_JAR%", serverJarPath));
+
+            // Gets the run.bat file and adds nogui to the end of the java command
             List<String> lines = FileUtils.ReadFromFile(runFilepath);
             int lineIndex = lines.IndexOf(lines.FirstOrDefault(x => x.StartsWith("java"))) is var index && index != -1 ? index : 0;
-            
-            // Removes the pause statement if there is one
-            if (lines.Count > 0 && lines[lines.Count - 1] == "pause") lines.RemoveAt(lines.Count - 1);  
-            
-            // If the bat file was generated, there's a '%*' that needs to be replaced instead of just
-            // adding --nogui to the end.
-            lines[lineIndex] = lines[lineIndex].Contains("%*") ? lines[lineIndex].Replace("%*", "--nogui %*") : lines[lineIndex] + " --nogui";
-            lines[lineIndex] = lines[lineIndex].Replace("@user_jvm_args.txt", "-Xms1024M -Xmx1024M");
-            FileUtils.DumpToFile(runFilepath, lines);
-            
+
+            if (!lines[lineIndex].Contains("nogui"))
+            {
+                // Removes the pause statement if there is one
+                if (lines.Count > 0 && lines[lines.Count - 1] == "pause") lines.RemoveAt(lines.Count - 1);
+
+                // If the bat file was generated, there's a '%*' that needs to be replaced instead of just
+                // adding nogui to the end.
+                lines[lineIndex] = lines[lineIndex].Contains("%*")
+                    ? lines[lineIndex].Replace("%*", "nogui %*")
+                    : lines[lineIndex] + " nogui";
+                
+                lines[lineIndex] = lines[lineIndex].Replace("@user_jvm_args.txt", "-Xms1024M -Xmx1024M");
+                FileUtils.DumpToFile(runFilepath, lines);
+            }
+
             // Creates the process to be run
             Process proc = CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
 
@@ -146,6 +154,7 @@ namespace MCSMLauncher.common.builders
             }
 
             properties["server-port"] = availablePort.ToString();
+            properties["level-type"] = @"minecraft\:normal";
             editServer.LoadToProperties(properties);
             
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.

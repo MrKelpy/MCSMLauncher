@@ -72,7 +72,16 @@ namespace MCSMLauncher.gui
                 
                 var versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
                 string cachePath = mappingsFactory.GetCacheFileFor(serverType);
+
+                if (versions == null) Logging.LOGGER.Warn($"Failed to retrieve versions for {serverType}.");
                 
+                // If we couldn't retrieve any versions for the server type, and the cache has content in it, keep it. 
+                if (mappingsFactory.GetCacheContentsForType(serverType)?.Count > 0 && versions == null)
+                {
+                    Logging.LOGGER.Info($"Using previously cached versions for {serverType}.");
+                    continue;
+                }
+
                 // Writes the cache into its correct cache filepath, in the format "version>url".
                 FileUtils.DumpToFile(cachePath, versions == null ? new List<string>() : 
                     versions.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());

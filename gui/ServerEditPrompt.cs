@@ -139,17 +139,6 @@ namespace MCSMLauncher.gui
             if (propertiesFilepath == null) return;
             List<string> propertiesFile = FileUtils.ReadFromFile(propertiesFilepath);
             
-            // Iterates through the dictionary and replaces the line in the file with the same key
-            for (var i = 0; i < dictionaryToLoad.Count; i++)
-            {
-                string key = dictionaryToLoad.Keys.ToArray()[i];
-                int keyIndex = propertiesFile.FindIndex(x => x.ToLower().Contains(key));
-                if (key == "ram" || key.Contains("backupspath")) continue;
-                
-                if (keyIndex != -1) propertiesFile[keyIndex] = $"{key}={dictionaryToLoad[key]}";
-                else propertiesFile.Add($"{key}={dictionaryToLoad[key]}");
-            }
-
             // Loads the information from the form into the ServerInformation object and serializes it again
             ServerInformation updatedServerInformation = XMLUtils.DeserializeFromFile<ServerInformation>(settingsFilepath);
             updatedServerInformation.Port = int.Parse(dictionaryToLoad["server-port"]);
@@ -157,6 +146,20 @@ namespace MCSMLauncher.gui
             updatedServerInformation.PlayerdataBackupsPath = dictionaryToLoad["playerdatabackupspath"];
             updatedServerInformation.ServerBackupsPath = dictionaryToLoad["serverbackupspath"];
             
+            // Iterates through the dictionary and replaces the line in the file with the same key
+            for (var i = 0; i < dictionaryToLoad.Count; i++)
+            {
+                string key = dictionaryToLoad.Keys.ToArray()[i];
+                int keyIndex = propertiesFile.FindIndex(x => x.ToLower().Contains(key));
+                
+                // If the current key is a settings file key, skip it.
+                if (updatedServerInformation.GetType().GetProperties().Any(x => String.Equals(key.ToLower(), x.Name.ToLower(), StringComparison.InvariantCulture))) 
+                    continue;
+                
+                if (keyIndex != -1) propertiesFile[keyIndex] = $"{key}={dictionaryToLoad[key]}";
+                else propertiesFile.Add($"{key}={dictionaryToLoad[key]}");
+            }
+
             File.Delete(settingsFilepath);
             
             // Writes the new edited file contents to disk.

@@ -113,6 +113,7 @@
             // 
             // PictureBoxLoading
             // 
+            this.PictureBoxLoading.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.PictureBoxLoading.BackColor = System.Drawing.Color.Transparent;
             this.PictureBoxLoading.Location = new System.Drawing.Point(189, 354);
             this.PictureBoxLoading.Name = "PictureBoxLoading";

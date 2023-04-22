@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using MCSMLauncher.common.processes;
 using MCSMLauncher.gui;
 
 namespace MCSMLauncher.common
@@ -17,6 +20,11 @@ namespace MCSMLauncher.common
         /// The termination code for a server execution, to be used by the processing events
         /// </summary>
         protected int TerminationCode { get; set; } = -1;
+
+        /// <summary>
+        /// A collection of errors to handle differently in the processing methods
+        /// </summary>
+        protected ErrorCollection SpecialErrors { get; } = new ErrorCollection();
         
         /// <summary>
         /// The console object to update with the logs.
@@ -40,10 +48,9 @@ namespace MCSMLauncher.common
                 string typeSection = matches.Groups[0].Captures[0].Value;
                 string message = matches.Groups[1].Captures[0].Value;
                 
-                if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
-                if (typeSection.Contains("WARN")) ProcessWarningMessages(message, proc);
-                if (typeSection.Contains("ERROR")) ProcessErrorMessages(message, proc);
-                return;
+                if (!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR") || typeSection.Contains("Exception")) ProcessErrorMessages(message, proc);
+                else if (typeSection.Contains("WARN")) ProcessWarningMessages(message, proc);
+                else if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
 
             } catch (ArgumentOutOfRangeException) { }
             

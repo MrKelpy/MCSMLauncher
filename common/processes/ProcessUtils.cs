@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Management;
@@ -30,7 +31,10 @@ namespace MCSMLauncher.utils
                 KillProcessAndChildren(null, Convert.ToInt32(managementObject["ProcessID"]));
             
             try { Process.GetProcessById(pid).Kill(); }
-            catch (ArgumentException) {} // Ignored, process already existed.
+            
+            // Ignored, process already exiting.
+            catch (ArgumentException ) {}
+            catch (Win32Exception) { }
         }
     }
 }

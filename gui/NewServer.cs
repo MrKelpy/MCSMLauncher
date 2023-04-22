@@ -169,9 +169,35 @@ namespace MCSMLauncher.gui
             // Starts to build the server, first disabling the controls so the user can't interact with them,
             // then building the server, and finally re-enabling the controls.
             ToggleControlsState(false);
-            AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
-            await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+            
+            try
+            {
+                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+            }
+            
+            // If a network error happened, log it and tell the user that a network error happened
+            catch (HttpRequestException err)
+            {
+                Logging.LOGGER.Error(err.StackTrace);
+                string errorMessage = !NetworkUtils.IsWifiConnected() ? 
+                    $"A network error happened while building the server. {Environment.NewLine}Please check your internet connection and try again." :
+                    $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
+                
+                MessageBox.Show(errorMessage, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                serversSection.RemoveSection(TextBoxServerName.Text);
+            }
+            
+            // If an unknown exception was raised, log it as such and tell the user that an error occured
+            catch (Exception err)
+            {
+                Logging.LOGGER.Error(err.StackTrace);
+                MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                serversSection.RemoveSection(TextBoxServerName.Text);
+            }
+            
             ToggleControlsState(true);
+            await ServerList.INSTANCE.RefreshGridAsync();
         }
 
         /// <summary>
@@ -205,7 +231,11 @@ namespace MCSMLauncher.gui
         private void FolderBrowserButton_Click(object sender, EventArgs e)
         {
             DialogResult result = FolderBrowser.ShowDialog();
-            if (result == DialogResult.OK) ComboBoxJavaVersion.SelectedItem = FolderBrowser.SelectedPath;
+            if (result == DialogResult.OK)
+            {
+                int index = ComboBoxJavaVersion.Items.Add(FolderBrowser.SelectedPath);
+                ComboBoxJavaVersion.SelectedItem = ComboBoxJavaVersion.Items[index];
+            }
         }
     }
 }

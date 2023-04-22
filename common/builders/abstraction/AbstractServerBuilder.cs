@@ -32,14 +32,21 @@ namespace MCSMLauncher.common.builders.abstraction
         /// Variables:
         ///     > %SERVER_JAR%: The path to the server.jar file
         /// </summary>
-        protected string StartupArguments { get; set; }
+        protected string StartupArguments { get; private set; }
 
         /// <summary>
         /// Main constructor for the AbstractServerBuilder class, sets the startup arguments
         /// to be used in the server startups, through the child classes.
         /// </summary>
         /// <param name="startupArguments">The start</param>
-        protected AbstractServerBuilder(string startupArguments) => this.StartupArguments = startupArguments;
+        protected AbstractServerBuilder(string startupArguments)
+        {
+            this.StartupArguments = startupArguments;
+            SpecialErrors.Add("Exception handling console input");
+            SpecialErrors.Add("Error during early discovery");
+            SpecialErrors.Add("Cannot read the array length");
+            SpecialErrors.Add("FML appears to be missing any signature data");
+        }
 
         /// <summary>
         /// Accesses the given file and returns the section based on its parent folder.
@@ -75,7 +82,7 @@ namespace MCSMLauncher.common.builders.abstraction
             // Gets the direct download link for the server jar based on the version and type
             ServerTypeMappingsFactory multiFactory = new ServerTypeMappingsFactory();
             string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
-            string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(downloadLink);
+            string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(serverVersion, downloadLink);
             OutputConsole.AppendText(Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
             
             // Downloads the server jar into the server folder
@@ -128,7 +135,9 @@ namespace MCSMLauncher.common.builders.abstraction
             }
 
             await ServerList.INSTANCE.AddServerToListAsync(serverSection);
+            OutputConsole.SelectionColor = Color.LimeGreen;
             OutputConsole.AppendText(Logging.LOGGER.Info($"Finished building the server.") + Environment.NewLine);
+            OutputConsole.SelectionColor = Color.Black;
         }
 
         /// <summary>
@@ -187,12 +196,13 @@ namespace MCSMLauncher.common.builders.abstraction
         {
             // Creates a new process to run the server silently, and waits for it to finish.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
-            Process proc = CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"", StartupArguments, Path.GetDirectoryName(serverJarPath));
             OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
-            
-            // Gets the server section from the path of the jar being run
+
+            // Gets the server section from the path of the jar being run, the runtime and creates the process
             Section serverSection = this.GetSectionFromFile(serverJarPath);
-            
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(serverSection.GetFirstDocumentNamed("server_settings.xml"));
+            Process proc = CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments, Path.GetDirectoryName(serverJarPath));
+
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             if (serverSection.GetFirstDocumentNamed("server.properties") != null)
             {
@@ -242,7 +252,7 @@ namespace MCSMLauncher.common.builders.abstraction
         protected override void ProcessInfoMessages(string message, Process proc)
         {
             TerminationCode = TerminationCode != 1 ? 0 : 1;
-            if (message.ToLower().Contains("preparing level")) proc.Kill();
+            if (message.ToLower().Contains("preparing level")) proc.KillProcessAndChildren();
             
             Logging.LOGGER.Info(message);
         }
@@ -260,6 +270,8 @@ namespace MCSMLauncher.common.builders.abstraction
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Firebrick; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine); }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            
+            if (SpecialErrors.StringMatches(message)) return;
             TerminationCode = !message.Contains("server.properties") ? 1 : TerminationCode;
         } 
         
@@ -278,7 +290,7 @@ namespace MCSMLauncher.common.builders.abstraction
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = TerminationCode != 1 ? 2 : 1;
             
-            if (message.Contains("already running on that port")) proc.Kill();
+            if (message.Contains("already running on that port")) proc.KillProcessAndChildren();
         }
         
         /// <summary>

@@ -67,10 +67,10 @@ namespace MCSMLauncher.gui
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.label6 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.NumericSpawnProtection = new System.Windows.Forms.NumericUpDown();
             this.CheckBoxSpawnProtection = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericSpawnProtection)).BeginInit();
@@ -424,17 +424,6 @@ namespace MCSMLauncher.gui
             this.label6.Text = "Server Backups Path";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // checkBox1
-            // 
-            this.checkBox1.Location = new System.Drawing.Point(228, 103);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(107, 36);
-            this.checkBox1.TabIndex = 42;
-            this.checkBox1.Tag = "hardcore";
-            this.checkBox1.Text = "Server \r\nBackups";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // checkBox3
             // 
             this.checkBox3.Location = new System.Drawing.Point(300, 81);
@@ -463,9 +452,20 @@ namespace MCSMLauncher.gui
             this.CheckBoxSpawnProtection.Name = "CheckBoxSpawnProtection";
             this.CheckBoxSpawnProtection.Size = new System.Drawing.Size(124, 29);
             this.CheckBoxSpawnProtection.TabIndex = 44;
-            this.CheckBoxSpawnProtection.Tag = "serverbackupson";
+            this.CheckBoxSpawnProtection.Tag = "";
             this.CheckBoxSpawnProtection.Text = "Spawn Protection";
             this.CheckBoxSpawnProtection.UseVisualStyleBackColor = true;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.Location = new System.Drawing.Point(228, 103);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(107, 36);
+            this.checkBox1.TabIndex = 42;
+            this.checkBox1.Tag = "serverbackupson";
+            this.checkBox1.Text = "Server \r\nBackups";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // ServerEditPrompt
             // 

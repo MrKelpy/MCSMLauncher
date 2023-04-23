@@ -59,10 +59,6 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="common\builders\abstraction\AbstractServerBuilder.cs" />
-        <Compile Include="common\builders\ForgeBuilder.cs" />
-        <Compile Include="common\builders\MCVBuilder.cs" />
-        <Compile Include="common\builders\SpigotBuilder.cs" />
         <Compile Include="common\Constants.cs" />
         <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
@@ -71,6 +67,11 @@
         <Compile Include="common\processes\AbstractCommandProcessing.cs" />
         <Compile Include="common\processes\ErrorCollection.cs" />
         <Compile Include="common\processes\ProcessUtils.cs" />
+        <Compile Include="common\server\builders\abstraction\AbstractServerBuilder.cs" />
+        <Compile Include="common\server\builders\ForgeBuilder.cs" />
+        <Compile Include="common\server\builders\MCVBuilder.cs" />
+        <Compile Include="common\server\builders\SpigotBuilder.cs" />
+        <Compile Include="common\server\starters\AbstractServerStarter.cs" />
         <Compile Include="extensions\ProcessExtensions.cs" />
         <Compile Include="gui\PreLoadingScreen.cs">
           <SubType>Form</SubType>
@@ -269,6 +270,9 @@
       <Content Include="docs\_build\html\_static\pygments.css" />
       <Content Include="docs\_build\html\_static\searchtools.js" />
       <Content Include="docs\_build\html\_static\sphinx_highlight.js" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="common\builders\abstraction" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

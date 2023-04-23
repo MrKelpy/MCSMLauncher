@@ -17,7 +17,7 @@ using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.common.builders.abstraction
+namespace MCSMLauncher.common.server.builders.abstraction
 {
     /// <summary>
     /// This interface implements contracts for the methods that should be implemented in each

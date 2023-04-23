@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MCSMLauncher.common.builders.abstraction;
+using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.requests;
 using PgpsUtilsAEFC.utils;
 

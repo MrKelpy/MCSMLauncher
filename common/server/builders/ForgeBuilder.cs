@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using MCSMLauncher.common.builders.abstraction;
-using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
+using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
-using MCSMLauncher.requests.content;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
-using static MCSMLauncher.common.Constants;
 using PgpsUtilsAEFC.utils;
+using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.common.builders
+namespace MCSMLauncher.common.server.builders
 {
     /// <summary>
     /// This class implements the server building methods for the forge releases. 

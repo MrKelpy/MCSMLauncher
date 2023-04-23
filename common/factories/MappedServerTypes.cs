@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MCSMLauncher.common.builders;
+using MCSMLauncher.common.server.builders;
 using MCSMLauncher.requests.forge;
 using MCSMLauncher.requests.mcversions;
 using MCSMLauncher.requests.spigot;

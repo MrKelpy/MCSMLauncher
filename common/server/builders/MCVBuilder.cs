@@ -1,22 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MCSMLauncher.common.builders.abstraction;
-using MCSMLauncher.common.factories;
-using MCSMLauncher.extensions;
-using MCSMLauncher.gui;
-using MCSMLauncher.requests.content;
-using PgpsUtilsAEFC.common;
+﻿using System.Threading.Tasks;
+using MCSMLauncher.common.server.builders.abstraction;
 using static MCSMLauncher.common.Constants;
-using PgpsUtilsAEFC.utils;
 
-namespace MCSMLauncher.common.builders
+namespace MCSMLauncher.common.server.builders
 {
     /// <summary>
     /// This class implements the server building methods for the vanilla releases and snapshots. 

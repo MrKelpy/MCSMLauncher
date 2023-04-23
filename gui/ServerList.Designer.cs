@@ -34,7 +34,7 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.ServerListLayout = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
+            this.dnjlfe = new System.Windows.Forms.Label();
             this.GridServerList = new System.Windows.Forms.DataGridView();
             this.ServerType = new System.Windows.Forms.DataGridViewImageColumn();
             this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -57,7 +57,7 @@
             // 
             // ServerListLayout
             // 
-            this.ServerListLayout.Controls.Add(this.label5);
+            this.ServerListLayout.Controls.Add(this.dnjlfe);
             this.ServerListLayout.Controls.Add(this.GridServerList);
             this.ServerListLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ServerListLayout.Location = new System.Drawing.Point(0, 24);
@@ -65,14 +65,14 @@
             this.ServerListLayout.Size = new System.Drawing.Size(800, 426);
             this.ServerListLayout.TabIndex = 1;
             // 
-            // label5
+            // dnjlfe
             // 
-            this.label5.Location = new System.Drawing.Point(0, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(14, 14);
-            this.label5.TabIndex = 17;
-            this.label5.Tag = "tooltip";
-            this.ToolTips.SetToolTip(this.label5, resources.GetString("label5.ToolTip"));
+            this.dnjlfe.Location = new System.Drawing.Point(3, 0);
+            this.dnjlfe.Name = "dnjlfe";
+            this.dnjlfe.Size = new System.Drawing.Size(14, 14);
+            this.dnjlfe.TabIndex = 17;
+            this.dnjlfe.Tag = "tooltip";
+            this.ToolTips.SetToolTip(this.dnjlfe, resources.GetString("dnjlfe.ToolTip"));
             // 
             // GridServerList
             // 
@@ -186,7 +186,7 @@
 
         private System.Windows.Forms.ToolTip ToolTips;
 
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label dnjlfe;
 
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
 

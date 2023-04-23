@@ -28,7 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewServer));
             this.NewServerLayout = new System.Windows.Forms.Panel();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             this.RichTextBoxConsoleOutput = new System.Windows.Forms.RichTextBox();
             this.ButtonFolderBrowser = new System.Windows.Forms.Button();
             this.ComboBoxJavaVersion = new System.Windows.Forms.ComboBox();
@@ -44,12 +50,17 @@
             this.TextBoxServerName = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
             this.NewServerLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).BeginInit();
             this.SuspendLayout();
             // 
             // NewServerLayout
             // 
+            this.NewServerLayout.Controls.Add(this.label8);
+            this.NewServerLayout.Controls.Add(this.label7);
+            this.NewServerLayout.Controls.Add(this.label6);
+            this.NewServerLayout.Controls.Add(this.label5);
             this.NewServerLayout.Controls.Add(this.RichTextBoxConsoleOutput);
             this.NewServerLayout.Controls.Add(this.ButtonFolderBrowser);
             this.NewServerLayout.Controls.Add(this.ComboBoxJavaVersion);
@@ -68,6 +79,42 @@
             this.NewServerLayout.Name = "NewServerLayout";
             this.NewServerLayout.Size = new System.Drawing.Size(800, 426);
             this.NewServerLayout.TabIndex = 2;
+            // 
+            // label8
+            // 
+            this.label8.Location = new System.Drawing.Point(350, 67);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(14, 14);
+            this.label8.TabIndex = 19;
+            this.label8.Tag = "tooltip";
+            this.ToolTips.SetToolTip(this.label8, "This is the server\'s name, which is used to identify each server internally. \r\nTh" + "is name will also be the one displayed in the listings when you try to run it.");
+            // 
+            // label7
+            // 
+            this.label7.Location = new System.Drawing.Point(350, 147);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(14, 14);
+            this.label7.TabIndex = 18;
+            this.label7.Tag = "tooltip";
+            this.ToolTips.SetToolTip(this.label7, resources.GetString("label7.ToolTip"));
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(350, 227);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(14, 14);
+            this.label6.TabIndex = 17;
+            this.label6.Tag = "tooltip";
+            this.ToolTips.SetToolTip(this.label6, "This is the server\'s version, according to the selected server type.\r\nEach type h" + "as slightly different version ranges to be selected.");
+            // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(350, 304);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(14, 14);
+            this.label5.TabIndex = 16;
+            this.label5.Tag = "tooltip";
+            this.ToolTips.SetToolTip(this.label5, resources.GetString("label5.ToolTip"));
             // 
             // RichTextBoxConsoleOutput
             // 
@@ -229,6 +276,14 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+
+        private System.Windows.Forms.ToolTip ToolTips;
+
+        private System.Windows.Forms.Label label5;
 
         public System.Windows.Forms.RichTextBox RichTextBoxConsoleOutput;
 

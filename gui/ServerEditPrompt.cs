@@ -145,7 +145,9 @@ namespace MCSMLauncher.gui
             updatedServerInformation.Ram = int.Parse(dictionaryToLoad["ram"]);
             updatedServerInformation.PlayerdataBackupsPath = dictionaryToLoad["playerdatabackupspath"];
             updatedServerInformation.ServerBackupsPath = dictionaryToLoad["serverbackupspath"];
-            
+            updatedServerInformation.ServerBackupsOn = bool.Parse(dictionaryToLoad["serverbackupson"]);
+            updatedServerInformation.PlayerdataBackupsOn = bool.Parse(dictionaryToLoad["playerdatabackupson"]);
+
             // Iterates through the dictionary and replaces the line in the file with the same key
             for (var i = 0; i < dictionaryToLoad.Count; i++)
             {

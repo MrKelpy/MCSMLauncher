@@ -30,6 +30,8 @@ namespace MCSMLauncher.gui
         private Mainframe()
         {
             InitializeComponent();
+            
+            
             this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
         }
 
@@ -49,7 +51,7 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private async void ServersToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ServersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
             this.MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
@@ -62,6 +64,5 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_SizeChanged(object sender, EventArgs e) =>
             NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = this.Size;
-
     }
 }

@@ -38,7 +38,6 @@ namespace MCSMLauncher.gui
             this.label3 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.ButtonFolderBrowsing = new System.Windows.Forms.Button();
@@ -51,7 +50,6 @@ namespace MCSMLauncher.gui
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
-            this.CheckBoxSpawnProtection = new System.Windows.Forms.CheckBox();
             this.checkBox7 = new System.Windows.Forms.CheckBox();
             this.checkBox6 = new System.Windows.Forms.CheckBox();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
@@ -63,12 +61,16 @@ namespace MCSMLauncher.gui
             this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
             this.ButtonOpenServerFolder = new System.Windows.Forms.Button();
             this.ButtonSave = new System.Windows.Forms.Button();
-            this.NumericSpawnProtection = new System.Windows.Forms.NumericUpDown();
             this.ButtonDeleteServer = new System.Windows.Forms.Button();
             this.ButtonFolderBrowsing3 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            this.label6 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.NumericSpawnProtection = new System.Windows.Forms.NumericUpDown();
+            this.CheckBoxSpawnProtection = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericSpawnProtection)).BeginInit();
@@ -135,16 +137,6 @@ namespace MCSMLauncher.gui
             this.textBox5.Size = new System.Drawing.Size(170, 20);
             this.textBox5.TabIndex = 10;
             this.textBox5.Tag = "serverbackupspath";
-            // 
-            // label6
-            // 
-            this.label6.BackColor = System.Drawing.Color.Transparent;
-            this.label6.Location = new System.Drawing.Point(9, 191);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(169, 25);
-            this.label6.TabIndex = 11;
-            this.label6.Text = "Server Backups Path";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label7
             // 
@@ -272,17 +264,6 @@ namespace MCSMLauncher.gui
             this.checkBox5.Text = "Allow Flight";
             this.checkBox5.UseVisualStyleBackColor = true;
             // 
-            // CheckBoxSpawnProtection
-            // 
-            this.CheckBoxSpawnProtection.Location = new System.Drawing.Point(300, 81);
-            this.CheckBoxSpawnProtection.Margin = new System.Windows.Forms.Padding(2);
-            this.CheckBoxSpawnProtection.Name = "CheckBoxSpawnProtection";
-            this.CheckBoxSpawnProtection.Size = new System.Drawing.Size(124, 29);
-            this.CheckBoxSpawnProtection.TabIndex = 32;
-            this.CheckBoxSpawnProtection.Text = "Spawn Protection";
-            this.CheckBoxSpawnProtection.UseVisualStyleBackColor = true;
-            this.CheckBoxSpawnProtection.CheckedChanged += new System.EventHandler(this.CheckBoxSpawnProtection_CheckedChanged);
-            // 
             // checkBox7
             // 
             this.checkBox7.Location = new System.Drawing.Point(228, 81);
@@ -389,16 +370,6 @@ namespace MCSMLauncher.gui
             this.ButtonSave.UseVisualStyleBackColor = true;
             this.ButtonSave.Click += new System.EventHandler(this.ButtonSave_Click);
             // 
-            // NumericSpawnProtection
-            // 
-            this.NumericSpawnProtection.Location = new System.Drawing.Point(300, 107);
-            this.NumericSpawnProtection.Margin = new System.Windows.Forms.Padding(2);
-            this.NumericSpawnProtection.Name = "NumericSpawnProtection";
-            this.NumericSpawnProtection.Size = new System.Drawing.Size(107, 20);
-            this.NumericSpawnProtection.TabIndex = 37;
-            this.NumericSpawnProtection.Tag = "spawn-protection";
-            this.NumericSpawnProtection.Visible = false;
-            // 
             // ButtonDeleteServer
             // 
             this.ButtonDeleteServer.BackColor = System.Drawing.Color.IndianRed;
@@ -443,18 +414,73 @@ namespace MCSMLauncher.gui
             this.textBox3.TabIndex = 39;
             this.textBox3.Tag = "javaruntimepath";
             // 
+            // label6
+            // 
+            this.label6.BackColor = System.Drawing.Color.Transparent;
+            this.label6.Location = new System.Drawing.Point(9, 191);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(169, 25);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Server Backups Path";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.Location = new System.Drawing.Point(228, 103);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(107, 36);
+            this.checkBox1.TabIndex = 42;
+            this.checkBox1.Tag = "hardcore";
+            this.checkBox1.Text = "Server \r\nBackups";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.Location = new System.Drawing.Point(300, 81);
+            this.checkBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(146, 29);
+            this.checkBox3.TabIndex = 43;
+            this.checkBox3.Tag = "playerdatabackupson";
+            this.checkBox3.Text = "Playerdata Backups";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            // 
+            // NumericSpawnProtection
+            // 
+            this.NumericSpawnProtection.Location = new System.Drawing.Point(301, 134);
+            this.NumericSpawnProtection.Margin = new System.Windows.Forms.Padding(2);
+            this.NumericSpawnProtection.Name = "NumericSpawnProtection";
+            this.NumericSpawnProtection.Size = new System.Drawing.Size(107, 20);
+            this.NumericSpawnProtection.TabIndex = 45;
+            this.NumericSpawnProtection.Tag = "spawn-protection";
+            this.NumericSpawnProtection.Visible = false;
+            // 
+            // CheckBoxSpawnProtection
+            // 
+            this.CheckBoxSpawnProtection.Location = new System.Drawing.Point(300, 107);
+            this.CheckBoxSpawnProtection.Margin = new System.Windows.Forms.Padding(2);
+            this.CheckBoxSpawnProtection.Name = "CheckBoxSpawnProtection";
+            this.CheckBoxSpawnProtection.Size = new System.Drawing.Size(124, 29);
+            this.CheckBoxSpawnProtection.TabIndex = 44;
+            this.CheckBoxSpawnProtection.Tag = "serverbackupson";
+            this.CheckBoxSpawnProtection.Text = "Spawn Protection";
+            this.CheckBoxSpawnProtection.UseVisualStyleBackColor = true;
+            // 
             // ServerEditPrompt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(436, 369);
+            this.ClientSize = new System.Drawing.Size(430, 369);
+            this.Controls.Add(this.NumericSpawnProtection);
+            this.Controls.Add(this.CheckBoxSpawnProtection);
+            this.Controls.Add(this.checkBox3);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.ButtonFolderBrowsing3);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.ButtonDeleteServer);
-            this.Controls.Add(this.NumericSpawnProtection);
-            this.Controls.Add(this.CheckBoxSpawnProtection);
             this.Controls.Add(this.checkBox4);
             this.Controls.Add(this.ButtonSave);
             this.Controls.Add(this.checkBox7);
@@ -496,6 +522,14 @@ namespace MCSMLauncher.gui
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.CheckBox CheckBoxSpawnProtection;
+        private System.Windows.Forms.NumericUpDown NumericSpawnProtection;
+
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.CheckBox checkBox3;
+
+        private System.Windows.Forms.CheckBox checkBox1;
+
         private System.Windows.Forms.FolderBrowserDialog FolderBrowser;
 
         private System.Windows.Forms.Button ButtonFolderBrowsing3;
@@ -515,11 +549,8 @@ namespace MCSMLauncher.gui
         private System.Windows.Forms.CheckBox checkBox6;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.CheckBox checkBox7;
-        private System.Windows.Forms.NumericUpDown NumericSpawnProtection;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox textBox4;
-
-        private System.Windows.Forms.CheckBox CheckBoxSpawnProtection;
 
         private System.Windows.Forms.CheckBox checkBox5;
 
@@ -538,7 +569,6 @@ namespace MCSMLauncher.gui
         private System.Windows.Forms.Button ButtonFolderBrowsing2;
 
         private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textBox6;
 

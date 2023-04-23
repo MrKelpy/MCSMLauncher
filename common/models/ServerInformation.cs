@@ -23,16 +23,16 @@ namespace MCSMLauncher.common.models
         /// The type of the server.
         /// </summary>
         public string Type { get; set; }
-        
+
         /// <summary>
         /// The amount of RAM to allocate to the server.
         /// </summary>
-        public int Ram { get; set; }
-        
+        public int Ram { get; set; } = 1024;
+
         /// <summary>
         /// The base port to try to use for the server.
         /// </summary>
-        public int Port { get; set; }
+        public int Port { get; set; } = 25565;
         
         /// <summary>
         /// The path to the directory where the backups should be stored at.
@@ -43,11 +43,21 @@ namespace MCSMLauncher.common.models
         /// The path to the directory where the playerdata backups should be stored at.
         /// </summary>
         public string PlayerdataBackupsPath { get; set; }
-        
+
+        /// <summary>
+        /// Whether or not to create server backups whilst running the server
+        /// </summary>
+        public bool ServerBackupsOn { get; set; } = true;
+
+        /// <summary>
+        /// Whether or not to create playerdata backups whilst running the server
+        /// </summary>
+        public bool PlayerdataBackupsOn { get; set; } = true;
+
         /// <summary>
         /// The path to the java runtime to use for the server.
         /// </summary>
-        public string JavaRuntimePath { get; set; }
+        public string JavaRuntimePath { get; set; } = "java";
         
         public ServerInformation() { }
     }

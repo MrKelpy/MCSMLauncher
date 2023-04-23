@@ -36,6 +36,14 @@ namespace MCSMLauncher.gui
         {
             InitializeComponent();
             Task.Run(RefreshGridAsync);
+            
+            // Sets the info layout pictures
+            foreach (var label in ServerListLayout.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
+            {
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("tooltip.Icon"))));
+                label.BackgroundImageLayout = ImageLayout.Zoom;
+            }
+            
         }
 
         /// <summary>
@@ -98,9 +106,6 @@ namespace MCSMLauncher.gui
                     Version = "Unknown",
                     ServerBackupsPath = section.AddSection("backups/server").SectionFullPath,
                     PlayerdataBackupsPath = section.AddSection("backups/playerdata").SectionFullPath,
-                    Port = 25565,
-                    Ram = 1024,
-                    JavaRuntimePath = "java"
                 });
 
                 Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate()

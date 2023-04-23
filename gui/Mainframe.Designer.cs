@@ -33,10 +33,6 @@
             this.NewServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainLayout = new System.Windows.Forms.Panel();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.creatingAServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editingAServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.startingAServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.radminVPNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuBar.SuspendLayout();
             this.SuspendLayout();
@@ -44,7 +40,7 @@
             // MenuBar
             // 
             this.MenuBar.BackColor = System.Drawing.Color.Gainsboro;
-            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem, this.helpToolStripMenuItem });
+            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem, this.radminVPNToolStripMenuItem });
             this.MenuBar.Location = new System.Drawing.Point(0, 0);
             this.MenuBar.Name = "MenuBar";
             this.MenuBar.Size = new System.Drawing.Size(800, 24);
@@ -73,35 +69,12 @@
             this.MainLayout.Size = new System.Drawing.Size(800, 426);
             this.MainLayout.TabIndex = 1;
             // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { this.creatingAServerToolStripMenuItem, this.editingAServerToolStripMenuItem, this.startingAServerToolStripMenuItem, this.radminVPNToolStripMenuItem });
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // creatingAServerToolStripMenuItem
-            // 
-            this.creatingAServerToolStripMenuItem.Name = "creatingAServerToolStripMenuItem";
-            this.creatingAServerToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.creatingAServerToolStripMenuItem.Text = "Creating a Server";
-            // 
-            // editingAServerToolStripMenuItem
-            // 
-            this.editingAServerToolStripMenuItem.Name = "editingAServerToolStripMenuItem";
-            this.editingAServerToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.editingAServerToolStripMenuItem.Text = "Editing a Server";
-            // 
-            // startingAServerToolStripMenuItem
-            // 
-            this.startingAServerToolStripMenuItem.Name = "startingAServerToolStripMenuItem";
-            this.startingAServerToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.startingAServerToolStripMenuItem.Text = "Starting a Server";
-            // 
             // radminVPNToolStripMenuItem
             // 
+            this.radminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.radminVPNToolStripMenuItem.Name = "radminVPNToolStripMenuItem";
-            this.radminVPNToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.radminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.radminVPNToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
             this.radminVPNToolStripMenuItem.Text = "Radmin VPN";
             // 
             // Mainframe
@@ -124,10 +97,6 @@
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem creatingAServerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editingAServerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem startingAServerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem radminVPNToolStripMenuItem;
 
         #endregion

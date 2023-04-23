@@ -102,8 +102,6 @@ namespace MCSMLauncher.common.builders.abstraction
                 Version = serverVersion,
                 ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath,
                 PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath,
-                Port = 25565,
-                Ram = 1024,
                 JavaRuntimePath = NewServer.INSTANCE.ComboBoxJavaVersion.Text
             };
             

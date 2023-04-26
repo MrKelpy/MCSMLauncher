@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.requests;
@@ -71,7 +72,7 @@ namespace MCSMLauncher.common.factories
         /// Returns a list of all the supported server types.
         /// </summary>
         /// <returns>A List(string) containing all the supported server types.</returns>
-        public List<string> GetSupportedServerTypes() => new List<string>(Mappings.Keys);
+        public List<string> GetSupportedServerTypes() => new List<string>(Mappings.Keys).Where(x => x != "unknown").ToList();
         
         /// <summary>
         /// Iterates over each line, and breaks it by the > character, then adds the result to a dictionary, mapping

@@ -59,6 +59,16 @@ namespace MCSMLauncher.common.factories
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") },
                     }
                 },
+                {
+                    "unknown", new Dictionary<string, object>()
+                    {
+                        { "handler", null },
+                        { "parser", null },
+                        { "builder", null },
+                        { "starter", new MCVServerStarter() },
+                        { "cache_file", null },
+                    }
+                }
             };
     }
 }

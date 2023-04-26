@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using MCSMLauncher.common;
 
 namespace MCSMLauncher.requests.spigot
 {
@@ -52,12 +53,12 @@ namespace MCSMLauncher.requests.spigot
                 string value = downloadPanel.SelectSingleNode(downloadPanel.XPath + "/div/div[4]/div[2]/a[1]").GetAttributeValue("href", null);
                 
                 if (value == null) continue;
-                mappings.Add(key, value);
+                mappings.Add(new MinecraftVersion(key).Version, value);
                 
                 if (key == "1.7.10") break;
             }
 
-            return this.FormatVersionMappings(mappings);
+            return mappings;
         }
     }
 }

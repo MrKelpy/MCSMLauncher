@@ -61,8 +61,8 @@ namespace MCSMLauncher.gui
             Logging.LOGGER.Info("Refreshed the server list.");
             
             // Sort the servers by version
-            GridServerList.Sort(Comparer<DataGridViewRow>.Create((a, b) => new Version(b.Cells[1].Value.ToString() is var cell && cell != "??.??.??" ? cell : "0.0.0")
-                    .CompareTo(new Version(a.Cells[1].Value.ToString() is var cell2 && cell2 != "??.??.??" ? cell2 : "0.0.0"))));
+            GridServerList.Sort(Comparer<DataGridViewRow>.Create(
+                (a, b) => new MinecraftVersion(b.Cells[1].Value.ToString()).CompareTo(new MinecraftVersion(a.Cells[1].Value.ToString()))));
         }
 
         /// <summary>

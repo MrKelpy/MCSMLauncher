@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -74,5 +75,13 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_SizeChanged(object sender, EventArgs e) =>
             NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = this.Size;
+
+        /// <summary>
+        /// Opens the RadminVPN website in the default browser.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void RadminVPNToolStripMenuItem_Click(object sender, EventArgs e) =>
+            Process.Start("https://www.radmin-vpn.com");
     }
 }

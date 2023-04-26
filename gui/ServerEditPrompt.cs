@@ -201,5 +201,12 @@ namespace MCSMLauncher.gui
             DialogResult result = FolderBrowser.ShowDialog();
             if (result == DialogResult.OK) boundTextBox.Text = FolderBrowser.SelectedPath;
         }
+
+        /// <summary>
+        /// Refreshes the grid after every edit to any server's properties and settings.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private async void ServerEditPrompt_FormClosed(object sender, FormClosedEventArgs e) => await ServerList.INSTANCE.RefreshGridAsync();
     }
 }

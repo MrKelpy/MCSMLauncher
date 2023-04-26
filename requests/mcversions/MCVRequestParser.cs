@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using MCSMLauncher.common;
 
 namespace MCSMLauncher.requests.mcversions
 {
@@ -51,13 +52,13 @@ namespace MCSMLauncher.requests.mcversions
                 string link = item.SelectSingleNode($"//*[@id=\"{name}\"]/div[2]/a").GetAttributeValue("href", null);
                 string directLink = baseUrl + link;
 
-                mappings.Add(name, directLink);
+                mappings.Add(new MinecraftVersion(name).Version, directLink);
                 
                 // Since there's no version with a server past 1.2.1, just break once we get to it.
                 if (name.Equals("1.3.1")) break;
             }
 
-            return this.FormatVersionMappings(mappings);
+            return mappings;
         }
     }
 }

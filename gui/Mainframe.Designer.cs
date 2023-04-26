@@ -32,7 +32,7 @@
             this.MenuBar = new System.Windows.Forms.MenuStrip();
             this.NewServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.radminVPNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RadminVPNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainLayout = new System.Windows.Forms.Panel();
             this.MenuBar.SuspendLayout();
             this.SuspendLayout();
@@ -40,7 +40,7 @@
             // MenuBar
             // 
             this.MenuBar.BackColor = System.Drawing.Color.Gainsboro;
-            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem, this.radminVPNToolStripMenuItem });
+            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem, this.RadminVPNToolStripMenuItem });
             this.MenuBar.Location = new System.Drawing.Point(0, 0);
             this.MenuBar.Name = "MenuBar";
             this.MenuBar.Size = new System.Drawing.Size(800, 24);
@@ -61,13 +61,14 @@
             this.ServersToolStripMenuItem.Text = "Servers";
             this.ServersToolStripMenuItem.Click += new System.EventHandler(this.ServersToolStripMenuItem_Click);
             // 
-            // radminVPNToolStripMenuItem
+            // RadminVPNToolStripMenuItem
             // 
-            this.radminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.radminVPNToolStripMenuItem.Name = "radminVPNToolStripMenuItem";
-            this.radminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.radminVPNToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
-            this.radminVPNToolStripMenuItem.Text = "Radmin VPN";
+            this.RadminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.RadminVPNToolStripMenuItem.Name = "RadminVPNToolStripMenuItem";
+            this.RadminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.RadminVPNToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
+            this.RadminVPNToolStripMenuItem.Text = "Radmin VPN";
+            this.RadminVPNToolStripMenuItem.Click += new System.EventHandler(this.RadminVPNToolStripMenuItem_Click);
             // 
             // MainLayout
             // 
@@ -98,7 +99,7 @@
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.ToolStripMenuItem radminVPNToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem RadminVPNToolStripMenuItem;
 
         #endregion
 

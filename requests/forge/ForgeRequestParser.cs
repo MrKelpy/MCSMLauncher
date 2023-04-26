@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using MCSMLauncher.common;
 
 namespace MCSMLauncher.requests.forge
 {
@@ -74,12 +75,12 @@ namespace MCSMLauncher.requests.forge
                 }
                 
                 if (value == null || key == null) continue;
-                mappings.Add(key, baseUrl + value);
+                mappings.Add(new MinecraftVersion(key).Version, baseUrl + value);
                 
                 if (key == "1.5.2") break;
             }
 
-            return this.FormatVersionMappings(mappings);
+            return mappings;
         }
     }
 }

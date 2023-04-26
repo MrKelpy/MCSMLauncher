@@ -63,6 +63,7 @@
         <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
         <Compile Include="common\Logging.cs" />
+        <Compile Include="common\MinecraftVersion.cs" />
         <Compile Include="common\models\ServerInformation.cs" />
         <Compile Include="common\processes\AbstractCommandProcessing.cs" />
         <Compile Include="common\processes\ErrorCollection.cs" />

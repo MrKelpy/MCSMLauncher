@@ -514,6 +514,7 @@ namespace MCSMLauncher.gui
             this.Location = new System.Drawing.Point(15, 15);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ServerEditPrompt";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ServerEditPrompt_FormClosed);
             this.Load += new System.EventHandler(this.ServerEditPrompt_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();

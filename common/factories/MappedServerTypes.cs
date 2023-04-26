@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MCSMLauncher.common.server.builders;
+using MCSMLauncher.common.server.starters;
 using MCSMLauncher.requests.forge;
 using MCSMLauncher.requests.mcversions;
 using MCSMLauncher.requests.spigot;
@@ -26,6 +27,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", new MCVRequestHandler() },
                         { "parser", new MCVRequestParser() },
                         { "builder", new MCVBuilder() },
+                        { "starter", new MCVServerStarter() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") },
                     }
                 },
@@ -35,6 +37,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", new MCVSnapshotsRequestHandler() },
                         { "parser", new MCVRequestParser() },
                         { "builder", new MCVBuilder() },
+                        { "starter", new MCVServerStarter() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }, 
                     }
                 },

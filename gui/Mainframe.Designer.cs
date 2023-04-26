@@ -32,8 +32,8 @@
             this.MenuBar = new System.Windows.Forms.MenuStrip();
             this.NewServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MainLayout = new System.Windows.Forms.Panel();
             this.radminVPNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainLayout = new System.Windows.Forms.Panel();
             this.MenuBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,14 +61,6 @@
             this.ServersToolStripMenuItem.Text = "Servers";
             this.ServersToolStripMenuItem.Click += new System.EventHandler(this.ServersToolStripMenuItem_Click);
             // 
-            // MainLayout
-            // 
-            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainLayout.Location = new System.Drawing.Point(0, 24);
-            this.MainLayout.Name = "MainLayout";
-            this.MainLayout.Size = new System.Drawing.Size(800, 426);
-            this.MainLayout.TabIndex = 1;
-            // 
             // radminVPNToolStripMenuItem
             // 
             this.radminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -76,6 +68,14 @@
             this.radminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.radminVPNToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
             this.radminVPNToolStripMenuItem.Text = "Radmin VPN";
+            // 
+            // MainLayout
+            // 
+            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainLayout.Location = new System.Drawing.Point(0, 24);
+            this.MainLayout.Name = "MainLayout";
+            this.MainLayout.Size = new System.Drawing.Size(800, 426);
+            this.MainLayout.TabIndex = 1;
             // 
             // Mainframe
             // 
@@ -90,6 +90,7 @@
             this.Name = "Mainframe";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MCSM Launcher";
+            this.Load += new System.EventHandler(this.Mainframe_Load);
             this.SizeChanged += new System.EventHandler(this.Mainframe_SizeChanged);
             this.MenuBar.ResumeLayout(false);
             this.MenuBar.PerformLayout();

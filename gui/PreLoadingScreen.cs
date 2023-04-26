@@ -86,7 +86,7 @@ namespace MCSMLauncher.gui
 
             // Iterates over every configuration key and downloads the file corresponding to it.
             // While that is happening, updates the loading bar.
-            for (var index = 0; index < configLength; index++)
+            for (int index = 0; index < configLength; index++)
             {
                 var settingKey = ConfigurationManager.AppSettings.AllKeys[index];
 

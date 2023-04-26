@@ -39,7 +39,6 @@
             this.ServerType = new System.Windows.Forms.DataGridViewImageColumn();
             this.Version = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ServerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Edit = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Play = new System.Windows.Forms.DataGridViewButtonColumn();
             this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
@@ -90,7 +89,7 @@
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.GridServerList.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.GridServerList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.GridServerList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { this.ServerType, this.Version, this.ServerName, this.Status, this.Edit, this.Play });
+            this.GridServerList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { this.ServerType, this.Version, this.ServerName, this.Edit, this.Play });
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -138,16 +137,6 @@
             this.ServerName.ReadOnly = true;
             this.ServerName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // Status
-            // 
-            this.Status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Status.ToolTipText = "Offline";
-            this.Status.Width = 43;
-            // 
             // Edit
             // 
             this.Edit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
@@ -165,7 +154,6 @@
             this.Play.Name = "Play";
             this.Play.ReadOnly = true;
             this.Play.Text = "Start";
-            this.Play.UseColumnTextForButtonValue = true;
             this.Play.Width = 76;
             // 
             // ServerList
@@ -187,8 +175,6 @@
         private System.Windows.Forms.ToolTip ToolTips;
 
         private System.Windows.Forms.Label dnjlfe;
-
-        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
 
         private System.Windows.Forms.DataGridViewImageColumn ServerType;
         private System.Windows.Forms.DataGridViewTextBoxColumn Version;

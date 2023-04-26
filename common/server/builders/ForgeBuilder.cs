@@ -35,7 +35,7 @@ namespace MCSMLauncher.common.server.builders
             
             // Creates the process that will build the server
             Process forgeBuildingProcess =
-                CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"", $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
+                ProcessUtils.CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"", $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
 
             // Set the output and error data handlers
             forgeBuildingProcess.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
@@ -133,24 +133,19 @@ namespace MCSMLauncher.common.server.builders
             }
 
             // Creates the process to be run
-            Process proc = CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
+            Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            ServerEditPrompt editServer = new ServerEditPrompt(serverSection);
-            Dictionary<string, string> properties = editServer.PropertiesToDictionary();
-            int port = properties.ContainsKey("server-port") ? int.Parse(properties["server-port"]) : 25565;
-
-            // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.
-            int availablePort = NetworkUtils.GetNextAvailablePort(port);
-            if (availablePort == -1)
+            ServerEditor editor = new ServerEditor(serverSection);
+            if (editor.HandlePortForServer(serverSection) == 1)
             {
                 ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;
             }
 
-            properties["server-port"] = availablePort.ToString();
+            Dictionary<string, string> properties = editor.LoadProperties();
             properties["level-type"] = @"minecraft\:normal";
-            editServer.LoadToProperties(properties);
+            editor.DumpToProperties(properties);
             
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
             proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);

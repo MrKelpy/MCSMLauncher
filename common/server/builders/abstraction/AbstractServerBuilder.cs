@@ -153,35 +153,6 @@ namespace MCSMLauncher.common.server.builders.abstraction
             lines[eulaIndex] = "eula=true";
             FileUtils.DumpToFile(eulaPath, lines);
         }
-        
-        /// <summary>
-        /// Creates a Java jar process, redirecting its STDOUT and STDERR to process it.
-        /// </summary>
-        /// <param name="java">The java version path to run</param>
-        /// <param name="args">The java args to run the jar with</param>
-        /// <param name="workingDirectory">The working directory of the process</param>
-        /// <returns>The process started</returns>
-        protected static Process CreateProcess(string java, string args, string workingDirectory = null)
-        {
-            // Creates a new process with the command line arguments to run the command, in a hidden
-            // window.
-            Process proc = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo 
-            { 
-                WindowStyle = ProcessWindowStyle.Hidden,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory(),
-                FileName = java,
-                Arguments = args
-            };
-            
-            // Assigns the startInfo to the process and starts it.
-            proc.StartInfo = startInfo;
-            return proc;
-        }
 
         /// <summary>
         /// Runs the server once and closes it once it has been initialised. Deletes the world folder
@@ -199,25 +170,13 @@ namespace MCSMLauncher.common.server.builders.abstraction
             // Gets the server section from the path of the jar being run, the runtime and creates the process
             Section serverSection = this.GetSectionFromFile(serverJarPath);
             ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(serverSection.GetFirstDocumentNamed("server_settings.xml"));
-            Process proc = CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments, Path.GetDirectoryName(serverJarPath));
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments, Path.GetDirectoryName(serverJarPath));
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (serverSection.GetFirstDocumentNamed("server.properties") != null)
+            if (new ServerEditor(serverSection).HandlePortForServer(serverSection) == 1)
             {
-                ServerEditPrompt editServer = new ServerEditPrompt(serverSection);
-                Dictionary<string, string> properties = editServer.PropertiesToDictionary();
-                int port = properties.ContainsKey("server-port") ? int.Parse(properties["server-port"]) : 25565;
-
-                // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.
-                int availablePort = NetworkUtils.GetNextAvailablePort(port);
-                if (availablePort == -1)
-                {
-                    ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
-                    return 1;
-                }
-
-                properties["server-port"] = availablePort.ToString();
-                editServer.LoadToProperties(properties);
+                ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
+                return 1;
             }
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
@@ -249,10 +208,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <terminationCode>0 - The server.jar fired a normal info message</terminationCode>
         protected override void ProcessInfoMessages(string message, Process proc)
         {
-            TerminationCode = TerminationCode != 1 ? 0 : 1;
+            base.ProcessInfoMessages(message, proc);
             if (message.ToLower().Contains("preparing level")) proc.KillProcessAndChildren();
-            
-            Logging.LOGGER.Info(message);
         }
 
         /// <summary>
@@ -265,10 +222,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <terminationCode>1 - The server.jar fired an error. If fired last, stop the build.</terminationCode>
         protected override void ProcessErrorMessages(string message, Process proc)
         {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Firebrick; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine); }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
-            
+            base.ProcessErrorMessages(message, proc);
             if (SpecialErrors.StringMatches(message)) return;
             TerminationCode = !message.Contains("server.properties") ? 1 : TerminationCode;
         } 
@@ -283,28 +237,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected override void ProcessWarningMessages(string message, Process proc)
         {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.OrangeRed; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine); }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
-            TerminationCode = TerminationCode != 1 ? 2 : 1;
-            
+            base.ProcessWarningMessages(message, proc);
             if (message.Contains("already running on that port")) proc.KillProcessAndChildren();
-        }
-        
-        /// <summary>
-        /// Processes any undifferentiated messages received from the server jar.
-        /// Since we might be updating the console from another thread, we're just going to invoke everything
-        /// and that's that.
-        /// </summary>
-        /// <param name="message">The logging message</param>
-        /// <param name="proc">The object for the process running</param>
-        /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
-        protected override void ProcessOtherMessages(string message, Process proc)
-        {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine); }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
-            TerminationCode = TerminationCode != 1 && !message.ToLower().Split(' ').Contains("error") ? 3 : 1;
         }
 
         /// <summary>

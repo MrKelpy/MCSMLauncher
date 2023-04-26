@@ -67,11 +67,13 @@
         <Compile Include="common\processes\AbstractCommandProcessing.cs" />
         <Compile Include="common\processes\ErrorCollection.cs" />
         <Compile Include="common\processes\ProcessUtils.cs" />
+        <Compile Include="common\ServerEditor.cs" />
         <Compile Include="common\server\builders\abstraction\AbstractServerBuilder.cs" />
         <Compile Include="common\server\builders\ForgeBuilder.cs" />
         <Compile Include="common\server\builders\MCVBuilder.cs" />
         <Compile Include="common\server\builders\SpigotBuilder.cs" />
-        <Compile Include="common\server\starters\AbstractServerStarter.cs" />
+        <Compile Include="common\server\starters\abstraction\AbstractServerStarter.cs" />
+        <Compile Include="common\server\starters\MCVServerStarter.cs" />
         <Compile Include="extensions\ProcessExtensions.cs" />
         <Compile Include="gui\PreLoadingScreen.cs">
           <SubType>Form</SubType>

@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using System.Management;
 
 namespace MCSMLauncher.utils
@@ -35,6 +37,44 @@ namespace MCSMLauncher.utils
             // Ignored, process already exiting.
             catch (ArgumentException ) {}
             catch (Win32Exception) { }
+        }
+        
+        /// <summary>
+        /// Creates a Java jar process, redirecting its STDOUT and STDERR to process it.
+        /// </summary>
+        /// <param name="java">The java version path to run</param>
+        /// <param name="args">The java args to run the jar with</param>
+        /// <param name="workingDirectory">The working directory of the process</param>
+        /// <returns>The process started</returns>
+        public static Process CreateProcess(string java, string args, string workingDirectory = null)
+        {
+            // Creates a new process with the command line arguments to run the command, in a hidden
+            // window.
+            Process proc = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo 
+            { 
+                WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WorkingDirectory = workingDirectory ?? Directory.GetCurrentDirectory(),
+                FileName = java,
+                Arguments = args
+            };
+            
+            // Assigns the startInfo to the process and starts it.
+            proc.StartInfo = startInfo;
+            return proc;
+        }
+        
+        /// <summary>
+        /// Gets a process object from its ID if it is still running.
+        /// </summary>
+        /// <param name="id">The ID of the process to get</param>
+        /// <returns>The Process, if it is still running. Else, null</returns>
+        public static Process GetProcessById(int id) {
+            return Process.GetProcesses().FirstOrDefault(x => x.Id == id);
         }
     }
 }

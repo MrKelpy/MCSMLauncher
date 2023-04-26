@@ -30,9 +30,18 @@ namespace MCSMLauncher.gui
         private Mainframe()
         {
             InitializeComponent();
-            
-            
             this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+        }
+        
+        /// <summary>
+        /// Loads up anything that needs to be loaded after the mainframe handle is created.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void Mainframe_Load(object sender, EventArgs e)
+        {
+            // Updates the server list.
+            this.BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
         }
 
         /// <summary>
@@ -51,10 +60,11 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void ServersToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void ServersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
             this.MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
+            await ServerList.INSTANCE.TryUpdateAllButtonStatesAsync();
         }
 
         /// <summary>

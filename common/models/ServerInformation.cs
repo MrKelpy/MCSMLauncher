@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.common.models
@@ -59,6 +61,32 @@ namespace MCSMLauncher.common.models
         /// </summary>
         public string JavaRuntimePath { get; set; } = "java";
         
+        /// <summary>
+        /// The currently running server process. If the server is not running, this will be -1.
+        /// This is used to check if the server is currently running or not, and is only meant to be
+        /// interacted with programatically.
+        /// </summary>
+        public int CurrentServerProcessID { get; set; } = -1;
+        
+        /// <summary>
+        /// Empty constructor for the ServerInformation class. This is required for serialization.
+        /// </summary>
         public ServerInformation() { }
+
+        /// <summary>
+        /// Creates a new ServerInformation object with the bare minimum information required to run a server.
+        /// </summary>
+        /// <param name="serverSection">The server section to get the information from</param>
+        /// <returns>A ServerInformation instance of an unknown server with the minimal information required to run it.</returns>
+        public ServerInformation GetMinimalInformation(Section serverSection)
+        {
+            return new ServerInformation
+            {
+                Type = "unknown",
+                Version = "??.??.??",
+                ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath,
+                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath,
+            };
+        }
     }
 }

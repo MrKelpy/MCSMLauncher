@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.gui;
+using MCSMLauncher.utils;
 
 namespace MCSMLauncher.common
 {
@@ -63,7 +64,11 @@ namespace MCSMLauncher.common
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>0 - The server.jar fired a normal info message</terminationCode>
-        protected abstract void ProcessInfoMessages(string message, Process proc);
+        protected virtual void ProcessInfoMessages(string message, Process proc)
+        {
+            TerminationCode = TerminationCode != 1 ? 0 : 1;
+            Logging.LOGGER.Info(message);
+        }
 
         /// <summary>
         /// Processes any ERROR messages received from the server jar.
@@ -73,7 +78,12 @@ namespace MCSMLauncher.common
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>1 - The server.jar fired an error. If fired last, stop the build.</terminationCode>
-        protected abstract void ProcessErrorMessages(string message, Process proc);
+        protected virtual void ProcessErrorMessages(string message, Process proc)
+        {
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Firebrick; }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+        }
 
         /// <summary>
         /// Processes any WARN messages received from the server jar.
@@ -83,7 +93,13 @@ namespace MCSMLauncher.common
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
-        protected abstract void ProcessWarningMessages(string message, Process proc);
+        protected virtual void ProcessWarningMessages(string message, Process proc)
+        {
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.OrangeRed; }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            TerminationCode = TerminationCode != 1 ? 2 : 1;
+        }
 
         /// <summary>
         /// Processes any undifferentiated messages received from the server jar.
@@ -93,7 +109,13 @@ namespace MCSMLauncher.common
         /// <param name="message">The logging message</param>
         /// <param name="proc">The object for the process running</param>
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
-        protected abstract void ProcessOtherMessages(string message, Process proc);
+        protected virtual void ProcessOtherMessages(string message, Process proc)
+        {
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            TerminationCode = TerminationCode != 1 && !message.ToLower().Split(' ').Contains("error") ? 3 : 1;
+        }
 
     }
 }

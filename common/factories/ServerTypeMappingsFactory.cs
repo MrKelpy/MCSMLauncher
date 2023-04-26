@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MCSMLauncher.common.server.builders.abstraction;
+using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.requests;
 using PgpsUtilsAEFC.utils;
 
@@ -35,9 +36,18 @@ namespace MCSMLauncher.common.factories
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the builder for</param>
-        /// <returns></returns>
+        /// <returns>An instance of AbstractServerBuilder mapped to the server type</returns>
         public AbstractServerBuilder GetBuilderFor(string serverType) =>
             Mappings.ContainsKey(serverType.ToLower()) ? (AbstractServerBuilder) Mappings[serverType.ToLower()]["builder"] : null;
+        
+        /// <summary>
+        /// Gets the server starter for the given server type. If the server type is not supported,
+        /// return null.
+        /// </summary>
+        /// <param name="serverType">The server type to return the starter for</param>
+        /// <returns>An instance of AbstractServerStarter mapped to the server typ1</returns>
+        public AbstractServerStarter GetStarterFor(string serverType) => 
+            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractServerStarter) Mappings[serverType.ToLower()]["starter"] : null;
         
         /// <summary>
         /// Gets the cache file path for the given server type. If the server type is not supported,

@@ -29,7 +29,7 @@ namespace MCSMLauncher
             }
             // Logs whatever fatal issue happens as a last resource.
             catch (ArithmeticException e)
-            {
+            {   
                 Logging.LOGGER.Fatal($@"An unexpected error occured and the program was forced to exit.");
                 Logging.LOGGER.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
             }

@@ -37,6 +37,7 @@
         <Reference Include="HtmlAgilityPack, Version=1.11.46.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
             <HintPath>packages\HtmlAgilityPack.1.11.46\lib\Net45\HtmlAgilityPack.dll</HintPath>
         </Reference>
+        <Reference Include="mscorlib" />
         <Reference Include="PgpsUtilsAEFC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <HintPath>packages\MrKelpy.PgpsUtilsAEFC.1.2.4\lib\net472\PgpsUtilsAEFC.dll</HintPath>
         </Reference>
@@ -47,6 +48,10 @@
         <Reference Include="System.Configuration" />
         <Reference Include="System.Core" />
         <Reference Include="System.IO.Compression" />
+        <Reference Include="System.IO.Compression.FileSystem" />
+        <Reference Include="System.IO.Compression.ZipFile, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+          <HintPath>packages\System.IO.Compression.ZipFile.4.3.0\lib\net46\System.IO.Compression.ZipFile.dll</HintPath>
+        </Reference>
         <Reference Include="System.Management" />
         <Reference Include="System.Xml.Linq" />
         <Reference Include="System.Data.DataSetExtensions" />
@@ -59,9 +64,12 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="common\background\ServerBackupHandler.cs" />
+        <Compile Include="common\background\ServerProcessStateHandler.cs" />
         <Compile Include="common\Constants.cs" />
         <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
+        <Compile Include="common\interfaces\IBackgroundRunner.cs" />
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\MinecraftVersion.cs" />
         <Compile Include="common\models\ServerInformation.cs" />
@@ -74,7 +82,9 @@
         <Compile Include="common\server\builders\MCVBuilder.cs" />
         <Compile Include="common\server\builders\SpigotBuilder.cs" />
         <Compile Include="common\server\starters\abstraction\AbstractServerStarter.cs" />
+        <Compile Include="common\server\starters\ForgeServerStarter.cs" />
         <Compile Include="common\server\starters\MCVServerStarter.cs" />
+        <Compile Include="common\server\starters\SpigotServerStarter.cs" />
         <Compile Include="extensions\ProcessExtensions.cs" />
         <Compile Include="gui\PreLoadingScreen.cs">
           <SubType>Form</SubType>

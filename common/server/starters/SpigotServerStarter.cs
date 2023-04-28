@@ -3,14 +3,14 @@
 namespace MCSMLauncher.common.server.starters
 {
     /// <summary>
-    /// This class handles everything related to starting vanilla servers.
+    /// This class handles everything related to starting spigot servers.
     /// </summary>
-    public class MCVServerStarter : AbstractServerStarter
+    public class SpigotServerStarter : AbstractServerStarter
     {
         /// <summary>
         /// Main constructor for the SpigotServerStarter class. Defines the start-up arguments for the server, as well
         /// as the "other arguments" that are passed to the server.
         /// </summary>
-        public MCVServerStarter() : base(" ", "-jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"") { }
+        public SpigotServerStarter() : base(" ", "-DIReallyKnowWhatIAmDoingISwear=true -jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"") { }
     }
 }

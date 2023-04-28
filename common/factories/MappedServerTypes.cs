@@ -47,6 +47,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", new SpigotRequestHandler() },
                         { "parser", new SpigotRequestParser() },
                         { "builder", new SpigotBuilder() },
+                        { "starter", new SpigotServerStarter() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }, 
                     }
                 },
@@ -56,6 +57,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", new ForgeRequestHandler() },
                         { "parser", new ForgeRequestParser() },
                         { "builder", new ForgeBuilder() },
+                        { "starter", new ForgeServerStarter() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") },
                     }
                 },

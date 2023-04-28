@@ -136,6 +136,7 @@ namespace MCSMLauncher.common
             Dictionary<string, string> properties = this.LoadProperties();
             Dictionary<string, string> settings = this.LoadSettings();
             int port = settings.ContainsKey("base-port") ? int.Parse(settings["base-port"]) : 25565;
+            if (settings.ContainsKey("server-ip") && properties["server-ip"] != "") return 0;
 
             // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.
             int availablePort = NetworkUtils.GetNextAvailablePort(port);

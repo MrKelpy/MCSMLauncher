@@ -52,6 +52,13 @@ namespace MCSMLauncher.gui
             ButtonFolderBrowsing.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
             ButtonFolderBrowsing2.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
             ButtonFolderBrowsing3.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
+            
+            // Sets the info layout pictures
+            foreach (var label in Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
+            {
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("tooltip.Icon"))));
+                label.BackgroundImageLayout = ImageLayout.Zoom;
+            }
         }
         
         /// <summary>
@@ -155,6 +162,7 @@ namespace MCSMLauncher.gui
             // Saves the server properties and settings
             editor.DumpToProperties(properties);
             editor.DumpToSettings(settings);
+            Close();
         }
 
         /// <summary>
@@ -207,6 +215,11 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private async void ServerEditPrompt_FormClosed(object sender, FormClosedEventArgs e) => await ServerList.INSTANCE.RefreshGridAsync();
+        private async void ServerEditPrompt_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            await ServerList.INSTANCE.RefreshGridAsync();
+            await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
+            ServerList.INSTANCE.SortGrid();
+        }
     }
 }

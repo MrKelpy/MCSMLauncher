@@ -6,8 +6,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MCSMLauncher.common.background;
 using PgpsUtilsAEFC.forms.extensions;
 
 namespace MCSMLauncher.gui
@@ -43,6 +45,9 @@ namespace MCSMLauncher.gui
         {
             // Updates the server list.
             this.BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
+            
+            // Starts any background tasks.
+            new Thread(new ServerProcessStateHandler().RunTask) {IsBackground = true}.Start();
         }
 
         /// <summary>
@@ -65,7 +70,7 @@ namespace MCSMLauncher.gui
         {
             if (this.MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
             this.MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
-            await ServerList.INSTANCE.TryUpdateAllButtonStatesAsync();
+            await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
         }
 
         /// <summary>

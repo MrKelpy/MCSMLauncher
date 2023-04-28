@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
@@ -38,7 +40,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// Runs the server with the given startup arguments.
         /// </summary>
         /// <param name="serverSection">The section to get the resources from</param>
-        public void Run(Section serverSection)
+        public virtual void Run(Section serverSection)
         {
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
@@ -67,7 +69,9 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 return;
             }
             
+            // Starts both the process, and the backup handler attached to it.
             proc.Start();
+            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
             
             // Records the PID of the process into the server_settings.xml file.
             info.CurrentServerProcessID = proc.Id;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -61,8 +62,7 @@ namespace MCSMLauncher.gui
             Logging.LOGGER.Info("Refreshed the server list.");
             
             // Sort the servers by version
-            GridServerList.Sort(Comparer<DataGridViewRow>.Create(
-                (a, b) => new MinecraftVersion(b.Cells[1].Value.ToString()).CompareTo(new MinecraftVersion(a.Cells[1].Value.ToString()))));
+            this.SortGrid();
         }
 
         /// <summary>
@@ -83,6 +83,17 @@ namespace MCSMLauncher.gui
                 if (row.Cells[2].Value.Equals(serverName)) return row;
 
             return null;
+        }
+
+        /// <summary>
+        /// Sorts the grid by version, from highest to lowest.
+        /// </summary>
+        public void SortGrid()
+        {
+            GridServerList.Sort(GridServerList.Columns[2], ListSortDirection.Ascending);
+            
+            GridServerList.Sort(Comparer<DataGridViewRow>.Create((a, b) => new MinecraftVersion(b.Cells[1].Value.ToString()).CompareTo(
+                    new MinecraftVersion(a.Cells[1].Value.ToString()))));
         }
 
         /// <summary>
@@ -127,7 +138,7 @@ namespace MCSMLauncher.gui
             }));
             
             // Sets all of the start button rows' buttons to "Start" (default)
-            this.GetRowFromName(section.SimpleName).Cells[4].Value = "Start";
+            this.GetRowFromName(section.SimpleName).Cells[5].Value = "Start";
         }
 
         /// <summary>
@@ -176,17 +187,21 @@ namespace MCSMLauncher.gui
             if (row == null || settingsPath == null) return;
             
             ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            string procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
 
             // Handles the server if it is running; In which case there will be a process
             // with a set PID, specified in the server settings file, running as an mc server.
-            if (Math.Pow(info.CurrentServerProcessID, 2) != 1 && ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName == "java")
+            if (Math.Pow(info.CurrentServerProcessID, 2) != 1 && (procName == "java" || procName == "cmd"))
             {
-                row.Cells[4].Value = "Running";
+                row.Cells[5].Value = "Running";
+                this.UpdateServerIP(serverName);
                 return;
             }
 
-            row.Cells[4].Value = "Start";
+            row.Cells[5].Value = "Start";
+            row.Cells[3].Value = "";
             info.CurrentServerProcessID = -1;
+            File.Delete(settingsPath);
             XMLUtils.SerializeToFile<ServerInformation>(settingsPath, info);
         }
 
@@ -199,7 +214,7 @@ namespace MCSMLauncher.gui
         {
             DataGridViewRow row = this.GetRowFromName(serverName);
             if (row == null) return;
-            row.Cells[4].Value = state;
+            row.Cells[5].Value = state;
         }
 
         /// <summary>
@@ -212,16 +227,31 @@ namespace MCSMLauncher.gui
         /// Iterates through all of the servers listed in the Grid, and tries to update every row's
         /// running state, as long as they're not in the "start" state.
         /// </summary>
-        public async Task TryUpdateAllButtonStatesAsync()
+        public async Task UpdateAllButtonStatesAsync()
         {
             List<Task> tasks = new List<Task>();
 
             // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
-                if (row.Cells[4].Value.ToString() != "Start") 
-                    tasks.Add(UpdateServerButtonStateAsync(row.Cells[2].Value.ToString()));
+                tasks.Add(UpdateServerButtonStateAsync(row.Cells[2].Value.ToString()));
 
             await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Updates the server's IP address in the server list.
+        /// </summary>
+        /// <param name="serverName">The server to update the IP to</param>
+        public void UpdateServerIP(string serverName)
+        {
+            // Gets the server's IP address and updates the server list.
+            Section serverSection = FileSystem.AddSection("servers/" + serverName);
+            ServerEditor editor = new ServerEditor(serverSection);
+            Dictionary<string, string> properties = editor.LoadProperties();
+            DataGridViewRow row = this.GetRowFromName(serverName);
+            
+            if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
+            row.Cells[3].Value = properties["server-ip"] != "" ? properties["server-ip"] : NetworkUtils.GetLocalIPAddress() + ":" + properties["server-port"];
         }
         
         /// <summary>
@@ -236,27 +266,54 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void GridServerList_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void GridServerList_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
-            // If the user clicks on any "Options" button, we open the server edit prompt.
-            if (e.ColumnIndex == 3 && e.RowIndex >= 0)
+            switch (e.ColumnIndex)
             {
-                string serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
-                Section serverSection = FileSystem.AddSection($"servers/{serverName}");
-                ServerEditPrompt editPrompt = new ServerEditPrompt(serverSection);
-                editPrompt.ShowDialog();
-            }
-            
-            // If the user clicks on any "Start" button, we start that server.
-            if (e.ColumnIndex == 4 && e.RowIndex >= 0 && GridServerList.Rows[e.RowIndex].Cells[4].Value.ToString() == "Start")
-            {
-                string serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
-                Section serverSection = FileSystem.AddSection($"servers/{serverName}");
-                string serverType = new ServerEditor(serverSection).LoadSettings()["type"];
-                AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
-                this.ForceUpdateServerState(serverName, "Running");
-                serverStarter.Run(serverSection);
+                case 3 when e.RowIndex >= 0:
+                    
+                    // Prevent the user from spamming the "Copy to Clipboard" button.
+                    string value = GridServerList.Rows[e.RowIndex].Cells[3].Value.ToString();
+                    if (value == "Copied to Clipboard") return;
+                    Clipboard.SetText(value);
+                
+                    // Adds a "Copied to Clipboard" message to the IP address cell, and removes it after 2 seconds.
+                    GridServerList.Rows[e.RowIndex].Cells[3].Value = "Copied to Clipboard";
+                    await Task.Delay(500);
+                    GridServerList.Rows[e.RowIndex].Cells[3].Value = value;
+                    break;
+                
+                // If the user clicks on any "Options" button, we open the server edit prompt.
+                case 4 when e.RowIndex >= 0:
+                {
+                    string serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
+                    Section serverSection = FileSystem.AddSection($"servers/{serverName}");
+                    ServerEditPrompt editPrompt = new ServerEditPrompt(serverSection);
+                    editPrompt.ShowDialog();
+                    break;
+                }
+                
+                // If the user clicks on any "Start" button, we start that server.
+                case 5 when e.RowIndex >= 0 && GridServerList.Rows[e.RowIndex].Cells[5].Value.ToString() == "Start":
+                    try
+                    {
+                        // Gathers the necessary resources to start the server
+                        string serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
+                        Section serverSection = FileSystem.AddSection($"servers/{serverName}");
+                        string serverType = new ServerEditor(serverSection).LoadSettings()["type"];
+                        AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
+                    
+                        // Updates the server state, starts it, and displays the IP address.
+                        this.ForceUpdateServerState(serverName, "Running");
+                        serverStarter.Run(serverSection);
+                        this.UpdateServerIP(serverName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logging.LOGGER.Error(ex.Message + "\n"+ ex.StackTrace);
+                        MessageBox.Show($@"An error occurred whilst trying to start the server. {Environment.NewLine}Please check the integrity of the server and try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    break;
             }
         }
     }

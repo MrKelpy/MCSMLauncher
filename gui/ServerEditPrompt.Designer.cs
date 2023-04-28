@@ -31,6 +31,8 @@ namespace MCSMLauncher.gui
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServerEditPrompt));
             this.label1 = new System.Windows.Forms.Label();
             this.TextBoxServerName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -71,6 +73,8 @@ namespace MCSMLauncher.gui
             this.NumericSpawnProtection = new System.Windows.Forms.NumericUpDown();
             this.CheckBoxSpawnProtection = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.mkeq = new System.Windows.Forms.Label();
+            this.ToolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NumericSpawnProtection)).BeginInit();
@@ -467,12 +471,22 @@ namespace MCSMLauncher.gui
             this.checkBox1.Text = "Server \r\nBackups";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // mkeq
+            // 
+            this.mkeq.Location = new System.Drawing.Point(404, 9);
+            this.mkeq.Name = "mkeq";
+            this.mkeq.Size = new System.Drawing.Size(14, 14);
+            this.mkeq.TabIndex = 46;
+            this.mkeq.Tag = "tooltip";
+            this.ToolTip.SetToolTip(this.mkeq, resources.GetString("mkeq.ToolTip"));
+            // 
             // ServerEditPrompt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(430, 369);
+            this.Controls.Add(this.mkeq);
             this.Controls.Add(this.NumericSpawnProtection);
             this.Controls.Add(this.CheckBoxSpawnProtection);
             this.Controls.Add(this.checkBox3);
@@ -522,6 +536,10 @@ namespace MCSMLauncher.gui
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.ToolTip ToolTip;
+
+        private System.Windows.Forms.Label mkeq;
 
         private System.Windows.Forms.CheckBox CheckBoxSpawnProtection;
         private System.Windows.Forms.NumericUpDown NumericSpawnProtection;

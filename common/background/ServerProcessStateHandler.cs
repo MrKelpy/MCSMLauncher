@@ -29,10 +29,10 @@ namespace MCSMLauncher.common.background
                 foreach (DataGridViewRow row in ServerList.INSTANCE.GridServerList.Rows)
                 {
                     // Targets only the servers that are running.
-                    if (row.Cells[5].Value.ToString() != "Running") continue;
+                    if (row.Cells[5].Value?.ToString() != "Running") continue;
                     
                     // Updates the server state.
-                    string serverName = row.Cells[2].Value.ToString();
+                    string serverName = row.Cells[2]?.Value.ToString();
                     ServerList.INSTANCE.UpdateServerButtonState(serverName);
                 }
             }

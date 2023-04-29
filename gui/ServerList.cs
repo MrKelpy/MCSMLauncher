@@ -43,6 +43,8 @@ namespace MCSMLauncher.gui
                 label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("tooltip.Icon"))));
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
+            
+            ButtonRefresh.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("refresh.Icon"))));
         }
 
         /// <summary>
@@ -316,5 +318,12 @@ namespace MCSMLauncher.gui
                     break;
             }
         }
+
+        /// <summary>
+        /// Refreshes the server list asynchronously.
+        /// </summa
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private async void ButtonRefresh_Click(object sender, EventArgs e) => await this.RefreshGridAsync();
     }
 }

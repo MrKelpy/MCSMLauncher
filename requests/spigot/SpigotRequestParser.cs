@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MCSMLauncher.common;
+using MCSMLauncher.utils;
 
 namespace MCSMLauncher.requests.spigot
 {
@@ -22,13 +25,24 @@ namespace MCSMLauncher.requests.spigot
         /// <returns>The direct download link for the server</returns>
         public override async Task<string> GetServerDirectDownloadLink(string version, string url)
         {
-            HtmlDocument doc = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url);
-            
-            var wellDiv = from div in doc.DocumentNode.Descendants("div") 
-                where div.HasClass("well") select div;
+            try
+            {
+                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 10));
+                
+                HtmlDocument doc = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token)
+                        .ConfigureAwait(false);
+                
+                var wellDiv = from div in doc.DocumentNode.Descendants("div") 
+                    where div.HasClass("well") select div;
 
-            return wellDiv.ElementAt(0).SelectSingleNode("//*[@id=\"get-download\"]/div/div/div[2]/div/h2/a")
-                .GetAttributeValue("href", null);
+                return wellDiv.ElementAt(0).SelectSingleNode("//*[@id=\"get-download\"]/div/div/div[2]/div/h2/a")
+                    .GetAttributeValue("href", null);
+            }
+            
+            // If the task ended up being cancelled due to a time out, throw an exception.
+            catch (TaskCanceledException)
+            { throw new TimeoutException("Request timed out"); }
+            
         }
 
         /// <summary>

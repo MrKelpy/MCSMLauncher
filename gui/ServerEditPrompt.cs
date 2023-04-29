@@ -134,18 +134,7 @@ namespace MCSMLauncher.gui
             ServerEditor editor = new ServerEditor(ServerSection);
             Dictionary<string, string> properties = editor.LoadProperties();
             Dictionary<string, string> settings = editor.LoadSettings();
-            
-            // Renames the server's folder to the new name if it changed.
-            if (!ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
-            {
-                ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
-                Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
 
-                // Updates the ServerSection property to the new path.
-                ServerSection = Constants.FileSystem.AddSection("servers/" + TextBoxServerName.Text);
-                ServerList.INSTANCE.AddServerToList(ServerSection);
-            }
-            
             // Iterates through all of the items in the form, and decides whether they should be updated
             // in the server.properties file or in the server_settings.xml file, and then does it.
             foreach (KeyValuePair<string,string> item in this.FormToDictionary())
@@ -158,10 +147,29 @@ namespace MCSMLauncher.gui
                 else if (settings.ContainsKey(item.Key))
                     settings[item.Key] = item.Value;
             }
-            
-            // Saves the server properties and settings
-            editor.DumpToProperties(properties);
-            editor.DumpToSettings(settings);
+
+            try
+            {
+                // Saves the server properties and settings
+                editor.DumpToProperties(properties);
+                editor.DumpToSettings(settings);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show(@"One or more fields are incorrectly filled. Please correct them and try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Renames the server's folder to the new name if it changed.
+            if (!ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
+            {
+                ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
+                Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
+
+                // Updates the ServerSection property to the new path.
+                ServerSection = Constants.FileSystem.AddSection("servers/" + TextBoxServerName.Text);
+                ServerList.INSTANCE.AddServerToList(ServerSection);
+            }
             Close();
         }
 
@@ -215,11 +223,6 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private async void ServerEditPrompt_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            await ServerList.INSTANCE.RefreshGridAsync();
-            await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
-            ServerList.INSTANCE.SortGrid();
-        }
+        private void ServerEditPrompt_FormClosed(object sender, FormClosedEventArgs e) => ServerList.INSTANCE.SortGrid();
     }
 }

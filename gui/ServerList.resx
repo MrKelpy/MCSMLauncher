@@ -125,10 +125,9 @@
   </metadata>
   <data name="dnjlfe.ToolTip" xml:space="preserve">
     <value>This is the server list, which displays every server you have installed.
-Click in Edit to edit the information about a server.
-Click in Start to run a server.
-
-NOTE: In order to play with friends, you all need to be in the same network. For this, the use of Radmin VPN is recommended; You can go to its page by clicking in the top right button named "Radmin VPN".</value>
+Click in any of the Edit buttons to edit the information about a server.
+Click in any of the Start buttons to run a server.
+Click in the Refresh button to refresh the server list.</value>
   </data>
   <metadata name="ServerType.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

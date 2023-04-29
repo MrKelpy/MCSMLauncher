@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
@@ -20,7 +21,7 @@ namespace MCSMLauncher.requests
         /// The HTML Handler to perform the requests with.
         /// </summary>
         public static HtmlWeb Handler { get; } = new HtmlWeb();
- 
+        
         /// <summary>
         /// Main constructor for the AbstractBaseRequestHandler class.
         /// Sets the URL and the handler.

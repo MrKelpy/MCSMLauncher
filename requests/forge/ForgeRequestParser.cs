@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MCSMLauncher.common;
+using MCSMLauncher.utils;
 
 namespace MCSMLauncher.requests.forge
 {
@@ -22,27 +26,40 @@ namespace MCSMLauncher.requests.forge
         /// <returns>The direct download link for the server</returns>
         public override async Task<string> GetServerDirectDownloadLink(string version, string url)
         {
-            HtmlDocument document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url);
-            HtmlNode downloadsDiv = document.DocumentNode.SelectSingleNode("//div[@class=\"downloads\"]");
-            string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small").InnerText.Replace(" ", "");
-            string directLink = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{recommendedForgeVersion}/forge-{recommendedForgeVersion}-installer.jar";
-
-            // Gets the response code from the primary direct link
-            HttpStatusCode statusCode = HttpStatusCode.NotFound;
-
             try
             {
-                var request = (HttpWebRequest) WebRequest.Create(directLink);
-                request.Method = "HEAD";
-                statusCode = ((HttpWebResponse) request.GetResponse()).StatusCode;
-            }
-            catch (WebException) { }  // Ignored, the status code will remain 404
+                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 30));
+                HtmlDocument document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token);
+                
+                HtmlNode downloadsDiv = document.DocumentNode.SelectSingleNode("//div[@class=\"downloads\"]");
+                string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small")
+                    .InnerText.Replace(" ", "");
+                string directLink =
+                    $"https://maven.minecraftforge.net/net/minecraftforge/forge/{recommendedForgeVersion}/forge-{recommendedForgeVersion}-installer.jar";
 
-            // Gets the extended version of the recommended forge version, with itself repeated afterwards.
-            string extendedVersion = recommendedForgeVersion + "-" + version;
+                // Gets the response code from the primary direct link
+                HttpStatusCode statusCode = HttpStatusCode.NotFound;
+
+                try
+                {
+                    var request = (HttpWebRequest)WebRequest.Create(directLink);
+                    request.Method = "HEAD";
+                    statusCode = ((HttpWebResponse)request.GetResponse()).StatusCode;
+                }
+                catch (WebException) { } // Ignored, the status code will remain 404
+
+                // Gets the extended version of the recommended forge version, with itself repeated afterwards.
+                string extendedVersion = recommendedForgeVersion + "-" + version;
+
+                // Return the direct link, or the direct link with an extended version number if the response isn't 200. 
+                return statusCode == HttpStatusCode.OK
+                    ? directLink
+                    : directLink.Replace(recommendedForgeVersion, extendedVersion);
+            }
             
-            // Return the direct link, or the direct link with an extended version number if the response isn't 200. 
-            return statusCode == HttpStatusCode.OK ? directLink : directLink.Replace(recommendedForgeVersion, extendedVersion);
+            // If the task ended up being cancelled due to a time out, throw an exception.
+            catch (TaskCanceledException)
+            { throw new TimeoutException("Request timed out"); }
         }
         
         /// <summary>

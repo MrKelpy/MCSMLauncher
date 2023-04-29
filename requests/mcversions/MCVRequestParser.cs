@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MCSMLauncher.common;
+using MCSMLauncher.utils;
 
 namespace MCSMLauncher.requests.mcversions
 {
@@ -21,10 +24,18 @@ namespace MCSMLauncher.requests.mcversions
         /// <returns>The direct download link for the server</returns>
         public override async Task<string> GetServerDirectDownloadLink(string version, string url)
         {
-            HtmlNode node = (await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url)).DocumentNode;
+            try
+            {
+                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 10));
+                HtmlNode node = (await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token).ConfigureAwait(false)).DocumentNode;
+
+                string directLink = node.Descendants("a").First(x => x.HasClass("text-xs")).Attributes["href"].Value;
+                return directLink.ToLower().Contains("server") ? directLink : null;
+            }
             
-            string directLink = node.Descendants("a").First(x => x.HasClass("text-xs")).Attributes["href"].Value;
-            return directLink.ToLower().Contains("server") ? directLink : null;
+            // If the task ended up being cancelled due to a time out, throw an exception.
+            catch (TaskCanceledException)
+            { throw new TimeoutException("Request timed out"); }
         }
 
         /// <summary>

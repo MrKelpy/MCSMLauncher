@@ -34,6 +34,8 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.ServerListLayout = new System.Windows.Forms.Panel();
+            this.jkghvcgjv = new System.Windows.Forms.Label();
+            this.ButtonRefresh = new System.Windows.Forms.Button();
             this.dnjlfe = new System.Windows.Forms.Label();
             this.GridServerList = new System.Windows.Forms.DataGridView();
             this.ServerType = new System.Windows.Forms.DataGridViewImageColumn();
@@ -57,6 +59,8 @@
             // 
             // ServerListLayout
             // 
+            this.ServerListLayout.Controls.Add(this.jkghvcgjv);
+            this.ServerListLayout.Controls.Add(this.ButtonRefresh);
             this.ServerListLayout.Controls.Add(this.dnjlfe);
             this.ServerListLayout.Controls.Add(this.GridServerList);
             this.ServerListLayout.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -65,9 +69,31 @@
             this.ServerListLayout.Size = new System.Drawing.Size(800, 426);
             this.ServerListLayout.TabIndex = 1;
             // 
+            // jkghvcgjv
+            // 
+            this.jkghvcgjv.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.jkghvcgjv.Location = new System.Drawing.Point(32, 4);
+            this.jkghvcgjv.Name = "jkghvcgjv";
+            this.jkghvcgjv.Size = new System.Drawing.Size(727, 27);
+            this.jkghvcgjv.TabIndex = 19;
+            this.jkghvcgjv.Text = "In order to play with friends, everyone needs to be in the same network (Or in a " + "port-forwarded environment)\r\nFor this, the use of Radmin VPN is recommended; \r\n";
+            this.jkghvcgjv.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // ButtonRefresh
+            // 
+            this.ButtonRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ButtonRefresh.Location = new System.Drawing.Point(764, 4);
+            this.ButtonRefresh.Margin = new System.Windows.Forms.Padding(2);
+            this.ButtonRefresh.Name = "ButtonRefresh";
+            this.ButtonRefresh.Size = new System.Drawing.Size(25, 25);
+            this.ButtonRefresh.TabIndex = 18;
+            this.ButtonRefresh.UseVisualStyleBackColor = true;
+            this.ButtonRefresh.Click += new System.EventHandler(this.ButtonRefresh_Click);
+            // 
             // dnjlfe
             // 
-            this.dnjlfe.Location = new System.Drawing.Point(3, 0);
+            this.dnjlfe.Location = new System.Drawing.Point(12, 10);
             this.dnjlfe.Name = "dnjlfe";
             this.dnjlfe.Size = new System.Drawing.Size(14, 14);
             this.dnjlfe.TabIndex = 17;
@@ -100,14 +126,14 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.GridServerList.DefaultCellStyle = dataGridViewCellStyle2;
-            this.GridServerList.Location = new System.Drawing.Point(12, 15);
+            this.GridServerList.Location = new System.Drawing.Point(12, 34);
             this.GridServerList.MultiSelect = false;
             this.GridServerList.Name = "GridServerList";
             this.GridServerList.ReadOnly = true;
             this.GridServerList.RowHeadersVisible = false;
             this.GridServerList.ShowCellToolTips = false;
             this.GridServerList.ShowEditingIcon = false;
-            this.GridServerList.Size = new System.Drawing.Size(776, 400);
+            this.GridServerList.Size = new System.Drawing.Size(776, 381);
             this.GridServerList.TabIndex = 6;
             this.GridServerList.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridServerList_CellContentClick);
             this.GridServerList.SelectionChanged += new System.EventHandler(this.GridServerList_SelectionChanged);
@@ -181,6 +207,10 @@
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Label jkghvcgjv;
+
+        private System.Windows.Forms.Button ButtonRefresh;
 
         private System.Windows.Forms.DataGridViewTextBoxColumn ServerIp;
 

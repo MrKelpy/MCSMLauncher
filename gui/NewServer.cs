@@ -182,6 +182,14 @@ namespace MCSMLauncher.gui
                 await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
             }
             
+            // If a timeout exception happened, log it and tell the user that a timeout happened
+            catch (TimeoutException err)
+            {
+                Logging.LOGGER.Error(err.StackTrace);
+                MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                serversSection.RemoveSection(TextBoxServerName.Text);
+            }
+            
             // If a network error happened, log it and tell the user that a network error happened
             catch (HttpRequestException err)
             {

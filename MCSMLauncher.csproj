@@ -91,7 +91,6 @@
         <Compile Include="common\models\ServerInformation.cs" />
         <Compile Include="common\processes\AbstractCommandProcessing.cs" />
         <Compile Include="common\processes\ErrorCollection.cs" />
-        <Compile Include="common\processes\ProcessUtils.cs" />
         <Compile Include="common\ServerEditor.cs" />
         <Compile Include="common\server\builders\abstraction\AbstractServerBuilder.cs" />
         <Compile Include="common\server\builders\ForgeBuilder.cs" />
@@ -149,9 +148,10 @@
         <Compile Include="requests\mcversions\MCVRequestParser.cs" />
         <Compile Include="requests\mcversions\releases\MCVRequestHandler.cs" />
         <Compile Include="requests\mcversions\snapshots\MCVSnapshotsRequestHandler.cs" />
-        <Compile Include="requests\NetworkUtils.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
+        <Compile Include="utils\NetworkUtils.cs" />
+        <Compile Include="utils\ProcessUtils.cs" />
         <EmbeddedResource Include="gui\PreLoadingScreen.resx">
           <DependentUpon>PreLoadingScreen.cs</DependentUpon>
         </EmbeddedResource>

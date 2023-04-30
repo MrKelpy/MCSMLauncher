@@ -324,6 +324,10 @@ namespace MCSMLauncher.gui
         /// </summa
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private async void ButtonRefresh_Click(object sender, EventArgs e) => await this.RefreshGridAsync();
+        private async void ButtonRefresh_Click(object sender, EventArgs e)
+        {
+            await this.RefreshGridAsync();
+            await this.UpdateAllButtonStatesAsync();
+        }
     }
 }

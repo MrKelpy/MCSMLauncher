@@ -154,7 +154,7 @@ namespace MCSMLauncher.gui
                 editor.DumpToProperties(properties);
                 editor.DumpToSettings(settings);
             }
-            catch (FormatException)
+            catch (SystemException)
             {
                 MessageBox.Show(@"One or more fields are incorrectly filled. Please correct them and try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;

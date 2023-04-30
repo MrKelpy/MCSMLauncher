@@ -36,7 +36,7 @@ namespace MCSMLauncher.requests.content
                 Logging.LOGGER.Info($"Finished downloading the content from {url}");
             }
             // If the task ended up being cancelled due to a time out, throw an exception.
-            catch (TaskCanceledException e)
+            catch (TaskCanceledException)
             { throw new TimeoutException("Request timed out"); }
         }
     }

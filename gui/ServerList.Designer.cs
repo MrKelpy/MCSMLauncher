@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ServerList));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.ServerListLayout = new System.Windows.Forms.Panel();
             this.jkghvcgjv = new System.Windows.Forms.Label();
             this.ButtonRefresh = new System.Windows.Forms.Button();
@@ -49,14 +48,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.GridServerList)).BeginInit();
             this.SuspendLayout();
             // 
-            // menuStrip1
-            // 
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
-            // 
             // ServerListLayout
             // 
             this.ServerListLayout.Controls.Add(this.jkghvcgjv);
@@ -64,9 +55,9 @@
             this.ServerListLayout.Controls.Add(this.dnjlfe);
             this.ServerListLayout.Controls.Add(this.GridServerList);
             this.ServerListLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ServerListLayout.Location = new System.Drawing.Point(0, 24);
+            this.ServerListLayout.Location = new System.Drawing.Point(0, 0);
             this.ServerListLayout.Name = "ServerListLayout";
-            this.ServerListLayout.Size = new System.Drawing.Size(800, 426);
+            this.ServerListLayout.Size = new System.Drawing.Size(800, 450);
             this.ServerListLayout.TabIndex = 1;
             // 
             // jkghvcgjv
@@ -198,14 +189,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.ServerListLayout);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
             this.Name = "ServerList";
             this.Text = "Form1";
             this.ServerListLayout.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.GridServerList)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
         }
 
         private System.Windows.Forms.Label jkghvcgjv;
@@ -228,7 +216,6 @@
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.Panel ServerListLayout;
     }
 }

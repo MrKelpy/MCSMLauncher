@@ -39,7 +39,7 @@
             // 
             // MenuBar
             // 
-            this.MenuBar.BackColor = System.Drawing.Color.Gainsboro;
+            this.MenuBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(74)))), ((int)(((byte)(93)))), ((int)(((byte)(140)))));
             this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem, this.RadminVPNToolStripMenuItem });
             this.MenuBar.Location = new System.Drawing.Point(0, 0);
             this.MenuBar.Name = "MenuBar";
@@ -49,6 +49,7 @@
             // 
             // NewServerToolStripMenuItem
             // 
+            this.NewServerToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.NewServerToolStripMenuItem.Name = "NewServerToolStripMenuItem";
             this.NewServerToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.NewServerToolStripMenuItem.Text = "New";
@@ -56,6 +57,7 @@
             // 
             // ServersToolStripMenuItem
             // 
+            this.ServersToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.ServersToolStripMenuItem.Name = "ServersToolStripMenuItem";
             this.ServersToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
             this.ServersToolStripMenuItem.Text = "Servers";
@@ -64,6 +66,7 @@
             // RadminVPNToolStripMenuItem
             // 
             this.RadminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.RadminVPNToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
             this.RadminVPNToolStripMenuItem.Name = "RadminVPNToolStripMenuItem";
             this.RadminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.RadminVPNToolStripMenuItem.Size = new System.Drawing.Size(86, 20);

@@ -156,6 +156,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(248, 32);
             this.label4.TabIndex = 12;
+            this.label4.Text = "Java Runtime Version";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // PictureBoxLoading
@@ -210,6 +211,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(248, 32);
             this.label3.TabIndex = 5;
+            this.label3.Text = "Server Version";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ComboBoxServerType
@@ -229,6 +231,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(248, 32);
             this.label2.TabIndex = 3;
+            this.label2.Text = "Server Type";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
@@ -238,6 +241,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(248, 32);
             this.label1.TabIndex = 1;
+            this.label1.Text = "Server Name";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // TextBoxServerName

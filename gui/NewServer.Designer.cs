@@ -48,7 +48,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.TextBoxServerName = new System.Windows.Forms.TextBox();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.miniToolStrip = new System.Windows.Forms.MenuStrip();
             this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
             this.NewServerLayout.SuspendLayout();
@@ -57,6 +57,7 @@
             // 
             // NewServerLayout
             // 
+            this.NewServerLayout.BackColor = System.Drawing.SystemColors.Control;
             this.NewServerLayout.Controls.Add(this.label8);
             this.NewServerLayout.Controls.Add(this.label7);
             this.NewServerLayout.Controls.Add(this.label6);
@@ -75,9 +76,9 @@
             this.NewServerLayout.Controls.Add(this.label1);
             this.NewServerLayout.Controls.Add(this.TextBoxServerName);
             this.NewServerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.NewServerLayout.Location = new System.Drawing.Point(0, 24);
+            this.NewServerLayout.Location = new System.Drawing.Point(0, 0);
             this.NewServerLayout.Name = "NewServerLayout";
-            this.NewServerLayout.Size = new System.Drawing.Size(800, 426);
+            this.NewServerLayout.Size = new System.Drawing.Size(800, 450);
             this.NewServerLayout.TabIndex = 2;
             // 
             // label8
@@ -155,7 +156,6 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(248, 32);
             this.label4.TabIndex = 12;
-            this.label4.Text = "Java Version";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // PictureBoxLoading
@@ -210,7 +210,6 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(248, 32);
             this.label3.TabIndex = 5;
-            this.label3.Text = "Server Version";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ComboBoxServerType
@@ -230,7 +229,6 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(248, 32);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Server Type";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
@@ -240,7 +238,6 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(248, 32);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Server Name";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // TextBoxServerName
@@ -251,30 +248,31 @@
             this.TextBoxServerName.TabIndex = 0;
             this.TextBoxServerName.TextChanged += new System.EventHandler(this.TextBoxServerName_TextChanged);
             // 
-            // menuStrip1
+            // miniToolStrip
             // 
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(800, 24);
-            this.menuStrip1.TabIndex = 3;
-            this.menuStrip1.Text = "menuStrip1";
+            this.miniToolStrip.AutoSize = false;
+            this.miniToolStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.miniToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.miniToolStrip.Name = "miniToolStrip";
+            this.miniToolStrip.Size = new System.Drawing.Size(800, 24);
+            this.miniToolStrip.TabIndex = 3;
+            this.miniToolStrip.Visible = false;
             // 
             // NewServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.NewServerLayout);
-            this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.miniToolStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MainMenuStrip = this.menuStrip1;
+            this.Location = new System.Drawing.Point(15, 15);
             this.Name = "NewServer";
-            this.Text = "Form1";
             this.NewServerLayout.ResumeLayout(false);
             this.NewServerLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
         }
 
         private System.Windows.Forms.Label label6;
@@ -307,6 +305,6 @@
         private System.Windows.Forms.ComboBox ComboServerVersion;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button ButtonBuild;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip miniToolStrip;
     }
 }

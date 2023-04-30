@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
@@ -64,14 +65,14 @@ namespace MCSMLauncher.gui
             // Logs the initial assets and gets the essential resources to use
             Logging.LOGGER.Info("Downloading initial assets...");
             Section assets = FileSystem.GetFirstSectionNamed("assets");
-            int configLength = ConfigurationManager.AppSettings.AllKeys.Length;
+            List<string> config = ConfigurationManager.AppSettings.AllKeys.Where(x => x.StartsWith("Asset")).ToList();
 
             // Checks if the assets folder contains all the files. If it does, then try to check if they aren't corrupted
             // by trying to convert them to a bitmap. If none are corrupted, then return.
             // If one of them is, or assets has no files, then continue. 
             try
             {
-                if (assets?.GetAllDocuments().Length != configLength) throw new ArgumentException();
+                if (assets?.GetAllDocuments().Length != config.Count) throw new ArgumentException();
                 foreach (string filepath in assets.GetAllDocuments()) using (var _ = new Bitmap(filepath)) { }
                 Close(); return;
                 
@@ -86,16 +87,16 @@ namespace MCSMLauncher.gui
 
             // Iterates over every configuration key and downloads the file corresponding to it.
             // While that is happening, updates the loading bar.
-            for (int index = 0; index < configLength; index++)
+            for (int index = 0; index < config.Count; index++)
             {
-                var settingKey = ConfigurationManager.AppSettings.AllKeys[index];
+                var settingKey = config[index];
 
                 string filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
                 string filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
                 
                 SetDownloadingAssetName(filename);
                 await FileDownloader.DownloadFileAsync(filepath, ConfigurationManager.AppSettings.Get(settingKey));
-                ProgressBarDownload.Value = (int) ((((double)index + 1) / configLength) * 100);
+                ProgressBarDownload.Value = (int) (((double)index + 1) / config.Count * 100);
             }
             
             Close();

@@ -52,12 +52,12 @@ namespace MCSMLauncher.gui
             InitializeComponent();
             
             // Loads the images for the form
-            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("LoadingScreen.LoadingGifLink"))));
-            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("FolderBrowser.Icon"))));
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.LoadingScreen"))));
+            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
             foreach (var label in NewServerLayout.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("tooltip.Icon"))));
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
 
@@ -93,7 +93,7 @@ namespace MCSMLauncher.gui
         public void ToggleControlsState(bool enabled)
         {
             TextBoxServerName.Enabled = ComboServerVersion.Enabled = ComboBoxServerType.Enabled 
-                = ComboBoxJavaVersion.Enabled = ButtonBuild.Visible = enabled;
+                = ComboBoxJavaVersion.Enabled = ButtonFolderBrowser.Enabled = ButtonBuild.Visible = enabled;
             PictureBoxLoading.Visible = !enabled;
         }
 

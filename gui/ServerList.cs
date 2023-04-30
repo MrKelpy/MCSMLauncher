@@ -40,11 +40,11 @@ namespace MCSMLauncher.gui
             // Sets the info layout pictures
             foreach (var label in ServerListLayout.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("tooltip.Icon"))));
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
             
-            ButtonRefresh.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("refresh.Icon"))));
+            ButtonRefresh.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Refresh"))));
         }
 
         /// <summary>

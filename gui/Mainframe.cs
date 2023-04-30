@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -43,6 +44,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_Load(object sender, EventArgs e)
         {
+            this.Text += @" v" + ConfigurationManager.AppSettings.Get("Version.App");
+
             // Updates the server list.
             this.BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
             

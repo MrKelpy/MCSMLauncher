@@ -26,10 +26,10 @@ namespace MCSMLauncher.requests.content
             try
             {
                 HttpClient Client = new HttpClient();
-                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 2, 0));
+                // using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 5, 0));
 
                 Logging.LOGGER.Info($"Preparing to download {url} into {path}");
-                using var downloadStream = await Client.GetStreamAsync(url, ct.Token);
+                using var downloadStream = await Client.GetStreamAsync(url);
                 using FileStream fileStream = new FileStream(path, FileMode.CreateNew);
 
                 await downloadStream.CopyToAsync(fileStream);

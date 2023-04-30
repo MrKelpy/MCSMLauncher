@@ -112,7 +112,7 @@ namespace MCSMLauncher.common
         protected virtual void ProcessOtherMessages(string message, Process proc)
         {
             // If the message contains the word "error" in it, we're going to assume it's an error.
-            if (message.ToLower().Split(' ').Any(x => x.Contains("error")))
+            if (message.ToLower().Split(' ').Any(x => x.StartsWith("error")))
             {
                 ProcessErrorMessages(message, proc);
                 return;

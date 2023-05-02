@@ -73,7 +73,7 @@ namespace MCSMLauncher.common.background
                 if (playerdataBackupsEnabled && now.Minute % 5 == 0)
                     CreatePlayerdataBackup(ServerSection);
                 
-                Thread.Sleep(1*1000);  // Sleeps for a minute
+                Thread.Sleep(1*1000*60);  // Sleeps for a minute
             }
         }
 

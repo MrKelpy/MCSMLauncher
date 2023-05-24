@@ -22,9 +22,14 @@ namespace MCSMLauncher.utils
         [SuppressMessage("ReSharper", "PossibleInvalidCastExceptionInForeachLoop")]
         public static void KillProcessAndChildren(this Process proc, int pid = -1)
         {
-            if (pid == -1) pid = proc.Id;  // If not specified, use the proc id as the pid.
-            if (pid == 0) return;  // Can't close the windows idle process
-            
+            try
+            {
+                if (pid == -1) pid = proc.Id; // If not specified, use the proc id as the pid.
+                if (pid == 0) return; // Can't close the windows idle process
+                
+            // If the process is already closed, return.
+            } catch (InvalidOperationException) { return; }
+
             // Get all the process management objects for the PID specified.
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
             

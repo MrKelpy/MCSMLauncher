@@ -46,6 +46,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             SpecialErrors.Add("Error during early discovery");
             SpecialErrors.Add("Cannot read the array length");
             SpecialErrors.Add("FML appears to be missing any signature data");
+            SpecialErrors.Add("Failed to load");
         }
 
         /// <summary>

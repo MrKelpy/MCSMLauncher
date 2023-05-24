@@ -67,6 +67,7 @@ namespace MCSMLauncher.common
         protected virtual void ProcessInfoMessages(string message, Process proc)
         {
             TerminationCode = TerminationCode != 1 ? 0 : 1;
+            if (message.ToLower().Contains("agree to the eula")) proc.KillProcessAndChildren();
             Logging.LOGGER.Info(message);
         }
 
@@ -111,13 +112,15 @@ namespace MCSMLauncher.common
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected virtual void ProcessOtherMessages(string message, Process proc)
         {
+            if (message.ToLower().Contains("agree to the eula")) proc.KillProcessAndChildren();
+            
             // If the message contains the word "error" in it, we're going to assume it's an error.
             if (message.ToLower().Split(' ').Any(x => x.StartsWith("error")))
             {
                 ProcessErrorMessages(message, proc);
                 return;
             }
-            
+
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine); }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));

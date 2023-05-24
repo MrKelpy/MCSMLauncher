@@ -94,7 +94,7 @@ namespace MCSMLauncher.requests.forge
                 if (value == null || key == null) continue;
                 mappings.Add(new MinecraftVersion(key).Version, baseUrl + value);
                 
-                if (key == "1.5.2") break;
+                if (key == "1.6.1") break;
             }
 
             return mappings;

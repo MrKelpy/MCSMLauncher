@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ionic.Zip;
 using MCSMLauncher.common.interfaces;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
@@ -124,15 +124,17 @@ namespace MCSMLauncher.common.background
         private static void ZipDirectory(string directory, string destination)
         {
             // Creates and opens the zipping file, using a resource manager
-            using ZipArchive zipper = ZipFile.Open(destination, ZipArchiveMode.Create);
-            
+            using ZipFile zipper = new ZipFile(destination);
+                
             // Adds every file into the zip file, parsing their path to exclude the root directory path.
             foreach (string file in Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories))
             {
-                string relativePath = file.Substring(directory.Length - 1);
-                zipper.CreateEntry(relativePath, CompressionLevel.Optimal);
-            }
+                string relativePath = file.Substring(directory.Length + 1);
+                if (relativePath.Contains("backups") || relativePath.Contains(".lock")) continue;
+                zipper.AddFile(file, Path.GetDirectoryName(relativePath));
+            } 
             
+            zipper.Save();
         }
         
         

@@ -21,3 +21,6 @@ C:\dev\C#\MCSMLauncher\obj\Debug\MCSMLauncher.gui.ServerEditPrompt.resources
 C:\dev\C#\MCSMLauncher\bin\Debug\PgpsUtilsAEFC.dll
 C:\dev\C#\MCSMLauncher\bin\Debug\System.CodeDom.dll
 C:\dev\C#\MCSMLauncher\bin\Debug\System.CodeDom.xml
+C:\dev\C#\MCSMLauncher\bin\Debug\DotNetZip.dll
+C:\dev\C#\MCSMLauncher\bin\Debug\DotNetZip.pdb
+C:\dev\C#\MCSMLauncher\bin\Debug\DotNetZip.xml

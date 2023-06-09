@@ -90,6 +90,8 @@ namespace MCSMLauncher.common.background
                 ServerEditor editor = new ServerEditor(serverSection);
                 string backupsPath = editor.LoadSettings()["serverbackupspath"];
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
+                if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
+
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
                 
             } catch (Exception) {} // Ignored, try again later.
@@ -108,6 +110,7 @@ namespace MCSMLauncher.common.background
                 ServerEditor editor = new ServerEditor(serverSection);
                 string backupsPath = editor.LoadSettings()["playerdatabackupspath"];
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
+                if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 // Creates a playerdata backup for every world in the server.
                 foreach (Section section in serverSection.GetSectionsNamed("playerdata").Where(x => x.SectionFullPath != backupsPath).ToList())

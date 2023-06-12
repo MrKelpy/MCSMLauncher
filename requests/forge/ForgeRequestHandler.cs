@@ -6,6 +6,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MCSMLauncher.common;
+using MCSMLauncher.requests.abstraction;
 
 namespace MCSMLauncher.requests.forge
 {

@@ -3,6 +3,8 @@ using MCSMLauncher.common.server.builders;
 using MCSMLauncher.common.server.starters;
 using MCSMLauncher.requests.forge;
 using MCSMLauncher.requests.mcversions;
+using MCSMLauncher.requests.mcversions.full;
+using MCSMLauncher.requests.mcversions.snapshots;
 using MCSMLauncher.requests.spigot;
 using static MCSMLauncher.common.Constants;
 

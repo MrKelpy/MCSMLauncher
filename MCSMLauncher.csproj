@@ -150,7 +150,7 @@
         <Compile Include="requests\forge\ForgeRequestHandler.cs" />
         <Compile Include="requests\forge\ForgeRequestParser.cs" />
         <Compile Include="requests\mcversions\MCVRequestParser.cs" />
-        <Compile Include="requests\mcversions\releases\MCVRequestHandler.cs" />
+        <Compile Include="requests\mcversions\full\MCVRequestHandler.cs" />
         <Compile Include="requests\mcversions\snapshots\MCVSnapshotsRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />

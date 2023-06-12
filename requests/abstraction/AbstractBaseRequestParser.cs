@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace MCSMLauncher.requests
+namespace MCSMLauncher.requests.abstraction
 {
     /// <summary>
     /// This abstract class implements the basic functionality and contracts for the request parsers.

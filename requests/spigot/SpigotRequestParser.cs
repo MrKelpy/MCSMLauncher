@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MCSMLauncher.common;
+using MCSMLauncher.requests.abstraction;
 using MCSMLauncher.utils;
 
 namespace MCSMLauncher.requests.spigot

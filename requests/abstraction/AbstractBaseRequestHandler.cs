@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace MCSMLauncher.requests
+namespace MCSMLauncher.requests.abstraction
 {
     /// <summary>
     /// This abstract class implements all the basic functionality to be used by the special website request handlers

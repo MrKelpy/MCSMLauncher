@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using MCSMLauncher.common.processes;
 using MCSMLauncher.gui;
 using MCSMLauncher.utils;
 
-namespace MCSMLauncher.common
+namespace MCSMLauncher.common.processes
 {
     /// <summary>
     /// This class implements all the base methods for command processing events

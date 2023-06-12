@@ -8,16 +8,16 @@ using MCSMLauncher.requests.abstraction;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.requests.mcversions.snapshots
+namespace MCSMLauncher.requests.mcversions.full
 {
     /// <summary>
     /// This class handles every request to the mcversions.net website, and works
     /// together with MCVReleaseRequestParser in order to parse the information in a way that 
     /// returns useful data.
     /// </summary>
-    public class MCVSnapshotsRequestHandler : AbstractBaseRequestHandler
+    public class MCVRequestHandler : AbstractBaseRequestHandler
     {
-        public MCVSnapshotsRequestHandler() : base("https://mcversions.net") {}
+        public MCVRequestHandler() : base("https://mcversions.net") {}
 
         /// <summary>
         /// Accesses the website and parses out all the existent version names mapped
@@ -30,15 +30,15 @@ namespace MCSMLauncher.requests.mcversions.snapshots
             {
                 HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
-                var itemDivs = from div in document.DocumentNode.Descendants("div")
+                var itemsDiv = from div in document.DocumentNode.Descendants("div")
                     where div.HasClass("items")
                     select div;
 
-                return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(1));
+                return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemsDiv.ElementAt(0));
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla snapshot versions.");
+                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla versions.");
                 Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
                 return null;
             }

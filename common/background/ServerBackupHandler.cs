@@ -9,6 +9,7 @@ using Ionic.Zip;
 using MCSMLauncher.common.interfaces;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
+using PgpsUtilsAEFC.utils;
 
 namespace MCSMLauncher.common.background
 {
@@ -56,8 +57,8 @@ namespace MCSMLauncher.common.background
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;
 
             // Creates initial backups regardless of the current time.
-            if (serverBackupsEnabled) CreateServerBackup(ServerSection);
             if (playerdataBackupsEnabled) CreatePlayerdataBackup(ServerSection);
+            if (serverBackupsEnabled) CreateServerBackup(ServerSection);
 
             // Until the process is no longer active, keep creating backups.
             while (ProcessUtils.GetProcessById(ProcessID)?.ProcessName is var procName &&
@@ -70,7 +71,7 @@ namespace MCSMLauncher.common.background
                     CreateServerBackup(ServerSection); 
                 
                 // Creates a playerdata backup if the current min is divisible by 5 (every 5 minutes)
-                if (playerdataBackupsEnabled && now.Minute % 5 == 0)
+                if (playerdataBackupsEnabled || now.Minute % 5 == 0)
                     CreatePlayerdataBackup(ServerSection);
                 
                 Thread.Sleep(1*1000*60);  // Sleeps for a minute
@@ -108,12 +109,12 @@ namespace MCSMLauncher.common.background
             try
             {
                 ServerEditor editor = new ServerEditor(serverSection);
-                string backupsPath = editor.LoadSettings()["playerdatabackupspath"];
+                string backupsPath = PathUtils.NormalizePath(editor.LoadSettings()["playerdatabackupspath"]);
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 // Creates a playerdata backup for every world in the server.
-                foreach (Section section in serverSection.GetSectionsNamed("playerdata").Where(x => x.SectionFullPath != backupsPath).ToList())
+                foreach (Section section in serverSection.GetSectionsNamed("playerdata").Where(x => backupsPath.Contains(x.Name)).ToList())
                     ZipDirectory(section.SectionFullPath, Path.Combine(backupsPath, Path.GetFileName(Path.GetDirectoryName(section.SectionFullPath)) + "-" + backupName));
             }
             catch (Exception) {} // Ignored, try again later

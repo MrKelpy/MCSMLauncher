@@ -114,7 +114,7 @@ namespace MCSMLauncher.common.background
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 // Creates a playerdata backup for every world in the server.
-                foreach (Section section in serverSection.GetSectionsNamed("playerdata").Where(x => backupsPath.Contains(x.Name)).ToList())
+                foreach (Section section in serverSection.GetSectionsNamed("playerdata").Where(x => !backupsPath.Contains(x.Name)).ToList())
                     ZipDirectory(section.SectionFullPath, Path.Combine(backupsPath, Path.GetFileName(Path.GetDirectoryName(section.SectionFullPath)) + "-" + backupName));
             }
             catch (Exception) {} // Ignored, try again later

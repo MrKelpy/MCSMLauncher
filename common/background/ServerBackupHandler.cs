@@ -71,7 +71,7 @@ namespace MCSMLauncher.common.background
                     CreateServerBackup(ServerSection); 
                 
                 // Creates a playerdata backup if the current min is divisible by 5 (every 5 minutes)
-                if (playerdataBackupsEnabled || now.Minute % 5 == 0)
+                if (playerdataBackupsEnabled && now.Minute % 5 == 0)
                     CreatePlayerdataBackup(ServerSection);
                 
                 Thread.Sleep(1*1000*60);  // Sleeps for a minute

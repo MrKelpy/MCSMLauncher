@@ -20,7 +20,7 @@
 ;    3. This notice may not be removed or altered from any source distribution.
  
 ; change this to wherever the files to be packaged reside
-!define srcdir "C:\dev\C#\MCSMLauncher\bin\Debug"
+!define srcdir ".\bin\Debug"
  
 !define company "MrKelpy"
  

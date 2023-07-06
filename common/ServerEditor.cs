@@ -108,8 +108,7 @@ namespace MCSMLauncher.common
         public void DumpToSettings(Dictionary<string, string> dictionaryToLoad)
         {
             var settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");
-            if (!File.Exists(settingsFilepath))
-                XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath,
+            if (!File.Exists(settingsFilepath)) XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath,
                     new ServerInformation().GetMinimalInformation(ServerSection));
 
             // Loads the information from the form into the ServerInformation object and serializes it again

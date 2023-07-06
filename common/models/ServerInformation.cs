@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using PgpsUtilsAEFC.common;
+using PgpsUtilsAEFC.utils;
 
 namespace MCSMLauncher.common.models
 {
@@ -88,5 +90,34 @@ namespace MCSMLauncher.common.models
                 PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath
             };
         }
+
+        /// <summary>
+        /// Updates the ServerInformation object with the information from the specified dictionary.
+        /// </summary>
+        /// <param name="updateDict">The dictionary to </param>
+        public void Update(Dictionary<string, string> updateDict)
+        {
+            this.Port = int.Parse(updateDict["base-port"]);
+            this.Ram = int.Parse(updateDict["ram"]);
+            this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
+            this.ServerBackupsPath = updateDict["serverbackupspath"];
+            this.PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
+            this.ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
+            this.CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
+            this.JavaRuntimePath = updateDict["javaruntimepath"];
+        }
+        
+        /// <summary>
+        /// Serializes the ServerInformation object to XML and writes it to the specified path.
+        /// </summary>
+        /// <param name="path">The path to write the information into</param>
+        public void ToFile(string path) => XMLUtils.SerializeToFile<ServerInformation>(path, this);
+        
+        /// <summary>
+        /// Deserializes the ServerInformation object from XML and returns it.
+        /// </summary>
+        /// <param name="path">The path to get the information for the ServerInformation object</param>
+        /// <returns>The ServerInformation instance with the information present in the xml file</returns>
+        public static ServerInformation FromFile(string path) => XMLUtils.DeserializeFromFile<ServerInformation>(path);
     }
 }

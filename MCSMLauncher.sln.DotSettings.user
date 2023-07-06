@@ -6,4 +6,5 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=nogui/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=playerdata/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=playerdatabackupson/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=playerdatabackupspath/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=serverbackupson/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

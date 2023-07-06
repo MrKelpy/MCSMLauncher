@@ -11,6 +11,16 @@ namespace MCSMLauncher.requests.abstraction
     public abstract class AbstractBaseRequestHandler
     {
         /// <summary>
+        /// Main constructor for the AbstractBaseRequestHandler class.
+        /// Sets the URL and the handler.
+        /// </summary>
+        /// <param name="url">The URL to look for</param>
+        protected AbstractBaseRequestHandler(string url)
+        {
+            BaseUrl = url;
+        }
+
+        /// <summary>
         /// The URL to perform the requests to.
         /// </summary>
         protected string BaseUrl { get; }
@@ -19,13 +29,6 @@ namespace MCSMLauncher.requests.abstraction
         /// The HTML Handler to perform the requests with.
         /// </summary>
         public static HtmlWeb Handler { get; } = new HtmlWeb();
-        
-        /// <summary>
-        /// Main constructor for the AbstractBaseRequestHandler class.
-        /// Sets the URL and the handler.
-        /// </summary>
-        /// <param name="url">The URL to look for</param>
-        protected AbstractBaseRequestHandler(string url) => this.BaseUrl = url;
 
         /// <summary>
         /// Accesses the website and parses out all the existent version names mapped

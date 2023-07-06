@@ -16,17 +16,17 @@ namespace MCSMLauncher.common.background
         /// </summary>
         public void RunTask()
         {
-            while (true)  // This specific background task should run forever.
+            while (true) // This specific background task should run forever.
             {
-                Thread.Sleep(1*1000);  // 1 second of cooldown between each check.
-                
+                Thread.Sleep(1 * 1000); // 1 second of cooldown between each check.
+
                 foreach (DataGridViewRow row in ServerList.INSTANCE.GridServerList.Rows)
                 {
                     // Targets only the servers that are running.
                     if (row.Cells[5].Value?.ToString() != "Running") continue;
-                    
+
                     // Updates the server state.
-                    string serverName = row.Cells[2]?.Value.ToString();
+                    var serverName = row.Cells[2]?.Value.ToString();
                     ServerList.INSTANCE.UpdateServerButtonState(serverName);
                 }
             }

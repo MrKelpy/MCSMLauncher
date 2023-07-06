@@ -10,7 +10,6 @@ namespace MCSMLauncher.extensions
     /// </summary>
     public static class HttpClientExtensions
     {
-
         /// <summary>
         /// Asynchronously accesses the content of the given URL, returning it as a stream, allowing for
         /// the passing of a CancellationToken.
@@ -24,6 +23,5 @@ namespace MCSMLauncher.extensions
             var response = await client.GetAsync(url, token);
             return await response.Content.ReadAsStreamAsync();
         }
-        
     }
 }

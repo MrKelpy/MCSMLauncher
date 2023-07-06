@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,12 +15,6 @@ namespace MCSMLauncher.gui
     /// </summary>
     public partial class Mainframe : Form
     {
-        
-        /// <summary>
-        /// The singleton instance of the Mainframe.
-        /// </summary>
-        public static Mainframe INSTANCE { get; } = new Mainframe();
-        
         /// <summary>
         /// Main constructor for the Mainframe. Loads up the server list. Private to enforce the
         /// singleton pattern.
@@ -33,9 +22,14 @@ namespace MCSMLauncher.gui
         private Mainframe()
         {
             InitializeComponent();
-            this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
         }
-        
+
+        /// <summary>
+        /// The singleton instance of the Mainframe.
+        /// </summary>
+        public static Mainframe INSTANCE { get; } = new Mainframe();
+
         /// <summary>
         /// Loads up anything that needs to be loaded after the mainframe handle is created.
         /// </summary>
@@ -43,13 +37,13 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_Load(object sender, EventArgs e)
         {
-            this.Text += @" v" + ConfigurationManager.AppSettings.Get("Version.App");
+            Text += @" v" + ConfigurationManager.AppSettings.Get("Version.App");
 
             // Updates the server list.
-            this.BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
-            
+            BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
+
             // Starts any background tasks.
-            new Thread(new ServerProcessStateHandler().RunTask) {IsBackground = true}.Start();
+            new Thread(new ServerProcessStateHandler().RunTask) { IsBackground = true }.Start();
         }
 
         /// <summary>
@@ -59,8 +53,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void NewServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
-            this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            if (MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
+            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
         }
 
         /// <summary>
@@ -70,8 +64,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private async void ServersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
-            this.MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
+            if (MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
+            MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
             await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
         }
 
@@ -80,15 +74,19 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void Mainframe_SizeChanged(object sender, EventArgs e) =>
-            NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = this.Size;
+        private void Mainframe_SizeChanged(object sender, EventArgs e)
+        {
+            NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = Size;
+        }
 
         /// <summary>
         /// Opens the RadminVPN website in the default browser.
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void RadminVPNToolStripMenuItem_Click(object sender, EventArgs e) =>
+        private void RadminVPNToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             Process.Start("https://www.radmin-vpn.com");
+        }
     }
 }

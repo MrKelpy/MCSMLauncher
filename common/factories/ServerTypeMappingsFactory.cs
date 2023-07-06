@@ -13,15 +13,18 @@ namespace MCSMLauncher.common.factories
     /// </summary>
     public partial class ServerTypeMappingsFactory
     {
-        
         /// <summary>
         /// Gets the request handler for the given server type. If the server type is not supported,
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the handler for</param>
         /// <returns>An instance of AbstractBaseRequestHandler mapped to the server type</returns>
-        public AbstractBaseRequestHandler GetHandlerFor(string serverType) =>
-            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractBaseRequestHandler) Mappings[serverType.ToLower()]["handler"] : null;
+        public AbstractBaseRequestHandler GetHandlerFor(string serverType)
+        {
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractBaseRequestHandler)Mappings[serverType.ToLower()]["handler"]
+                : null;
+        }
 
         /// <summary>
         /// Gets the request parser for the given server type. If the server type is not supported,
@@ -29,35 +32,51 @@ namespace MCSMLauncher.common.factories
         /// </summary>
         /// <param name="serverType">The server type to return the parser for</param>
         /// <returns>An instance of AbstractBaseRequestParser mapped to the server type</returns>
-        public AbstractBaseRequestParser GetParserFor(string serverType) =>
-            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractBaseRequestParser) Mappings[serverType.ToLower()]["parser"] : null;
-        
+        public AbstractBaseRequestParser GetParserFor(string serverType)
+        {
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractBaseRequestParser)Mappings[serverType.ToLower()]["parser"]
+                : null;
+        }
+
         /// <summary>
         /// Gets the server builder for the given server type. If the server type is not supported,
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the builder for</param>
         /// <returns>An instance of AbstractServerBuilder mapped to the server type</returns>
-        public AbstractServerBuilder GetBuilderFor(string serverType) =>
-            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractServerBuilder) Mappings[serverType.ToLower()]["builder"] : null;
-        
+        public AbstractServerBuilder GetBuilderFor(string serverType)
+        {
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractServerBuilder)Mappings[serverType.ToLower()]["builder"]
+                : null;
+        }
+
         /// <summary>
         /// Gets the server starter for the given server type. If the server type is not supported,
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the starter for</param>
         /// <returns>An instance of AbstractServerStarter mapped to the server typ1</returns>
-        public AbstractServerStarter GetStarterFor(string serverType) => 
-            Mappings.ContainsKey(serverType.ToLower()) ? (AbstractServerStarter) Mappings[serverType.ToLower()]["starter"] : null;
-        
+        public AbstractServerStarter GetStarterFor(string serverType)
+        {
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractServerStarter)Mappings[serverType.ToLower()]["starter"]
+                : null;
+        }
+
         /// <summary>
         /// Gets the cache file path for the given server type. If the server type is not supported,
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the cache file for</param>
         /// <returns>The path for the cache file mapped to the server type</returns>
-        public string GetCacheFileFor(string serverType) =>
-            Mappings.ContainsKey(serverType.ToLower()) ? (string) Mappings[serverType.ToLower()]["cache_file"] : null;
+        public string GetCacheFileFor(string serverType)
+        {
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (string)Mappings[serverType.ToLower()]["cache_file"]
+                : null;
+        }
 
         /// <summary>
         /// Accesses the file system and returns the correct cache contents based on a provided server type, in
@@ -65,15 +84,20 @@ namespace MCSMLauncher.common.factories
         /// </summary>
         /// <param name="serverType">The server type to get the version cache file for.</param>
         /// <returns>A dictionary mapping the version names to their server download links</returns>
-        public Dictionary<string, string> GetCacheContentsForType(string serverType) =>
-            FileToDictionary(this.GetCacheFileFor(serverType));
-        
+        public Dictionary<string, string> GetCacheContentsForType(string serverType)
+        {
+            return FileToDictionary(GetCacheFileFor(serverType));
+        }
+
         /// <summary>
         /// Returns a list of all the supported server types.
         /// </summary>
         /// <returns>A List(string) containing all the supported server types.</returns>
-        public List<string> GetSupportedServerTypes() => new List<string>(Mappings.Keys).Where(x => x != "unknown").ToList();
-        
+        public List<string> GetSupportedServerTypes()
+        {
+            return new List<string>(Mappings.Keys).Where(x => x != "unknown").ToList();
+        }
+
         /// <summary>
         /// Iterates over each line, and breaks it by the > character, then adds the result to a dictionary, mapping
         /// the first part to the second part, equivalent to VersionName:DownloadLink.
@@ -82,16 +106,16 @@ namespace MCSMLauncher.common.factories
         /// <returns>The VersionName:DownloadLink mapping</returns>
         private static Dictionary<string, string> FileToDictionary(string path)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            
+            var result = new Dictionary<string, string>();
+
             // Iterates over each line, and breaks it by the > character, logically defines as the separator,
             // and adds the result to a dictionary.
-            foreach (string line in FileUtils.ReadFromFile(path))
+            foreach (var line in FileUtils.ReadFromFile(path))
             {
-                string[] split = line.Split('>');
+                var split = line.Split('>');
                 result.Add(split[0].Trim(), split[1].Trim());
             }
-            
+
             return result.Count > 0 ? result : null;
         }
     }

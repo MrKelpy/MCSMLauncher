@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.abstraction;
 
@@ -15,8 +13,10 @@ namespace MCSMLauncher.requests.spigot
     /// </summary>
     public class SpigotRequestHandler : AbstractBaseRequestHandler
     {
-        public SpigotRequestHandler() : base("https://getbukkit.org/download/spigot") { }
-        
+        public SpigotRequestHandler() : base("https://getbukkit.org/download/spigot")
+        {
+        }
+
         /// <summary>
         /// Accesses the website and parses out all the existent version names mapped
         /// to their direct download links.
@@ -26,13 +26,13 @@ namespace MCSMLauncher.requests.spigot
         {
             try
             {
-                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
+                var document = await Handler.LoadFromWebAsync(BaseUrl);
 
                 var columnDiv = from div in document.DocumentNode.Descendants("div")
                     where div.HasClass("col-md-12")
                     select div;
 
-                return new SpigotRequestParser().GetVersionUrlMap(this.BaseUrl, columnDiv.ElementAt(0));
+                return new SpigotRequestParser().GetVersionUrlMap(BaseUrl, columnDiv.ElementAt(0));
             }
             catch (Exception e)
             {

@@ -24,12 +24,12 @@ namespace MCSMLauncher.common.processes
         /// A collection of errors to handle differently in the processing methods
         /// </summary>
         protected ErrorCollection SpecialErrors { get; } = new ErrorCollection();
-        
+
         /// <summary>
         /// The console object to update with the logs.
         /// </summary>
         protected RichTextBox OutputConsole => NewServer.INSTANCE.RichTextBoxConsoleOutput;
-        
+
         /// <summary>
         /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,
         /// and separate them by WARN, ERROR, and INFO messages, calling the appropriate methods.
@@ -40,19 +40,23 @@ namespace MCSMLauncher.common.processes
         protected virtual void ProcessMergedData(object sender, DataReceivedEventArgs e, Process proc)
         {
             if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
-            Match matches = Regex.Match(e.Data.Trim(), @"^(?:\[[^\]]+\] \[[^\]]+\]: |[\d-]+ [\d:]+ \[[^\]]+\] )(.+)$", RegexOptions.Multiline);
+            var matches = Regex.Match(e.Data.Trim(), @"^(?:\[[^\]]+\] \[[^\]]+\]: |[\d-]+ [\d:]+ \[[^\]]+\] )(.+)$",
+                RegexOptions.Multiline);
 
             try
             {
-                string typeSection = matches.Groups[0].Captures[0].Value;
-                string message = matches.Groups[1].Captures[0].Value;
-                
-                if (!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR") || typeSection.Contains("Exception")) ProcessErrorMessages(message, proc);
+                var typeSection = matches.Groups[0].Captures[0].Value;
+                var message = matches.Groups[1].Captures[0].Value;
+
+                if ((!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) ||
+                    typeSection.Contains("Exception")) ProcessErrorMessages(message, proc);
                 else if (typeSection.Contains("WARN")) ProcessWarningMessages(message, proc);
                 else if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+            }
 
-            } catch (ArgumentOutOfRangeException) { }
-            
             ProcessOtherMessages(e.Data, proc);
         }
 
@@ -80,7 +84,10 @@ namespace MCSMLauncher.common.processes
         protected virtual void ProcessErrorMessages(string message, Process proc)
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Firebrick; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
+            {
+                OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine);
+            }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
         }
 
@@ -95,7 +102,10 @@ namespace MCSMLauncher.common.processes
         protected virtual void ProcessWarningMessages(string message, Process proc)
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.OrangeRed; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
+            {
+                OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine);
+            }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = TerminationCode != 1 ? 2 : 1;
         }
@@ -111,7 +121,7 @@ namespace MCSMLauncher.common.processes
         protected virtual void ProcessOtherMessages(string message, Process proc)
         {
             if (message.ToLower().Contains("agree to the eula")) proc.KillProcessAndChildren();
-            
+
             // If the message contains the word "error" in it, we're going to assume it's an error.
             if (message.ToLower().Split(' ').Any(x => x.StartsWith("error")))
             {
@@ -120,10 +130,12 @@ namespace MCSMLauncher.common.processes
             }
 
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
+            {
+                OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
+            }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = TerminationCode != 1 ? 3 : 1;
         }
-
     }
 }

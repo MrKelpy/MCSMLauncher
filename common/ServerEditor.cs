@@ -9,7 +9,6 @@ using PgpsUtilsAEFC.utils;
 
 namespace MCSMLauncher.common
 {
-
     /// <summary>
     /// Implements a bunch of methods to edit the server files. Specifically the server.properties and
     /// server_settings.xml files.
@@ -17,15 +16,18 @@ namespace MCSMLauncher.common
     public class ServerEditor
     {
         /// <summary>
-        /// The server section that the editor will work with.
-        /// </summary>
-        private Section ServerSection { get; }
-        
-        /// <summary>
         /// Main constructor for the ServerEditor class. Sets the server section to work with.
         /// </summary>
         /// <param name="serverSection"></param>
-        public ServerEditor(Section serverSection) => ServerSection = serverSection;
+        public ServerEditor(Section serverSection)
+        {
+            ServerSection = serverSection;
+        }
+
+        /// <summary>
+        /// The server section that the editor will work with.
+        /// </summary>
+        private Section ServerSection { get; }
 
         /// <summary>
         /// Reads the properties file and returns a dictionary with the key and value of each line.
@@ -33,16 +35,16 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the key:val's of the properties file</returns>
         public Dictionary<string, string> LoadProperties()
         {
-            Dictionary<string, string> propertiesDictionary = new Dictionary<string, string>();
-            string propertiesPath = ServerSection.GetFirstDocumentNamed("server.properties");
-            
+            var propertiesDictionary = new Dictionary<string, string>();
+            var propertiesPath = ServerSection.GetFirstDocumentNamed("server.properties");
+
             if (propertiesPath == null) return propertiesDictionary;
-            
+
             // Reads the file line by line, and adds the key and value to the dictionary.
-            foreach (string line in FileUtils.ReadFromFile(propertiesPath))
+            foreach (var line in FileUtils.ReadFromFile(propertiesPath))
             {
                 if (line.StartsWith("#")) continue;
-                string[] splitLine = line.Split('=');
+                var splitLine = line.Split('=');
                 propertiesDictionary[splitLine[0]] = splitLine[1];
             }
 
@@ -56,18 +58,18 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the deserialized server_settings.xml</returns>
         public Dictionary<string, string> LoadSettings()
         {
-            Dictionary<string, string> settingsDictionary = new Dictionary<string, string>();
-            string settingsPath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
+            var settingsDictionary = new Dictionary<string, string>();
+            var settingsPath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
 
             // If the server_settings.xml doesn't exist, return an empty dictionary.
             if (settingsPath == null) return settingsDictionary;
-            
+
             // If the server_settings.xml file exists, deserialize it and add the values to the dictionary. 
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
-            
+            var info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+
             info.GetType().GetProperties().Where(x => x.Name.ToLower() != "port")
-                .ToList().ForEach(x => settingsDictionary[x.Name.ToLower()] =  x.GetValue(info)?.ToString() ?? "");
-            
+                .ToList().ForEach(x => settingsDictionary[x.Name.ToLower()] = x.GetValue(info)?.ToString() ?? "");
+
             // Adds the port with the key "base-port" to the dictionary.
             settingsDictionary.Add("base-port", info.Port.ToString());
             return settingsDictionary;
@@ -80,20 +82,20 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void DumpToProperties(Dictionary<string, string> dictionaryToLoad)
         {
-            string propertiesFilepath = Path.Combine(ServerSection.SectionFullPath, "server.properties");
+            var propertiesFilepath = Path.Combine(ServerSection.SectionFullPath, "server.properties");
             if (!File.Exists(propertiesFilepath)) File.Create(propertiesFilepath).Close();
-            
-            List<string> propertiesFile = FileUtils.ReadFromFile(propertiesFilepath);
+
+            var propertiesFile = FileUtils.ReadFromFile(propertiesFilepath);
 
             // Iterates through the dictionary and replaces the line in the file with the same key
             for (var i = 0; i < dictionaryToLoad.Count; i++)
             {
-                string key = dictionaryToLoad.Keys.ToArray()[i];
-                int keyIndex = propertiesFile.FindIndex(x => x.ToLower().Contains(key));
+                var key = dictionaryToLoad.Keys.ToArray()[i];
+                var keyIndex = propertiesFile.FindIndex(x => x.ToLower().Contains(key));
                 if (keyIndex != -1) propertiesFile[keyIndex] = $"{key}={dictionaryToLoad[key]}";
                 else propertiesFile.Add($"{key}={dictionaryToLoad[key]}");
             }
-            
+
             // Writes the new edited file contents to disk.
             FileUtils.DumpToFile(propertiesFilepath, propertiesFile);
         }
@@ -105,11 +107,13 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void DumpToSettings(Dictionary<string, string> dictionaryToLoad)
         {
-            string settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");
-            if (!File.Exists(settingsFilepath)) XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath, new ServerInformation().GetMinimalInformation(ServerSection));
-            
+            var settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");
+            if (!File.Exists(settingsFilepath))
+                XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath,
+                    new ServerInformation().GetMinimalInformation(ServerSection));
+
             // Loads the information from the form into the ServerInformation object and serializes it again
-            ServerInformation updatedServerInformation = XMLUtils.DeserializeFromFile<ServerInformation>(settingsFilepath);
+            var updatedServerInformation = XMLUtils.DeserializeFromFile<ServerInformation>(settingsFilepath);
             updatedServerInformation.Port = int.Parse(dictionaryToLoad["base-port"]);
             updatedServerInformation.Ram = int.Parse(dictionaryToLoad["ram"]);
             updatedServerInformation.PlayerdataBackupsPath = dictionaryToLoad["playerdatabackupspath"];
@@ -132,19 +136,18 @@ namespace MCSMLauncher.common
         /// <returns>A code signaling the success of the operation.</returns>
         public int HandlePortForServer(Section serverSection)
         {
-            Dictionary<string, string> properties = this.LoadProperties();
-            Dictionary<string, string> settings = this.LoadSettings();
-            int port = settings.TryGetValue("base-port", out var setting) ? int.Parse(setting) : 25565;
+            var properties = LoadProperties();
+            var settings = LoadSettings();
+            var port = settings.TryGetValue("base-port", out var setting) ? int.Parse(setting) : 25565;
             if (settings.ContainsKey("server-ip") && properties["server-ip"] != "") return 0;
 
             // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.
-            int availablePort = NetworkUtils.GetNextAvailablePort(port);
+            var availablePort = NetworkUtils.GetNextAvailablePort(port);
             if (availablePort == -1) return 1;
 
             properties["server-port"] = availablePort.ToString();
-            this.DumpToProperties(properties);
+            DumpToProperties(properties);
             return 0;
         }
-        
     }
 }

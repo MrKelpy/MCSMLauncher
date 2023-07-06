@@ -16,61 +16,60 @@ namespace MCSMLauncher.common.factories
     /// </summary>
     public partial class ServerTypeMappingsFactory
     {
-        
         /// <summary>
         /// The dictionary containing the values for every server type supported.
         /// </summary>
         private Dictionary<string, Dictionary<string, object>> Mappings { get; } =
-            new Dictionary<string, Dictionary<string, object>>()
+            new Dictionary<string, Dictionary<string, object>>
             {
                 {
-                    "vanilla", new Dictionary<string, object>()
+                    "vanilla", new Dictionary<string, object>
                     {
                         { "handler", new MCVRequestHandler() },
                         { "parser", new MCVRequestParser() },
                         { "builder", new MCVBuilder() },
                         { "starter", new MCVServerStarter() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") },
+                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") }
                     }
                 },
                 {
-                    "vanilla snapshots", new Dictionary<string, object>()
+                    "vanilla snapshots", new Dictionary<string, object>
                     {
                         { "handler", new MCVSnapshotsRequestHandler() },
                         { "parser", new MCVRequestParser() },
                         { "builder", new MCVBuilder() },
                         { "starter", new MCVServerStarter() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }, 
+                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }
                     }
                 },
                 {
-                    "spigot", new Dictionary<string, object>()
+                    "spigot", new Dictionary<string, object>
                     {
                         { "handler", new SpigotRequestHandler() },
                         { "parser", new SpigotRequestParser() },
                         { "builder", new SpigotBuilder() },
                         { "starter", new SpigotServerStarter() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }, 
+                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }
                     }
                 },
                 {
-                    "forge", new Dictionary<string, object>()
+                    "forge", new Dictionary<string, object>
                     {
                         { "handler", new ForgeRequestHandler() },
                         { "parser", new ForgeRequestParser() },
                         { "builder", new ForgeBuilder() },
                         { "starter", new ForgeServerStarter() },
-                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") },
+                        { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") }
                     }
                 },
                 {
-                    "unknown", new Dictionary<string, object>()
+                    "unknown", new Dictionary<string, object>
                     {
                         { "handler", null },
                         { "parser", null },
                         { "builder", null },
                         { "starter", new MCVServerStarter() },
-                        { "cache_file", null },
+                        { "cache_file", null }
                     }
                 }
             };

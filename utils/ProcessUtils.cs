@@ -13,7 +13,6 @@ namespace MCSMLauncher.utils
     /// </summary>
     public static class ProcessUtils
     {
-        
         /// <summary>
         /// Kill a process, and all of its children, grandchildren, etc.
         /// </summary>
@@ -26,24 +25,35 @@ namespace MCSMLauncher.utils
             {
                 if (pid == -1) pid = proc.Id; // If not specified, use the proc id as the pid.
                 if (pid == 0) return; // Can't close the windows idle process
-                
-            // If the process is already closed, return.
-            } catch (InvalidOperationException) { return; }
+
+                // If the process is already closed, return.
+            }
+            catch (InvalidOperationException)
+            {
+                return;
+            }
 
             // Get all the process management objects for the PID specified.
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
-            
+            var searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
+
             // Run this method recursively on every children of the proc
-            foreach (ManagementObject managementObject in searcher.Get()) 
+            foreach (ManagementObject managementObject in searcher.Get())
                 KillProcessAndChildren(null, Convert.ToInt32(managementObject["ProcessID"]));
-            
-            try { Process.GetProcessById(pid).Kill(); }
-            
+
+            try
+            {
+                Process.GetProcessById(pid).Kill();
+            }
+
             // Ignored, process already exiting.
-            catch (ArgumentException ) {}
-            catch (Win32Exception) { }
+            catch (ArgumentException)
+            {
+            }
+            catch (Win32Exception)
+            {
+            }
         }
-        
+
         /// <summary>
         /// Creates a Java jar process, redirecting its STDOUT and STDERR to process it.
         /// </summary>
@@ -55,9 +65,9 @@ namespace MCSMLauncher.utils
         {
             // Creates a new process with the command line arguments to run the command, in a hidden
             // window.
-            Process proc = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo 
-            { 
+            var proc = new Process();
+            var startInfo = new ProcessStartInfo
+            {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
@@ -67,18 +77,19 @@ namespace MCSMLauncher.utils
                 FileName = java,
                 Arguments = args
             };
-            
+
             // Assigns the startInfo to the process and starts it.
             proc.StartInfo = startInfo;
             return proc;
         }
-        
+
         /// <summary>
         /// Gets a process object from its ID if it is still running.
         /// </summary>
         /// <param name="id">The ID of the process to get</param>
         /// <returns>The Process, if it is still running. Else, null</returns>
-        public static Process GetProcessById(int id) {
+        public static Process GetProcessById(int id)
+        {
             return Process.GetProcesses().FirstOrDefault(x => x.Id == id);
         }
     }

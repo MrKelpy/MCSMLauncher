@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Security.Authentication;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.abstraction;
 
@@ -16,7 +12,9 @@ namespace MCSMLauncher.requests.forge
     /// </summary>
     public class ForgeRequestHandler : AbstractBaseRequestHandler
     {
-        public ForgeRequestHandler() : base("https://files.minecraftforge.net/net/minecraftforge/forge/") {}
+        public ForgeRequestHandler() : base("https://files.minecraftforge.net/net/minecraftforge/forge/")
+        {
+        }
 
         /// <summary>
         /// Accesses the website and parses out all the existent version names mapped
@@ -27,8 +25,8 @@ namespace MCSMLauncher.requests.forge
         {
             try
             {
-                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
-                return new ForgeRequestParser().GetVersionUrlMap(this.BaseUrl, document.DocumentNode);
+                var document = await Handler.LoadFromWebAsync(BaseUrl);
+                return new ForgeRequestParser().GetVersionUrlMap(BaseUrl, document.DocumentNode);
             }
             catch (Exception e)
             {

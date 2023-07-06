@@ -15,10 +15,17 @@ namespace MCSMLauncher.common.models
     public class ServerInformation
     {
         /// <summary>
+        /// Empty constructor for the ServerInformation class. This is required for serialization.
+        /// </summary>
+        public ServerInformation()
+        {
+        }
+
+        /// <summary>
         /// The version of the server.
         /// </summary>
         public string Version { get; set; }
-        
+
         /// <summary>
         /// The type of the server.
         /// </summary>
@@ -33,12 +40,12 @@ namespace MCSMLauncher.common.models
         /// The base port to try to use for the server.
         /// </summary>
         public int Port { get; set; } = 25565;
-        
+
         /// <summary>
         /// The path to the directory where the backups should be stored at.
         /// </summary>
         public string ServerBackupsPath { get; set; }
-        
+
         /// <summary>
         /// The path to the directory where the playerdata backups should be stored at.
         /// </summary>
@@ -58,18 +65,13 @@ namespace MCSMLauncher.common.models
         /// The path to the java runtime to use for the server.
         /// </summary>
         public string JavaRuntimePath { get; set; } = "java";
-        
+
         /// <summary>
         /// The currently running server process. If the server is not running, this will be -1.
         /// This is used to check if the server is currently running or not, and is only meant to be
         /// interacted with programatically.
         /// </summary>
         public int CurrentServerProcessID { get; set; } = -1;
-        
-        /// <summary>
-        /// Empty constructor for the ServerInformation class. This is required for serialization.
-        /// </summary>
-        public ServerInformation() { }
 
         /// <summary>
         /// Creates a new ServerInformation object with the bare minimum information required to run a server.
@@ -83,7 +85,7 @@ namespace MCSMLauncher.common.models
                 Type = "unknown",
                 Version = "??.??.??",
                 ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath,
-                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath,
+                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath
             };
         }
     }

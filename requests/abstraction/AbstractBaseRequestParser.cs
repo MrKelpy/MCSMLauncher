@@ -9,7 +9,6 @@ namespace MCSMLauncher.requests.abstraction
     /// </summary>
     public abstract class AbstractBaseRequestParser
     {
-
         /// <summary>
         /// Returns the direct download link for a server given its version page
         /// </summary>

@@ -9,12 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
-using MCSMLauncher.requests.content;
-using MCSMLauncher.requests.forge;
-using MCSMLauncher.requests.mcversions;
-using MCSMLauncher.requests.spigot;
 using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
 
@@ -34,12 +29,17 @@ namespace MCSMLauncher.gui
         {
             InitializeComponent();
             CenterToScreen();
-  
-            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Clock"))));
-            BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Image.LoadingScreen"))));
+
+            PictureBoxLoading.Image =
+                Image.FromFile(
+                    FileSystem.GetFirstDocumentNamed(
+                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Clock"))));
+            BackgroundImage =
+                Image.FromFile(FileSystem.GetFirstDocumentNamed(
+                    Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Image.LoadingScreen"))));
             FileSystem.AddSection("versioncache");
         }
-        
+
         /// <summary>
         /// Runs the actual loading logic, once the form has been loaded.
         /// First checks for an internet connection, and waits until one is estabilished, then updates the version cache
@@ -63,18 +63,18 @@ namespace MCSMLauncher.gui
         /// </summary>
         private async Task UpdateVersionCache()
         {
-            ServerTypeMappingsFactory mappingsFactory = new ServerTypeMappingsFactory();
+            var mappingsFactory = new ServerTypeMappingsFactory();
 
             // Iterates through every server type, and updates the cache for each one.
-            foreach (string serverType in mappingsFactory.GetSupportedServerTypes())
+            foreach (var serverType in mappingsFactory.GetSupportedServerTypes())
             {
                 LabelStatus.Text = Logging.LOGGER.Info(@$"Updating the {serverType} cache...");
-                
+
                 var versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
-                string cachePath = mappingsFactory.GetCacheFileFor(serverType);
+                var cachePath = mappingsFactory.GetCacheFileFor(serverType);
 
                 if (versions == null) Logging.LOGGER.Warn($"Failed to retrieve versions for {serverType}.");
-                
+
                 // If we couldn't retrieve any versions for the server type, and the cache has content in it, keep it. 
                 if (mappingsFactory.GetCacheContentsForType(serverType)?.Count > 0 && versions == null)
                 {
@@ -83,8 +83,10 @@ namespace MCSMLauncher.gui
                 }
 
                 // Writes the cache into its correct cache filepath, in the format "version>url".
-                FileUtils.DumpToFile(cachePath, versions == null ? new List<string>() : 
-                    versions.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+                FileUtils.DumpToFile(cachePath,
+                    versions == null
+                        ? new List<string>()
+                        : versions.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
             }
         }
 
@@ -96,7 +98,7 @@ namespace MCSMLauncher.gui
         private void LoadingScreen_FormClosing(object sender, FormClosingEventArgs e)
         {
             // ReSharper disable once SimplifyLinqExpressionUseAll
-            if (!(new StackTrace().GetFrames() ?? Array.Empty<StackFrame>()).Any(x => x.GetMethod().Name == "Close")) 
+            if (!(new StackTrace().GetFrames() ?? Array.Empty<StackFrame>()).Any(x => x.GetMethod().Name == "Close"))
                 Environment.Exit(1);
         }
     }

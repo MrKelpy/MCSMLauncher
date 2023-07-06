@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.gui;
@@ -15,11 +12,12 @@ namespace MCSMLauncher
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Logging.LOGGER.LoggingFilePath = Path.Combine(Constants.FileSystem.AddSection("logs").SectionFullPath, Logging.LOGGER.LoggingSession + ".log");
+            Logging.LOGGER.LoggingFilePath = Path.Combine(Constants.FileSystem.AddSection("logs").SectionFullPath,
+                Logging.LOGGER.LoggingSession + ".log");
 
             try
             {
@@ -29,8 +27,8 @@ namespace MCSMLauncher
             }
             // Logs whatever fatal issue happens as a last resource.
             catch (ArithmeticException e)
-            {   
-                Logging.LOGGER.Fatal($@"An unexpected error occured and the program was forced to exit.");
+            {
+                Logging.LOGGER.Fatal(@"An unexpected error occured and the program was forced to exit.");
                 Logging.LOGGER.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
             }
         }

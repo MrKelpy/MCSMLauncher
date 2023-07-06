@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
@@ -14,7 +13,6 @@ namespace MCSMLauncher.utils
     /// </summary>
     public static class NetworkUtils
     {
-        
         /// <summary>
         /// Returns the Local IPv4 Address.
         /// </summary>
@@ -35,12 +33,13 @@ namespace MCSMLauncher.utils
         public static int GetNextAvailablePort(int startingPort)
         {
             // Iterates through the ports until it finds one that's available, starting from the given port.
-            for (int currentPort = startingPort; currentPort < IPEndPoint.MaxPort; currentPort++)
-                if (!PortInUse(currentPort)) return currentPort;
+            for (var currentPort = startingPort; currentPort < IPEndPoint.MaxPort; currentPort++)
+                if (!PortInUse(currentPort))
+                    return currentPort;
 
-            return -1;  // There are no more ports open.
+            return -1; // There are no more ports open.
         }
-        
+
         /// <summary>
         /// Checks if a port is open or not, by accessing the list of active TCP listeners
         /// and checking if any endpoint has the same port as the one we're checking.
@@ -49,10 +48,10 @@ namespace MCSMLauncher.utils
         /// <returns>Whether the port is open or not</returns>
         private static bool PortInUse(int port)
         {
-            IPEndPoint[] ipEndpoints = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
+            var ipEndpoints = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
             return ipEndpoints.Any(endPoint => endPoint.Port == port);
         }
-        
+
         /// <summary>
         /// Checks if the current machine has internet connectivity.
         /// </summary>
@@ -61,11 +60,14 @@ namespace MCSMLauncher.utils
         {
             try
             {
-                PingReply reply = new Ping().Send("google.com", 1000, new byte[32], new PingOptions());
+                var reply = new Ping().Send("google.com", 1000, new byte[32], new PingOptions());
                 return reply != null && reply.Status == IPStatus.Success;
             }
             // There are many, many exceptions that can be thrown from a ping, so just catch them all.
-            catch  { return false; }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -78,11 +80,10 @@ namespace MCSMLauncher.utils
             {
                 Logging.LOGGER.Info(@"Checking for an internet connection...");
                 if (IsWifiConnected()) break;
-                
+
                 label.Text = @"Could not connect to the internet. Retrying...";
                 await Task.Delay(2 * 1000);
             }
         }
-        
     }
 }

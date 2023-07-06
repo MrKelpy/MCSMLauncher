@@ -1,5 +1,4 @@
-﻿using MCSMLauncher.common;
-using PgpsUtilsAEFC.common;
+﻿using PgpsUtilsAEFC.common;
 
 namespace MCSMLauncher.common
 {

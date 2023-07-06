@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using PgpsUtilsAEFC.common;
-using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.common.models
 {
@@ -14,6 +11,7 @@ namespace MCSMLauncher.common.models
     [SuppressMessage("ReSharper", "CommentTypo")]
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     [Serializable]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class ServerInformation
     {
         /// <summary>

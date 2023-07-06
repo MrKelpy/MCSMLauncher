@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Ionic.Zip;
 using MCSMLauncher.common.interfaces;
 using MCSMLauncher.utils;

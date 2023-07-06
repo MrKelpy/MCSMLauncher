@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -20,7 +19,7 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The server section that the editor will work with.
         /// </summary>
-        public Section ServerSection { get; }
+        private Section ServerSection { get; }
         
         /// <summary>
         /// Main constructor for the ServerEditor class. Sets the server section to work with.
@@ -135,7 +134,7 @@ namespace MCSMLauncher.common
         {
             Dictionary<string, string> properties = this.LoadProperties();
             Dictionary<string, string> settings = this.LoadSettings();
-            int port = settings.ContainsKey("base-port") ? int.Parse(settings["base-port"]) : 25565;
+            int port = settings.TryGetValue("base-port", out var setting) ? int.Parse(setting) : 25565;
             if (settings.ContainsKey("server-ip") && properties["server-ip"] != "") return 0;
 
             // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.

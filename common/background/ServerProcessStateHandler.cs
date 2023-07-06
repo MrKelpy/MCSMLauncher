@@ -1,13 +1,7 @@
-﻿using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Windows.Forms;
 using MCSMLauncher.common.interfaces;
-using MCSMLauncher.common.models;
 using MCSMLauncher.gui;
-using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
-using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.common.background
 {

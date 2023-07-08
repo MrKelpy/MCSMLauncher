@@ -19,6 +19,11 @@ namespace MCSMLauncher.gui
     public partial class ServerEditPrompt : Form
     {
         /// <summary>
+        /// The server directory to edit.
+        /// </summary>
+        private Section ServerSection { get; set; }
+        
+        /// <summary>
         /// Main constructor for the ServerEditPrompt form. Initialises the form and loads the
         /// information from the server.properties file into the form.
         /// </summary>
@@ -63,11 +68,6 @@ namespace MCSMLauncher.gui
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
         }
-
-        /// <summary>
-        /// The server directory to edit.
-        /// </summary>
-        private Section ServerSection { get; set; }
 
         /// <summary>
         /// Switches the focus to the first label in the form when the form is loaded, so that nothing
@@ -151,6 +151,7 @@ namespace MCSMLauncher.gui
             // Gets the necessary resources to edit save the server's properties and settings
             var newServerSectionPath =
                 Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+            
             var editor = new ServerEditor(ServerSection);
             var properties = editor.LoadProperties();
             var settings = editor.LoadSettings();
@@ -158,6 +159,7 @@ namespace MCSMLauncher.gui
             // Iterates through all of the items in the form, and decides whether they should be updated
             // in the server.properties file or in the server_settings.xml file, and then does it.
             foreach (var item in FormToDictionary())
+            {
                 // Updates the key for the server properties
                 if (properties.ContainsKey(item.Key))
                     properties[item.Key] = item.Value;
@@ -165,7 +167,7 @@ namespace MCSMLauncher.gui
                 // Updates the key for the server settings
                 else if (settings.ContainsKey(item.Key))
                     settings[item.Key] = item.Value;
-
+            } 
             try
             {
                 // Saves the server properties and settings

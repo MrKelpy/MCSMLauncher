@@ -56,7 +56,7 @@ namespace MCSMLauncher.common.server.starters
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (new ServerEditor(serverSection).HandlePortForServer(serverSection) == 1)
+            if (new ServerEditor(serverSection).HandlePortForServer() == 1)
             {
                 ProcessErrorMessages(
                     "Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.",

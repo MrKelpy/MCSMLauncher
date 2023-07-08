@@ -58,6 +58,7 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the deserialized server_settings.xml</returns>
         public Dictionary<string, string> LoadSettings()
         {
+            // Creates a new dictionary to store the settings in.
             var settingsDictionary = new Dictionary<string, string>();
             var settingsPath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
 
@@ -65,7 +66,7 @@ namespace MCSMLauncher.common
             if (settingsPath == null) return settingsDictionary;
 
             // If the server_settings.xml file exists, deserialize it and add the values to the dictionary. 
-            var info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            var info = ServerInformation.FromFile(settingsPath);
 
             info.GetType().GetProperties().Where(x => x.Name.ToLower() != "port")
                 .ToList().ForEach(x => settingsDictionary[x.Name.ToLower()] = x.GetValue(info)?.ToString() ?? "");
@@ -107,33 +108,29 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void DumpToSettings(Dictionary<string, string> dictionaryToLoad)
         {
+            // Get the path to the server_settings.xml file.
             var settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");
-            if (!File.Exists(settingsFilepath)) XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath,
-                    new ServerInformation().GetMinimalInformation(ServerSection));
+            
+            // If the server_settings.xml file doesn't exist, create it with minimal information.
+            if (!File.Exists(settingsFilepath))
+            {
+                new ServerInformation().GetMinimalInformation(ServerSection).ToFile(settingsFilepath);
+            }
 
             // Loads the information from the form into the ServerInformation object and serializes it again
-            var updatedServerInformation = XMLUtils.DeserializeFromFile<ServerInformation>(settingsFilepath);
-            updatedServerInformation.Port = int.Parse(dictionaryToLoad["base-port"]);
-            updatedServerInformation.Ram = int.Parse(dictionaryToLoad["ram"]);
-            updatedServerInformation.PlayerdataBackupsPath = dictionaryToLoad["playerdatabackupspath"];
-            updatedServerInformation.ServerBackupsPath = dictionaryToLoad["serverbackupspath"];
-            updatedServerInformation.PlayerdataBackupsOn = bool.Parse(dictionaryToLoad["playerdatabackupson"]);
-            updatedServerInformation.ServerBackupsOn = bool.Parse(dictionaryToLoad["serverbackupson"]);
-            updatedServerInformation.CurrentServerProcessID = int.Parse(dictionaryToLoad["currentserverprocessid"]);
-            updatedServerInformation.JavaRuntimePath = dictionaryToLoad["javaruntimepath"];
+            ServerInformation serverInformation = ServerInformation.FromFile(settingsFilepath);
+            serverInformation.Update(dictionaryToLoad);
 
             // Writes the new edited file contents to disk.
-            File.Delete(settingsFilepath);
-            XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath, updatedServerInformation);
+            serverInformation.ToFile(settingsFilepath);
         }
 
         /// <summary>
         /// Handles the determination of the server port of a server, based on its defined base
         /// port in the server_settings.xml file.
         /// </summary>
-        /// <param name="serverSection">The server section to work on</param>
         /// <returns>A code signaling the success of the operation.</returns>
-        public int HandlePortForServer(Section serverSection)
+        public int HandlePortForServer()
         {
             var properties = LoadProperties();
             var settings = LoadSettings();

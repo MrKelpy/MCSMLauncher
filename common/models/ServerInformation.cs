@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 
@@ -97,27 +98,34 @@ namespace MCSMLauncher.common.models
         /// <param name="updateDict">The dictionary to </param>
         public void Update(Dictionary<string, string> updateDict)
         {
-            this.Port = int.Parse(updateDict["base-port"]);
-            this.Ram = int.Parse(updateDict["ram"]);
-            this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
-            this.ServerBackupsPath = updateDict["serverbackupspath"];
-            this.PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
-            this.ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
-            this.CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
-            this.JavaRuntimePath = updateDict["javaruntimepath"];
+            Port = int.Parse(updateDict["port"]);
+            Ram = int.Parse(updateDict["ram"]);
+            PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
+            ServerBackupsPath = updateDict["serverbackupspath"];
+            PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
+            ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
+            CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
+            JavaRuntimePath = updateDict["javaruntimepath"];
         }
-        
+
         /// <summary>
         /// Serializes the ServerInformation object to XML and writes it to the specified path.
         /// </summary>
         /// <param name="path">The path to write the information into</param>
-        public void ToFile(string path) => XMLUtils.SerializeToFile<ServerInformation>(path, this);
-        
+        public void ToFile(string path)
+        {
+            if (File.Exists(path)) File.Delete(path);
+            XMLUtils.SerializeToFile<ServerInformation>(path, this);
+        }
+
         /// <summary>
         /// Deserializes the ServerInformation object from XML and returns it.
         /// </summary>
         /// <param name="path">The path to get the information for the ServerInformation object</param>
         /// <returns>The ServerInformation instance with the information present in the xml file</returns>
-        public static ServerInformation FromFile(string path) => XMLUtils.DeserializeFromFile<ServerInformation>(path);
+        public static ServerInformation FromFile(string path)
+        {
+            return XMLUtils.DeserializeFromFile<ServerInformation>(path);
+        }
     }
 }

@@ -143,7 +143,7 @@ namespace MCSMLauncher.common.server.builders
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             var editor = new ServerEditor(serverSection);
-            if (editor.HandlePortForServer(serverSection) == 1)
+            if (editor.HandlePortForServer() == 1)
             {
                 ProcessErrorMessages(
                     "Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.",

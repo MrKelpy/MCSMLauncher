@@ -22,12 +22,12 @@ namespace MCSMLauncher.requests.content
         {
             try
             {
-                var Client = new HttpClient();
+                HttpClient Client = new HttpClient();
                 // using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 5, 0));
 
                 Logging.LOGGER.Info($"Preparing to download {url} into {path}");
-                using var downloadStream = await Client.GetStreamAsync(url);
-                using var fileStream = new FileStream(path, FileMode.CreateNew);
+                using Stream downloadStream = await Client.GetStreamAsync(url);
+                using FileStream fileStream = new FileStream(path, FileMode.CreateNew);
 
                 await downloadStream.CopyToAsync(fileStream);
                 Logging.LOGGER.Info($"Finished downloading the content from {url}");

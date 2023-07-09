@@ -63,15 +63,15 @@ namespace MCSMLauncher.gui
         /// </summary>
         private async Task UpdateVersionCache()
         {
-            var mappingsFactory = new ServerTypeMappingsFactory();
+            ServerTypeMappingsFactory mappingsFactory = new ServerTypeMappingsFactory();
 
             // Iterates through every server type, and updates the cache for each one.
-            foreach (var serverType in mappingsFactory.GetSupportedServerTypes())
+            foreach (string serverType in mappingsFactory.GetSupportedServerTypes())
             {
                 LabelStatus.Text = Logging.LOGGER.Info(@$"Updating the {serverType} cache...");
 
-                var versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
-                var cachePath = mappingsFactory.GetCacheFileFor(serverType);
+                Dictionary<string, string> versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
+                string cachePath = mappingsFactory.GetCacheFileFor(serverType);
 
                 if (versions == null) Logging.LOGGER.Warn($"Failed to retrieve versions for {serverType}.");
 

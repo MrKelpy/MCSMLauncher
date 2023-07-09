@@ -111,7 +111,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging, either in a file, console, or both.</param>
         private string _internalLog(string message, string level, LoggingType loggingType)
         {
-            var preparedStrings = _buildFormats(message, level);
+            string[] preparedStrings = _buildFormats(message, level);
             FileUtils.EnsurePath(LoggingFilePath);
 
             if (loggingType == LoggingType.FILE || loggingType == LoggingType.ALL)
@@ -131,7 +131,7 @@ namespace MCSMLauncher.common
         /// <returns>A string[] with both the console and file strings</returns>
         private string[] _buildFormats(string message, string level)
         {
-            var formats = new string[2];
+            string[] formats = new string[2];
 
             formats[0] = ConsoleLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))

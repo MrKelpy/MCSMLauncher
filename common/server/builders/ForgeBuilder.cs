@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
 using MCSMLauncher.utils;
+using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
 
@@ -34,12 +36,12 @@ namespace MCSMLauncher.common.server.builders
         protected override async Task<string> InstallServer(string serverInstallerPath)
         {
             // Gets the server section from the path of the jar being run, and removes the installer from it
-            var directories = serverInstallerPath.Split(Path.DirectorySeparatorChar).ToList();
-            var serverName = directories[directories.IndexOf("servers") + 1];
-            var serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
+            List<string> directories = serverInstallerPath.Split(Path.DirectorySeparatorChar).ToList();
+            string serverName = directories[directories.IndexOf("servers") + 1];
+            Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
 
             // Creates the process that will build the server
-            var forgeBuildingProcess =
+            Process forgeBuildingProcess =
                 ProcessUtils.CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"",
                     $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
 
@@ -104,22 +106,22 @@ namespace MCSMLauncher.common.server.builders
         protected override async Task<int> RunAndCloseSilently(string serverJarPath)
         {
             // Due to how forge works, we need to generate a run.bat file to run the forge.
-            var serverSection = GetSectionFromFile(serverJarPath);
+            Section serverSection = GetSectionFromFile(serverJarPath);
             serverSection.AddDocument("server.properties"); // Adds the server properties just in case
 
             // Gets the java runtime and creates the run command from it
-            var info = XMLUtils.DeserializeFromFile<ServerInformation>(
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(
                 serverSection.GetFirstDocumentNamed("server_settings.xml"));
-            var runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
+            string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
 
             // Creates the run.bat file if it doesn't already exist, with simple running params
-            var runFilepath = Path.Combine(serverSection.SectionFullPath, "run.bat");
+            string runFilepath = Path.Combine(serverSection.SectionFullPath, "run.bat");
             if (!File.Exists(runFilepath))
                 File.WriteAllText(runFilepath, runCommand.Replace("%SERVER_JAR%", serverJarPath));
 
             // Gets the run.bat file and adds nogui to the end of the java command
-            var lines = FileUtils.ReadFromFile(runFilepath);
-            var lineIndex = lines.IndexOf(lines.FirstOrDefault(x => x.StartsWith("java"))) is var index && index != -1
+            List<string> lines = FileUtils.ReadFromFile(runFilepath);
+            int lineIndex = lines.IndexOf(lines.FirstOrDefault(x => x.StartsWith("java"))) is var index && index != -1
                 ? index
                 : 0;
 
@@ -139,10 +141,10 @@ namespace MCSMLauncher.common.server.builders
             }
 
             // Creates the process to be run
-            var proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
+            Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            var editor = new ServerEditor(serverSection);
+            ServerEditor editor = new ServerEditor(serverSection);
             if (editor.HandlePortForServer() == 1)
             {
                 ProcessErrorMessages(
@@ -151,7 +153,7 @@ namespace MCSMLauncher.common.server.builders
                 return 1;
             }
 
-            var properties = editor.LoadProperties();
+            Dictionary<string, string> properties = editor.LoadProperties();
             properties["level-type"] = @"minecraft\:normal";
             editor.DumpToProperties(properties);
 

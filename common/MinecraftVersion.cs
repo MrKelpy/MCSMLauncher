@@ -56,7 +56,7 @@ namespace MCSMLauncher.common
             // If the current version is the issue, then this one follows the other one.
             try
             {
-                var _ = new Version(Version);
+                Version _ = new Version(Version);
             }
             catch (ArgumentException)
             {

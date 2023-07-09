@@ -10,7 +10,9 @@ using System.Net.Http;
 using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.utils;
+using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui
@@ -37,7 +39,7 @@ namespace MCSMLauncher.gui
                 Image.FromFile(FileSystem.GetFirstDocumentNamed(
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
-            foreach (var label in NewServerLayout.Controls.OfType<Label>()
+            foreach (Label label in NewServerLayout.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
                 label.BackgroundImage =
@@ -51,8 +53,9 @@ namespace MCSMLauncher.gui
                 .Select(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x)).ToArray<object>());
 
             // Checks all the java versions available in Program Files and sets them in the java version box
-            var programFilesJavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
-            var programFilesX86JavaPath =
+            string programFilesJavaPath =
+                Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
+            string programFilesX86JavaPath =
                 Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
 
             if (Directory.Exists(programFilesJavaPath))
@@ -122,9 +125,10 @@ namespace MCSMLauncher.gui
             // recognized, the versions box is disabled.
             try
             {
-                var cache = new ServerTypeMappingsFactory().GetCacheContentsForType(ComboBoxServerType.Text);
+                Dictionary<string, string> cache =
+                    new ServerTypeMappingsFactory().GetCacheContentsForType(ComboBoxServerType.Text);
 
-                foreach (var item in cache)
+                foreach (KeyValuePair<string, string> item in cache)
                     ComboServerVersion.Items.Add(item.Key);
             }
 
@@ -149,7 +153,7 @@ namespace MCSMLauncher.gui
         [SuppressMessage("ReSharper", "LocalizableElement")]
         private async void ButtonBuild_Click(object sender, EventArgs e)
         {
-            var serversSection = FileSystem.AddSection("servers");
+            Section serversSection = FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
             RichTextBoxConsoleOutput.Clear();
             RichTextBoxConsoleOutput.ForeColor = Color.Black;
@@ -185,7 +189,7 @@ namespace MCSMLauncher.gui
 
             try
             {
-                var builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
                 await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
             }
 
@@ -203,7 +207,7 @@ namespace MCSMLauncher.gui
             catch (HttpRequestException err)
             {
                 Logging.LOGGER.Error(err.StackTrace);
-                var errorMessage = !NetworkUtils.IsWifiConnected()
+                string errorMessage = !NetworkUtils.IsWifiConnected()
                     ? $"A network error happened while building the server. {Environment.NewLine}Please check your internet connection and try again."
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
 
@@ -256,10 +260,10 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void FolderBrowserButton_Click(object sender, EventArgs e)
         {
-            var result = FolderBrowser.ShowDialog();
+            DialogResult result = FolderBrowser.ShowDialog();
             if (result == DialogResult.OK)
             {
-                var index = ComboBoxJavaVersion.Items.Add(FolderBrowser.SelectedPath);
+                int index = ComboBoxJavaVersion.Items.Add(FolderBrowser.SelectedPath);
                 ComboBoxJavaVersion.SelectedItem = ComboBoxJavaVersion.Items[index];
             }
         }

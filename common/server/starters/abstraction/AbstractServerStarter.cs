@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
@@ -44,23 +45,20 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="serverSection">The section to get the resources from</param>
         public virtual void Run(Section serverSection)
         {
-            var serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
-            var serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
+            string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
+            string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
+            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
+            ServerInformation info = GetServerInformation(serverSection);
 
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");
             if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
-
-            // Gets the server information from the server_settings.xml file or creates a new one with minimal information.
-            var info = serverSection.GetFirstDocumentNamed("server_settings.xml") is var settings && settings != null
-                ? XMLUtils.DeserializeFromFile<ServerInformation>(settings)
-                : new ServerInformation().GetMinimalInformation(serverSection);
-
+            
             // Builds the startup arguments for the server.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", PathUtils.NormalizePath(serverJarPath))
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             // Creates the process and starts it.
-            var proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", StartupArguments,
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", StartupArguments,
                 serverSection.SectionFullPath);
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
@@ -68,9 +66,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             if (new ServerEditor(serverSection).HandlePortForServer() == 1)
             {
-                ProcessErrorMessages(
-                    "Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.",
-                    proc);
+                ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return;
             }
 
@@ -80,8 +76,25 @@ namespace MCSMLauncher.common.server.starters.abstraction
 
             // Records the PID of the process into the server_settings.xml file.
             info.CurrentServerProcessID = proc.Id;
-            if (settings != null) File.Delete(settings);
-            XMLUtils.SerializeToFile<ServerInformation>(settings, info);
+            info.ToFile(settings);
+        }
+
+        /// <summary>
+        /// Returns the server information based on the server_settings.xml file, or creates a
+        /// new one with minimal info.
+        /// </summary>
+        /// <param name="serverSection">The section to work with</param>
+        /// <returns>The new server information instance</returns>
+        protected ServerInformation GetServerInformation(Section serverSection)
+        {
+            // Check if the "server_settings.xml" file exists
+            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
+
+            // If the file exists, load the server information from it
+            if (settings != null) return ServerInformation.FromFile(settings);
+
+            // If the file doesn't exist, create a new one with minimal information
+            return new ServerInformation().GetMinimalInformation(serverSection);
         }
     }
 }

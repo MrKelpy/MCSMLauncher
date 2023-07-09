@@ -106,13 +106,13 @@ namespace MCSMLauncher.common.factories
         /// <returns>The VersionName:DownloadLink mapping</returns>
         private static Dictionary<string, string> FileToDictionary(string path)
         {
-            var result = new Dictionary<string, string>();
+            Dictionary<string, string> result = new Dictionary<string, string>();
 
             // Iterates over each line, and breaks it by the > character, logically defines as the separator,
             // and adds the result to a dictionary.
-            foreach (var line in FileUtils.ReadFromFile(path))
+            foreach (string line in FileUtils.ReadFromFile(path))
             {
-                var split = line.Split('>');
+                string[] split = line.Split('>');
                 result.Add(split[0].Trim(), split[1].Trim());
             }
 

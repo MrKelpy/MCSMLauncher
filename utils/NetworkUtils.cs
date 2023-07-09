@@ -19,7 +19,7 @@ namespace MCSMLauncher.utils
         /// <returns>A string containing the ip addr</returns>
         public static string GetLocalIPAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
             return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
         }
 
@@ -33,7 +33,7 @@ namespace MCSMLauncher.utils
         public static int GetNextAvailablePort(int startingPort)
         {
             // Iterates through the ports until it finds one that's available, starting from the given port.
-            for (var currentPort = startingPort; currentPort < IPEndPoint.MaxPort; currentPort++)
+            for (int currentPort = startingPort; currentPort < IPEndPoint.MaxPort; currentPort++)
                 if (!PortInUse(currentPort))
                     return currentPort;
 
@@ -48,7 +48,7 @@ namespace MCSMLauncher.utils
         /// <returns>Whether the port is open or not</returns>
         private static bool PortInUse(int port)
         {
-            var ipEndpoints = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
+            IPEndPoint[] ipEndpoints = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners();
             return ipEndpoints.Any(endPoint => endPoint.Port == port);
         }
 
@@ -60,7 +60,7 @@ namespace MCSMLauncher.utils
         {
             try
             {
-                var reply = new Ping().Send("google.com", 1000, new byte[32], new PingOptions());
+                PingReply reply = new Ping().Send("google.com", 1000, new byte[32], new PingOptions());
                 return reply != null && reply.Status == IPStatus.Success;
             }
             // There are many, many exceptions that can be thrown from a ping, so just catch them all.

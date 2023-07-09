@@ -40,13 +40,13 @@ namespace MCSMLauncher.common.processes
         protected virtual void ProcessMergedData(object sender, DataReceivedEventArgs e, Process proc)
         {
             if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
-            var matches = Regex.Match(e.Data.Trim(), @"^(?:\[[^\]]+\] \[[^\]]+\]: |[\d-]+ [\d:]+ \[[^\]]+\] )(.+)$",
+            Match matches = Regex.Match(e.Data.Trim(), @"^(?:\[[^\]]+\] \[[^\]]+\]: |[\d-]+ [\d:]+ \[[^\]]+\] )(.+)$",
                 RegexOptions.Multiline);
 
             try
             {
-                var typeSection = matches.Groups[0].Captures[0].Value;
-                var message = matches.Groups[1].Captures[0].Value;
+                string typeSection = matches.Groups[0].Captures[0].Value;
+                string message = matches.Groups[1].Captures[0].Value;
 
                 if ((!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) ||
                     typeSection.Contains("Exception")) ProcessErrorMessages(message, proc);

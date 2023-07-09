@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.abstraction;
 
@@ -29,9 +30,9 @@ namespace MCSMLauncher.requests.mcversions.snapshots
         {
             try
             {
-                var document = await Handler.LoadFromWebAsync(BaseUrl);
+                HtmlDocument document = await Handler.LoadFromWebAsync(BaseUrl);
 
-                var itemDivs = from div in document.DocumentNode.Descendants("div")
+                IEnumerable<HtmlNode> itemDivs = from div in document.DocumentNode.Descendants("div")
                     where div.HasClass("items")
                     select div;
 

@@ -26,21 +26,21 @@ namespace MCSMLauncher.requests.forge
         {
             try
             {
-                using var ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 30));
-                var document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token);
+                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 30));
+                HtmlDocument document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token);
 
-                var downloadsDiv = document.DocumentNode.SelectSingleNode("//div[@class=\"downloads\"]");
-                var recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small")
+                HtmlNode downloadsDiv = document.DocumentNode.SelectSingleNode("//div[@class=\"downloads\"]");
+                string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small")
                     .InnerText.Replace(" ", "");
-                var directLink =
+                string directLink =
                     $"https://maven.minecraftforge.net/net/minecraftforge/forge/{recommendedForgeVersion}/forge-{recommendedForgeVersion}-installer.jar";
 
                 // Gets the response code from the primary direct link
-                var statusCode = HttpStatusCode.NotFound;
+                HttpStatusCode statusCode = HttpStatusCode.NotFound;
 
                 try
                 {
-                    var request = (HttpWebRequest)WebRequest.Create(directLink);
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(directLink);
                     request.Method = "HEAD";
                     statusCode = ((HttpWebResponse)request.GetResponse()).StatusCode;
                 }
@@ -49,7 +49,7 @@ namespace MCSMLauncher.requests.forge
                 } // Ignored, the status code will remain 404
 
                 // Gets the extended version of the recommended forge version, with itself repeated afterwards.
-                var extendedVersion = recommendedForgeVersion + "-" + version;
+                string extendedVersion = recommendedForgeVersion + "-" + version;
 
                 // Return the direct link, or the direct link with an extended version number if the response isn't 200. 
                 return statusCode == HttpStatusCode.OK
@@ -73,18 +73,18 @@ namespace MCSMLauncher.requests.forge
         /// <returns>A Dictionary(string,string) containing the mappings</returns>
         public override Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
         {
-            var mappings = new Dictionary<string, string>();
+            Dictionary<string, string> mappings = new Dictionary<string, string>();
 
             // Gets the lists that have hrefs in them and are under the nav-collapsible lists. 
-            var lists = from li in doc.SelectNodes("//li")
+            IEnumerable<HtmlNode> lists = from li in doc.SelectNodes("//li")
                 where li.ParentNode.HasClass("nav-collapsible")
                 select li;
 
             // Iterates through each list, gets its link and inner text, and adds them to the mappings.
-            foreach (var list in lists)
+            foreach (HtmlNode list in lists)
             {
-                var key = list.SelectSingleNode("a")?.InnerText;
-                var value = list.SelectSingleNode("a")?.GetAttributeValue("href", null);
+                string key = list.SelectSingleNode("a")?.InnerText;
+                string value = list.SelectSingleNode("a")?.GetAttributeValue("href", null);
 
                 // There is one special case where the list has the class "elem-active" instead of the href.
                 // This is the active element in the list, so we handle it separately when we find it.

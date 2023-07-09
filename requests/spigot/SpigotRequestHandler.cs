@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.abstraction;
 
@@ -26,9 +27,9 @@ namespace MCSMLauncher.requests.spigot
         {
             try
             {
-                var document = await Handler.LoadFromWebAsync(BaseUrl);
+                HtmlDocument document = await Handler.LoadFromWebAsync(BaseUrl);
 
-                var columnDiv = from div in document.DocumentNode.Descendants("div")
+                IEnumerable<HtmlNode> columnDiv = from div in document.DocumentNode.Descendants("div")
                     where div.HasClass("col-md-12")
                     select div;
 

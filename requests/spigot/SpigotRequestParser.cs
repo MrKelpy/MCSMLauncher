@@ -25,12 +25,12 @@ namespace MCSMLauncher.requests.spigot
         {
             try
             {
-                using var ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 10));
+                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 10));
 
-                var doc = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token)
+                HtmlDocument doc = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token)
                     .ConfigureAwait(false);
 
-                var wellDiv = from div in doc.DocumentNode.Descendants("div")
+                IEnumerable<HtmlNode> wellDiv = from div in doc.DocumentNode.Descendants("div")
                     where div.HasClass("well")
                     select div;
 
@@ -54,18 +54,18 @@ namespace MCSMLauncher.requests.spigot
         /// <returns>A Dictionary(string,string) containing the mappings</returns>
         public override Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
         {
-            var mappings = new Dictionary<string, string>();
+            Dictionary<string, string> mappings = new Dictionary<string, string>();
 
-            var downloadPanels = from div in doc.Descendants("div")
+            IEnumerable<HtmlNode> downloadPanels = from div in doc.Descendants("div")
                 where div.HasClass("download-pane")
                 select div;
 
             // Navigates to the version name and download links inside each of the downloadPanels,
             // retrieves the text inside it, and adds it to the mappings.
-            foreach (var downloadPanel in downloadPanels)
+            foreach (HtmlNode downloadPanel in downloadPanels)
             {
-                var key = downloadPanel.SelectSingleNode(downloadPanel.XPath + "/div/div[1]/h2").InnerText;
-                var value = downloadPanel.SelectSingleNode(downloadPanel.XPath + "/div/div[4]/div[2]/a[1]")
+                string key = downloadPanel.SelectSingleNode(downloadPanel.XPath + "/div/div[1]/h2").InnerText;
+                string value = downloadPanel.SelectSingleNode(downloadPanel.XPath + "/div/div[4]/div[2]/a[1]")
                     .GetAttributeValue("href", null);
 
                 if (value == null) continue;

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
+using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
@@ -31,7 +32,7 @@ namespace MCSMLauncher.gui
             InitializeComponent();
 
             // Sets the info layout pictures
-            foreach (var label in ServerListLayout.Controls.OfType<Label>()
+            foreach (Label label in ServerListLayout.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
                 label.BackgroundImage =
@@ -61,8 +62,8 @@ namespace MCSMLauncher.gui
             GridServerList.Rows.Clear();
 
             // Creates a list of tasks invoking AddServerToList in the original thread, sorted.
-            var sections = FileSystem.AddSection("servers").GetAllTopLevelSections().ToList();
-            var taskList = sections.Select(AddServerToListAsync).ToList();
+            List<Section> sections = FileSystem.AddSection("servers").GetAllTopLevelSections().ToList();
+            List<Task> taskList = sections.Select(AddServerToListAsync).ToList();
 
             await Task.WhenAll(taskList);
             Logging.LOGGER.Info("Refreshed the server list.");
@@ -118,7 +119,7 @@ namespace MCSMLauncher.gui
 
             // First checks if the server settings file exists, and if it doesn't, adds the server to the
             // list as "Unknown", creating the settings file.
-            var settingsPath = Path.Combine(section.SectionFullPath, "server_settings.xml");
+            string settingsPath = Path.Combine(section.SectionFullPath, "server_settings.xml");
             if (!File.Exists(settingsPath))
             {
                 XMLUtils.SerializeToFile<ServerInformation>(settingsPath,
@@ -135,12 +136,12 @@ namespace MCSMLauncher.gui
             }
 
             // Deserializes the server settings file to access the server information.
-            var info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
 
             // Gets the image path for the server type, and adds the server to the list.
             // We have to parse the type to get the first word, since there could be snapshots of the type,
             // making the type similar to "serverType snapshots".
-            var typeImagePath = FileSystem.GetFirstSectionNamed("assets")
+            string typeImagePath = FileSystem.GetFirstSectionNamed("assets")
                 .GetFirstDocumentNamed(info.Type.Split(' ')[0].ToLower() + ".png");
 
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
@@ -196,13 +197,13 @@ namespace MCSMLauncher.gui
         public void UpdateServerButtonState(string serverName)
         {
             // Gets the necessary information to update the server button state.
-            var serverSection = FileSystem.AddSection("servers/" + serverName);
-            var settingsPath = serverSection.GetFirstDocumentNamed("server_settings.xml");
-            var row = GetRowFromName(serverName);
+            Section serverSection = FileSystem.AddSection("servers/" + serverName);
+            string settingsPath = serverSection.GetFirstDocumentNamed("server_settings.xml");
+            DataGridViewRow row = GetRowFromName(serverName);
             if (row == null || settingsPath == null) return;
 
-            var info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
-            var procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            string procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
 
             // Handles the server if it is running; In which case there will be a process
             // with a set PID, specified in the server settings file, running as an mc server.
@@ -227,7 +228,7 @@ namespace MCSMLauncher.gui
         /// <param name="state">The new state</param>
         public void ForceUpdateServerState(string serverName, string state)
         {
-            var row = GetRowFromName(serverName);
+            DataGridViewRow row = GetRowFromName(serverName);
             if (row == null) return;
             row.Cells[5].Value = state;
         }
@@ -247,7 +248,7 @@ namespace MCSMLauncher.gui
         /// </summary>
         public async Task UpdateAllButtonStatesAsync()
         {
-            var tasks = new List<Task>();
+            List<Task> tasks = new List<Task>();
 
             // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
@@ -263,10 +264,10 @@ namespace MCSMLauncher.gui
         public void UpdateServerIP(string serverName)
         {
             // Gets the server's IP address and updates the server list.
-            var serverSection = FileSystem.AddSection("servers/" + serverName);
-            var editor = new ServerEditor(serverSection);
-            var properties = editor.LoadProperties();
-            var row = GetRowFromName(serverName);
+            Section serverSection = FileSystem.AddSection("servers/" + serverName);
+            ServerEditor editor = new ServerEditor(serverSection);
+            Dictionary<string, string> properties = editor.LoadProperties();
+            DataGridViewRow row = GetRowFromName(serverName);
 
             if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
             row.Cells[3].Value = properties["server-ip"] != ""
@@ -296,7 +297,7 @@ namespace MCSMLauncher.gui
                 case 3 when e.RowIndex >= 0:
 
                     // Prevent the user from spamming the "Copy to Clipboard" button.
-                    var value = GridServerList.Rows[e.RowIndex].Cells[3].Value.ToString();
+                    string value = GridServerList.Rows[e.RowIndex].Cells[3].Value.ToString();
                     if (value == "Copied to Clipboard") return;
                     Clipboard.SetText(value);
 
@@ -309,9 +310,9 @@ namespace MCSMLauncher.gui
                 // If the user clicks on any "Options" button, we open the server edit prompt.
                 case 4 when e.RowIndex >= 0:
                 {
-                    var serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
-                    var serverSection = FileSystem.AddSection($"servers/{serverName}");
-                    var editPrompt = new ServerEditPrompt(serverSection);
+                    string serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
+                    Section serverSection = FileSystem.AddSection($"servers/{serverName}");
+                    ServerEditPrompt editPrompt = new ServerEditPrompt(serverSection);
                     editPrompt.ShowDialog();
                     break;
                 }
@@ -321,10 +322,10 @@ namespace MCSMLauncher.gui
                     try
                     {
                         // Gathers the necessary resources to start the server
-                        var serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
-                        var serverSection = FileSystem.AddSection($"servers/{serverName}");
-                        var serverType = new ServerEditor(serverSection).LoadSettings()["type"];
-                        var serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
+                        string serverName = GridServerList.Rows[e.RowIndex].Cells[2].Value.ToString();
+                        Section serverSection = FileSystem.AddSection($"servers/{serverName}");
+                        string serverType = new ServerEditor(serverSection).LoadSettings()["type"];
+                        AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
                         // Updates the server state, starts it, and displays the IP address.
                         ForceUpdateServerState(serverName, "Running");

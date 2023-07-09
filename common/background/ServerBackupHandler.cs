@@ -44,11 +44,11 @@ namespace MCSMLauncher.common.background
         /// </summary>
         public void RunTask()
         {
-            var settings = new ServerEditor(ServerSection).LoadSettings();
-            var serverBackupsEnabled =
+            settings = new ServerEditor(ServerSection).LoadSettings();
+            bool serverBackupsEnabled =
                 !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
-            var playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") ||
-                                           bool.Parse(settings["playerdatabackupson"]);
+            bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") ||
+                                            bool.Parse(settings["playerdatabackupson"]);
 
             // If neither of the backups are activated, stop the thread to save resources.
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;
@@ -61,7 +61,7 @@ namespace MCSMLauncher.common.background
             while (ProcessUtils.GetProcessById(ProcessID)?.ProcessName is var procName &&
                    (procName == "java" || procName == "cmd"))
             {
-                var now = DateTime.Now;
+                DateTime now = DateTime.Now;
 
                 // Creates a server backup if the current hour is divisible by 2 (every 2 hours)
                 if (serverBackupsEnabled && now.Hour % 2 == 0 && now.Minute == 0)
@@ -85,9 +85,9 @@ namespace MCSMLauncher.common.background
         {
             try
             {
-                var editor = new ServerEditor(serverSection);
-                var backupsPath = editor.LoadSettings()["serverbackupspath"];
-                var backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
+                ServerEditor editor = new ServerEditor(serverSection);
+                string backupsPath = editor.LoadSettings()["serverbackupspath"];
+                string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
@@ -107,13 +107,13 @@ namespace MCSMLauncher.common.background
         {
             try
             {
-                var editor = new ServerEditor(serverSection);
-                var backupsPath = PathUtils.NormalizePath(editor.LoadSettings()["playerdatabackupspath"]);
-                var backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
+                ServerEditor editor = new ServerEditor(serverSection);
+                string backupsPath = PathUtils.NormalizePath(editor.LoadSettings()["playerdatabackupspath"]);
+                string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 // Creates a playerdata backup for every world in the server.
-                foreach (var section in serverSection.GetSectionsNamed("playerdata")
+                foreach (Section section in serverSection.GetSectionsNamed("playerdata")
                              .Where(x => !backupsPath.Contains(x.Name)).ToList())
                     ZipDirectory(section.SectionFullPath,
                         Path.Combine(backupsPath,
@@ -132,12 +132,12 @@ namespace MCSMLauncher.common.background
         private static void ZipDirectory(string directory, string destination)
         {
             // Creates and opens the zipping file, using a resource manager
-            using var zipper = new ZipFile(destination);
+            using ZipFile zipper = new ZipFile(destination);
 
             // Adds every file into the zip file, parsing their path to exclude the root directory path.
-            foreach (var file in Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories))
+            foreach (string file in Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories))
             {
-                var relativePath = file.Substring(directory.Length + 1);
+                string relativePath = file.Substring(directory.Length + 1);
                 if (relativePath.Contains("backups") || relativePath.Contains(".lock")) continue;
                 zipper.AddFile(file, Path.GetDirectoryName(relativePath));
             }

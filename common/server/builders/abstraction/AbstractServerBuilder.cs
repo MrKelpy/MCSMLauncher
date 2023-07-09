@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -55,8 +56,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <returns>A Section object for the directory the file is located in</returns>
         protected Section GetSectionFromFile(string filepath)
         {
-            var directories = filepath.Split(Path.DirectorySeparatorChar).ToList();
-            var serverName = directories[directories.IndexOf("servers") + 1];
+            List<string> directories = filepath.Split(Path.DirectorySeparatorChar).ToList();
+            string serverName = directories[directories.IndexOf("servers") + 1];
             return FileSystem.GetFirstSectionNamed("servers/" + serverName);
         }
 
@@ -76,16 +77,16 @@ namespace MCSMLauncher.common.server.builders.abstraction
                     $"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") +
                 Environment.NewLine);
 
-            var serversSection = FileSystem.GetFirstSectionNamed("servers");
+            Section serversSection = FileSystem.GetFirstSectionNamed("servers");
             serversSection.RemoveSection(serverName);
-            var currentServerSection = serversSection.AddSection(serverName);
+            Section currentServerSection = serversSection.AddSection(serverName);
 
             OutputConsole.AppendText(Logging.LOGGER.Info($"Created a new {serverName} section.") + Environment.NewLine);
 
             // Gets the direct download link for the server jar based on the version and type
-            var multiFactory = new ServerTypeMappingsFactory();
-            var downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
-            var directDownloadLink = await multiFactory.GetParserFor(serverType)
+            ServerTypeMappingsFactory multiFactory = new ServerTypeMappingsFactory();
+            string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
+            string directDownloadLink = await multiFactory.GetParserFor(serverType)
                 .GetServerDirectDownloadLink(serverVersion, downloadLink);
             OutputConsole.AppendText(
                 Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") +
@@ -97,14 +98,14 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 directDownloadLink);
 
             // Gets the server.jar file path and installs the server
-            var serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
-            var serverInstallerJar = serverSection.GetAllDocuments()
+            Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
+            string serverInstallerJar = serverSection.GetAllDocuments()
                 .FirstOrDefault(x => x.Contains("server") && x.EndsWith(".jar"));
-            var serverJarPath = await InstallServer(serverInstallerJar);
+            string serverJarPath = await InstallServer(serverInstallerJar);
 
             // Creates the server_settings.xml file, marks it as hidden and serializes the ServerInformation object into it
-            var serverSettingsPath = Path.Combine(serverSection.SectionFullPath, "server_settings.xml");
-            var serverInformation = new ServerInformation
+            string serverSettingsPath = Path.Combine(serverSection.SectionFullPath, "server_settings.xml");
+            ServerInformation serverInformation = new ServerInformation
             {
                 Type = serverType,
                 Version = serverVersion,
@@ -124,7 +125,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             }
 
             // Agrees to the EULA if it exists, and if it doesn't, skips it.
-            var eulaPath = serverSection.GetFirstDocumentNamed("eula.txt");
+            string eulaPath = serverSection.GetFirstDocumentNamed("eula.txt");
 
             if (File.Exists(eulaPath))
             {
@@ -152,10 +153,10 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <param name="eulaPath">The path to the eula.txt file</param>
         private void AgreeToEula(string eulaPath)
         {
-            var lines = FileUtils.ReadFromFile(eulaPath);
+            List<string> lines = FileUtils.ReadFromFile(eulaPath);
 
             // Replaces the eula=false line with eula=true
-            var eulaIndex = lines.IndexOf("eula=false");
+            int eulaIndex = lines.IndexOf("eula=false");
             if (eulaIndex == -1) return;
 
             lines[eulaIndex] = "eula=true";
@@ -178,10 +179,10 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 Environment.NewLine);
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
-            var serverSection = GetSectionFromFile(serverJarPath);
-            var info = XMLUtils.DeserializeFromFile<ServerInformation>(
+            Section serverSection = GetSectionFromFile(serverJarPath);
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(
                 serverSection.GetFirstDocumentNamed("server_settings.xml"));
-            var proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments,
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments,
                 Path.GetDirectoryName(serverJarPath));
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly

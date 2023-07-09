@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.abstraction;
 
@@ -25,7 +26,7 @@ namespace MCSMLauncher.requests.forge
         {
             try
             {
-                var document = await Handler.LoadFromWebAsync(BaseUrl);
+                HtmlDocument document = await Handler.LoadFromWebAsync(BaseUrl);
                 return new ForgeRequestParser().GetVersionUrlMap(BaseUrl, document.DocumentNode);
             }
             catch (Exception e)

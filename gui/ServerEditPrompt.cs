@@ -22,7 +22,7 @@ namespace MCSMLauncher.gui
         /// The server directory to edit.
         /// </summary>
         private Section ServerSection { get; set; }
-        
+
         /// <summary>
         /// Main constructor for the ServerEditPrompt form. Initialises the form and loads the
         /// information from the server.properties file into the form.
@@ -35,9 +35,9 @@ namespace MCSMLauncher.gui
             ServerSection = serverSection;
 
             // Loads the properties and settings into the form
-            var editor = new ServerEditor(serverSection);
-            var properties = editor.LoadProperties();
-            var settings = editor.LoadSettings();
+            ServerEditor editor = new ServerEditor(serverSection);
+            Dictionary<string, string> properties = editor.LoadProperties();
+            Dictionary<string, string> settings = editor.LoadSettings();
             LoadToForm(properties);
             LoadToForm(settings);
 
@@ -59,7 +59,7 @@ namespace MCSMLauncher.gui
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
             // Sets the info layout pictures
-            foreach (var label in Controls.OfType<Label>()
+            foreach (Label label in Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
                 label.BackgroundImage =
@@ -86,7 +86,7 @@ namespace MCSMLauncher.gui
         /// <returns>A dictionary containing all of the settings in the form as a dictionary</returns>
         public Dictionary<string, string> FormToDictionary()
         {
-            var formInformation = new Dictionary<string, string>();
+            Dictionary<string, string> formInformation = new Dictionary<string, string>();
 
             // Gets the information from the valid controls, excluding the buttons and the checkboxes,
             // and adds it them to the dictionary
@@ -115,10 +115,10 @@ namespace MCSMLauncher.gui
         /// <param name="dictionaryToLoad">The dictionary to load into the form</param>
         public void LoadToForm(Dictionary<string, string> dictionaryToLoad)
         {
-            foreach (var item in dictionaryToLoad)
+            foreach (KeyValuePair<string, string> item in dictionaryToLoad)
             {
                 // Finds the control with the same tag as the key in the dictionary
-                var control = Controls.OfType<Control>().Where(x => x.GetType() != typeof(Button) && x.Tag != null)
+                Control control = Controls.OfType<Control>().Where(x => x.GetType() != typeof(Button) && x.Tag != null)
                     .FirstOrDefault(x => x.Tag.ToString().Equals(item.Key));
                 if (control == null) continue;
 
@@ -149,17 +149,16 @@ namespace MCSMLauncher.gui
         private void ButtonSave_Click(object sender, EventArgs e)
         {
             // Gets the necessary resources to edit save the server's properties and settings
-            var newServerSectionPath =
+            string newServerSectionPath =
                 Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
-            
-            var editor = new ServerEditor(ServerSection);
-            var properties = editor.LoadProperties();
-            var settings = editor.LoadSettings();
+
+            ServerEditor editor = new ServerEditor(ServerSection);
+            Dictionary<string, string> properties = editor.LoadProperties();
+            Dictionary<string, string> settings = editor.LoadSettings();
 
             // Iterates through all of the items in the form, and decides whether they should be updated
             // in the server.properties file or in the server_settings.xml file, and then does it.
-            foreach (var item in FormToDictionary())
-            {
+            foreach (KeyValuePair<string, string> item in FormToDictionary())
                 // Updates the key for the server properties
                 if (properties.ContainsKey(item.Key))
                     properties[item.Key] = item.Value;
@@ -167,7 +166,6 @@ namespace MCSMLauncher.gui
                 // Updates the key for the server settings
                 else if (settings.ContainsKey(item.Key))
                     settings[item.Key] = item.Value;
-            } 
             try
             {
                 // Saves the server properties and settings
@@ -239,10 +237,10 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ButtonFolderBrowsing_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            var boundTextBox = Controls.OfType<TextBox>().First(x => x.Tag.ToString() == button.Tag.ToString());
+            Button button = (Button)sender;
+            TextBox boundTextBox = Controls.OfType<TextBox>().First(x => x.Tag.ToString() == button.Tag.ToString());
 
-            var result = FolderBrowser.ShowDialog();
+            DialogResult result = FolderBrowser.ShowDialog();
             if (result == DialogResult.OK) boundTextBox.Text = FolderBrowser.SelectedPath;
         }
 

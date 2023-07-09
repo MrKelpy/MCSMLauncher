@@ -20,7 +20,7 @@ namespace MCSMLauncher.extensions
         /// <returns>A Task, promising a stream</returns>
         public static async Task<Stream> GetStreamAsync(this HttpClient client, string url, CancellationToken token)
         {
-            var response = await client.GetAsync(url, token);
+            HttpResponseMessage response = await client.GetAsync(url, token);
             return await response.Content.ReadAsStreamAsync();
         }
     }

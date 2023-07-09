@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,6 +10,7 @@ using System.Windows.Forms;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.content;
 using MCSMLauncher.utils;
+using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui
@@ -67,8 +69,8 @@ namespace MCSMLauncher.gui
         {
             // Logs the initial assets and gets the essential resources to use
             Logging.LOGGER.Info("Downloading initial assets...");
-            var assets = FileSystem.GetFirstSectionNamed("assets");
-            var config = ConfigurationManager.AppSettings.AllKeys.Where(x => x.StartsWith("Asset")).ToList();
+            Section assets = FileSystem.GetFirstSectionNamed("assets");
+            List<string> config = ConfigurationManager.AppSettings.AllKeys.Where(x => x.StartsWith("Asset")).ToList();
 
             // Checks if the assets folder contains all the files. If it does, then try to check if they aren't corrupted
             // by trying to convert them to a bitmap. If none are corrupted, then return.
@@ -76,8 +78,8 @@ namespace MCSMLauncher.gui
             try
             {
                 if (assets?.GetAllDocuments().Length != config.Count) throw new ArgumentException();
-                foreach (var filepath in assets.GetAllDocuments())
-                    using (var _ = new Bitmap(filepath))
+                foreach (string filepath in assets.GetAllDocuments())
+                    using (Bitmap _ = new Bitmap(filepath))
                     {
                     }
 
@@ -97,12 +99,12 @@ namespace MCSMLauncher.gui
 
             // Iterates over every configuration key and downloads the file corresponding to it.
             // While that is happening, updates the loading bar.
-            for (var index = 0; index < config.Count; index++)
+            for (int index = 0; index < config.Count; index++)
             {
-                var settingKey = config[index];
+                string settingKey = config[index];
 
-                var filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
-                var filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
+                string filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
+                string filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
 
                 SetDownloadingAssetName(filename);
                 await FileDownloader.DownloadFileAsync(filepath, ConfigurationManager.AppSettings.Get(settingKey));

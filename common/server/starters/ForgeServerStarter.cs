@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
@@ -27,40 +29,39 @@ namespace MCSMLauncher.common.server.starters
         /// <param name="serverSection">The section of the server to be run</param>
         public override void Run(Section serverSection)
         {
-            var runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
-            var serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
+            string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
+            string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
+            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
 
             if (runBatFilepath == null) throw new FileNotFoundException("run.bat file not found");
             if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
 
             // Removes the "nogui" argument from the run.bat file.
-            var lines = FileUtils.ReadFromFile(runBatFilepath);
-            for (var index = 0; index < lines.Count; index++)
-                if (lines[index].Contains("nogui"))
-                    lines[index] = lines[index].Replace("nogui", "").TrimEnd();
+            List<string> lines = FileUtils.ReadFromFile(runBatFilepath);
+            for (int index = 0; index < lines.Count; index++)
+            {
+                const string noguiArgument = "nogui";
+                if (lines[index].Contains(noguiArgument))
+                    lines[index] = lines[index].Replace(noguiArgument, "").TrimEnd();
+            }
 
             FileUtils.DumpToFile(runBatFilepath, lines);
 
             // Gets the server information from the server_settings.xml file or creates a new one with minimal information.
-            var info = serverSection.GetFirstDocumentNamed("server_settings.xml") is var settings && settings != null
-                ? XMLUtils.DeserializeFromFile<ServerInformation>(settings)
-                : new ServerInformation().GetMinimalInformation(serverSection);
-
+            ServerInformation info = GetServerInformation(serverSection);
             // Builds the startup arguments for the server.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", PathUtils.NormalizePath(runBatFilepath))
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             // Creates the process and starts it.
-            var proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runBatFilepath}", serverSection.SectionFullPath);
+            Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runBatFilepath}", serverSection.SectionFullPath);
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             if (new ServerEditor(serverSection).HandlePortForServer() == 1)
             {
-                ProcessErrorMessages(
-                    "Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.",
-                    proc);
+                ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return;
             }
 
@@ -68,8 +69,7 @@ namespace MCSMLauncher.common.server.starters
 
             // Records the PID of the process into the server_settings.xml file.
             info.CurrentServerProcessID = proc.Id;
-            if (settings != null) File.Delete(settings);
-            XMLUtils.SerializeToFile<ServerInformation>(settings, info);
+            info.ToFile(settings);
         }
     }
 }

@@ -262,7 +262,7 @@ namespace MCSMLauncher.gui
         /// Updates the server's IP address in the server list.
         /// </summary>
         /// <param name="serverName">The server to update the IP to</param>
-        public void UpdateServerIP(string serverName)
+        private void UpdateServerIP(string serverName)
         {
             // Gets the server's IP address and updates the server list.
             Section serverSection = FileSystem.AddSection("servers/" + serverName);

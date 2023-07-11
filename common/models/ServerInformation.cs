@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 
@@ -43,6 +44,14 @@ namespace MCSMLauncher.common.models
         /// The base port to try to use for the server.
         /// </summary>
         public int Port { get; set; } = 25565;
+
+        /// <summary>
+        /// The IP Address used to connect to the server.
+        /// This will either be the local IP address or the public IP address, depending on whether
+        /// the UPnP setup was successful or not.
+        /// Defaults to the local IP address.
+        /// </summary>
+        public string IPAddress { get; set; } = NetworkUtils.GetLocalIPAddress();
 
         /// <summary>
         /// The path to the directory where the backups should be stored at.
@@ -99,6 +108,7 @@ namespace MCSMLauncher.common.models
         public void Update(Dictionary<string, string> updateDict)
         {
             this.Port = int.Parse(updateDict["port"]);
+            this.IPAddress = updateDict["ipaddress"];
             this.Ram = int.Parse(updateDict["ram"]);
             this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
             this.ServerBackupsPath = updateDict["serverbackupspath"];

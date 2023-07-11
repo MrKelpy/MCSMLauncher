@@ -92,14 +92,17 @@ namespace MCSMLauncher.common.server.starters.abstraction
             
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
 
-            // Records the PID of the process into the server_settings.xml file.
-            info.CurrentServerProcessID = proc.Id;
+            // Updates the server_settings.xml file with the correct IP prematurely.
             info.ToFile(settings);
             
             // Starts both the process, and the backup handler attached to it.
             proc.Start();
             ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName);
             new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
+            
+            // Records the PID of the process into the server_settings.xml file.
+            info.CurrentServerProcessID = proc.Id;
+            info.ToFile(settings);
         }
     }
 }

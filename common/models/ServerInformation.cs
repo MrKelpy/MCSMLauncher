@@ -107,7 +107,7 @@ namespace MCSMLauncher.common.models
         /// <param name="updateDict">The dictionary to </param>
         public void Update(Dictionary<string, string> updateDict)
         {
-            this.Port = int.Parse(updateDict["port"]);
+            this.Port = int.Parse(updateDict["base-port"]);
             this.IPAddress = updateDict.TryGetValue("ipaddress", out string value) ? value : this.IPAddress;
             this.Ram = int.Parse(updateDict["ram"]);
             this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];

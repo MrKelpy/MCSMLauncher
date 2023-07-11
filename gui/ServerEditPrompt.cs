@@ -48,23 +48,14 @@ namespace MCSMLauncher.gui
             this.TextBoxServerName.Text = this.ServerSection.SimpleName;
 
             // Loads the icons for the folder browsing buttons
-            this.ButtonFolderBrowsing.Image =
-                Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                    Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
-            this.ButtonFolderBrowsing2.Image =
-                Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                    Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
-            this.ButtonFolderBrowsing3.Image =
-                Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                    Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
+            this.ButtonFolderBrowsing.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
+            this.ButtonFolderBrowsing2.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
+            this.ButtonFolderBrowsing3.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
             // Sets the info layout pictures
-            foreach (Label label in this.Controls.OfType<Label>()
-                         .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
+            foreach (Label label in this.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage =
-                    Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
         }

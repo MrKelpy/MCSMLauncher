@@ -93,6 +93,7 @@ namespace MCSMLauncher.common
             {
                 string key = dictionaryToLoad.Keys.ToArray()[i];
                 int keyIndex = propertiesFile.FindIndex(x => x.ToLower().Contains(key));
+                
                 if (keyIndex != -1) propertiesFile[keyIndex] = $"{key}={dictionaryToLoad[key]}";
                 else propertiesFile.Add($"{key}={dictionaryToLoad[key]}");
             }

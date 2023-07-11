@@ -14,7 +14,7 @@ namespace MCSMLauncher.common.background
         /// <summary>
         /// Runs the background task.
         /// </summary>
-        public void RunTask()
+        public async void RunTask()
         {
             while (true) // This specific background task should run forever.
             {
@@ -27,7 +27,7 @@ namespace MCSMLauncher.common.background
 
                     // Updates the server state.
                     string serverName = row.Cells[2]?.Value.ToString();
-                    ServerList.INSTANCE.UpdateServerButtonState(serverName);
+                    await ServerList.INSTANCE.UpdateServerButtonStateAsync(serverName);
                 }
             }
         }

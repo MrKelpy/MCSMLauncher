@@ -108,7 +108,7 @@ namespace MCSMLauncher.common.models
         public void Update(Dictionary<string, string> updateDict)
         {
             this.Port = int.Parse(updateDict["port"]);
-            this.IPAddress = updateDict["ipaddress"];
+            this.IPAddress = updateDict.TryGetValue("ipaddress", out string value) ? value : this.IPAddress;
             this.Ram = int.Parse(updateDict["ram"]);
             this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
             this.ServerBackupsPath = updateDict["serverbackupspath"];

@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
+using MCSMLauncher.gui;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
@@ -38,15 +40,14 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// Runs the server with the given startup arguments.
         /// </summary>
         /// <param name="serverSection">The section to get the resources from</param>
-        public virtual void Run(Section serverSection)
+        public virtual async Task Run(Section serverSection)
         {
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
-            ServerInformation info = this.GetServerInformation(serverSection);
+            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
 
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");
             if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
-
             
             // Builds the startup arguments for the server.
             this.StartupArguments = this.StartupArguments
@@ -60,16 +61,17 @@ namespace MCSMLauncher.common.server.starters.abstraction
             proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
 
             // Finds the port and IP to start the server with, and starts the server.
-            this.StartServer(serverSection, proc, info);
+            await this.StartServer(serverSection, proc, info);
         }
 
         /// <summary>
-        /// 
+        /// Find the port and IP to start the server with, and start the server.
+        /// This method is subject to some higher elapsed run times due to the port mapping.
         /// </summary>
         /// <param name="serverSection">The server section to work with</param>
         /// <param name="proc">The server process to track</param>
         /// <param name="info">The ServerInformation object with the server's info</param>
-        private void StartServer(Section serverSection, Process proc, ServerInformation info)
+        protected async Task StartServer(Section serverSection, Process proc, ServerInformation info)
         {
             string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
 
@@ -79,32 +81,25 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 this.ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return;
             }
-
-            // Starts both the process, and the backup handler attached to it.
-            proc.Start();
-            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
+            
+            /*
+             Tries to create the port mapping for the server, and updates the server_settings.xml
+             file with the correct ip based on the success of the operation.
+             This will inevitably fail if the router does not support UPnP.
+            */
+            if (await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
+                info.IPAddress = NetworkUtils.GetExternalIPAddress();
+            
+            else info.IPAddress = NetworkUtils.GetLocalIPAddress();
 
             // Records the PID of the process into the server_settings.xml file.
             info.CurrentServerProcessID = proc.Id;
             info.ToFile(settings);
-        }
-
-        /// <summary>
-        /// Returns the server information based on the server_settings.xml file, or creates a
-        /// new one with minimal info.
-        /// </summary>
-        /// <param name="serverSection">The section to work with</param>
-        /// <returns>The new server information instance</returns>
-        protected ServerInformation GetServerInformation(Section serverSection)
-        {
-            // Check if the "server_settings.xml" file exists
-            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
-
-            // If the file exists, load the server information from it
-            if (settings != null) return ServerInformation.FromFile(settings);
-
-            // If the file doesn't exist, create a new one with minimal information
-            return new ServerInformation().GetMinimalInformation(serverSection);
+            
+            // Starts both the process, and the backup handler attached to it.
+            proc.Start();
+            ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName);
+            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
         }
     }
 }

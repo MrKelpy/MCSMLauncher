@@ -111,12 +111,8 @@ namespace MCSMLauncher.common
             // Get the path to the server_settings.xml file.
             string settingsFilepath = Path.Combine(this.ServerSection.SectionFullPath, "server_settings.xml");
 
-            // If the server_settings.xml file doesn't exist, create it with minimal information.
-            if (!File.Exists(settingsFilepath))
-                new ServerInformation().GetMinimalInformation(this.ServerSection).ToFile(settingsFilepath);
-
             // Loads the information from the form into the ServerInformation object and serializes it again
-            ServerInformation serverInformation = ServerInformation.FromFile(settingsFilepath);
+            ServerInformation serverInformation = GetServerInformation(ServerSection);
             serverInformation.Update(dictionaryToLoad);
 
             // Writes the new edited file contents to disk.
@@ -142,6 +138,24 @@ namespace MCSMLauncher.common
             properties["server-port"] = availablePort.ToString();
             this.DumpToProperties(properties);
             return 0;
+        }
+        
+        /// <summary>
+        /// Returns the server information based on the server_settings.xml file, or creates a
+        /// new one with minimal info.
+        /// </summary>
+        /// <param name="serverSection">The section to work with</param>
+        /// <returns>The new server information instance</returns>
+        public static ServerInformation GetServerInformation(Section serverSection)
+        {
+            // Check if the "server_settings.xml" file exists
+            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
+
+            // If the file exists, load the server information from it
+            if (settings != null) return ServerInformation.FromFile(settings);
+
+            // If the file doesn't exist, create a new one with minimal information
+            return new ServerInformation().GetMinimalInformation(serverSection);
         }
     }
 }

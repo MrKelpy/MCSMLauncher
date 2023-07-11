@@ -115,7 +115,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 JavaRuntimePath = NewServer.INSTANCE.ComboBoxJavaVersion.Text
             };
 
-            XMLUtils.SerializeToFile<ServerInformation>(serverSettingsPath, serverInformation);
+            serverInformation.ToFile(serverSettingsPath);
             File.SetAttributes(serverSettingsPath, File.GetAttributes(serverSettingsPath) | FileAttributes.Hidden);
 
             // Runs the server once and closes it, in order to create the first files.
@@ -181,7 +181,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
             Section serverSection = this.GetSectionFromFile(serverJarPath);
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(serverSection.GetFirstDocumentNamed("server_settings.xml"));
+            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
             Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", this.StartupArguments, Path.GetDirectoryName(serverJarPath));
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly

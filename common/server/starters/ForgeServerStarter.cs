@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
@@ -29,7 +30,7 @@ namespace MCSMLauncher.common.server.starters
         /// the "run.bat" file.
         /// </summary>
         /// <param name="serverSection">The section of the server to be run</param>
-        public override void Run(Section serverSection)
+        public override async Task Run(Section serverSection)
         {
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
             string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
@@ -50,7 +51,8 @@ namespace MCSMLauncher.common.server.starters
             FileUtils.DumpToFile(runBatFilepath, lines);
 
             // Gets the server information from the server_settings.xml file or creates a new one with minimal information.
-            ServerInformation info = this.GetServerInformation(serverSection);
+            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
+            
             // Builds the startup arguments for the server.
             this.StartupArguments = this.StartupArguments
                 .Replace("%SERVER_JAR%", PathUtils.NormalizePath(runBatFilepath))
@@ -61,22 +63,8 @@ namespace MCSMLauncher.common.server.starters
             proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
 
-            // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (new ServerEditor(serverSection).HandlePortForServer() == 1)
-            {
-                this.ProcessErrorMessages(
-                    "Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.",
-                    proc);
-                return;
-            }
-
-            // Starts both the process, and the backup handler attached to it.
-            proc.Start();
-            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
-
-            // Records the PID of the process into the server_settings.xml file.
-            info.CurrentServerProcessID = proc.Id;
-            info.ToFile(settings);
+            // Finds the port and IP to start the server with, and starts the server.
+            await this.StartServer(serverSection, proc, info);
         }
     }
 }

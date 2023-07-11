@@ -113,13 +113,21 @@ namespace MCSMLauncher.common.background
                 string backupsPath = PathUtils.NormalizePath(editor.LoadSettings()["playerdatabackupspath"]);
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
-
+                
+                // Gets all the 'playerdata' folders in the server, excluding the backups folder.
+                List<Section> filteredSections = serverSection.GetSectionsNamed("playerdata")
+                    .Where(section => !backupsPath.Contains(section.Name))
+                    .ToList();
+                
                 // Creates a playerdata backup for every world in the server.
-                foreach (Section section in serverSection.GetSectionsNamed("playerdata")
-                             .Where(x => !backupsPath.Contains(x.Name)).ToList())
-                    ZipDirectory(section.SectionFullPath,
-                        Path.Combine(backupsPath,
-                            Path.GetFileName(Path.GetDirectoryName(section.SectionFullPath)) + "-" + backupName));
+                foreach (Section section in filteredSections)
+                {
+                    string backupFileName = $"{Path.GetFileName(Path.GetDirectoryName(section.SectionFullPath))}-{backupName}";
+                    string backupFilePath = Path.Combine(backupsPath, backupFileName);
+
+                    ZipDirectory(section.SectionFullPath, backupFilePath);
+                }
+                
             }
             catch (Exception)
             {

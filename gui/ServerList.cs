@@ -25,6 +25,11 @@ namespace MCSMLauncher.gui
     public partial class ServerList : Form
     {
         /// <summary>
+        /// The instance of the class to use, matching the singleton model.
+        /// </summary>
+        public static ServerList INSTANCE { get; } = new ServerList();
+        
+        /// <summary>
         /// Main constructor for the ServerList form. Private to enforce the singleton model.
         /// </summary>
         private ServerList()
@@ -32,25 +37,14 @@ namespace MCSMLauncher.gui
             this.InitializeComponent();
 
             // Sets the info layout pictures
-            foreach (Label label in this.ServerListLayout.Controls.OfType<Label>()
-                         .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
+            foreach (Label label in this.ServerListLayout.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage =
-                    Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
 
-            this.ButtonRefresh.BackgroundImage =
-                Image.FromFile(
-                    FileSystem.GetFirstDocumentNamed(
-                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Refresh"))));
+            this.ButtonRefresh.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Refresh"))));
         }
-
-        /// <summary>
-        /// The instance of the class to use, matching the singleton model.
-        /// </summary>
-        public static ServerList INSTANCE { get; } = new ServerList();
 
         /// <summary>
         /// Refreshes the grid asynchronously, clearing everything and reading all of the existing
@@ -120,36 +114,22 @@ namespace MCSMLauncher.gui
             // First checks if the server settings file exists, and if it doesn't, adds the server to the
             // list as "Unknown", creating the settings file.
             string settingsPath = Path.Combine(section.SectionFullPath, "server_settings.xml");
+            
             if (!File.Exists(settingsPath))
             {
-                XMLUtils.SerializeToFile<ServerInformation>(settingsPath,
-                    new ServerInformation().GetMinimalInformation(section));
-
-                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-                {
-                    this.GridServerList.Rows.Add(
-                        Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed("unknown.png")),
-                        "Unknown",
-                        Path.GetFileName(section.Name), "Offline");
-                }));
+                new ServerInformation().GetMinimalInformation(section).ToFile(settingsPath);
+                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed("unknown.png")), "Unknown", Path.GetFileName(section.Name), "Offline"); }));
                 return;
             }
 
             // Deserializes the server settings file to access the server information.
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            ServerInformation info = ServerInformation.FromFile(settingsPath);
 
             // Gets the image path for the server type, and adds the server to the list.
             // We have to parse the type to get the first word, since there could be snapshots of the type,
             // making the type similar to "serverType snapshots".
-            string typeImagePath = FileSystem.GetFirstSectionNamed("assets")
-                .GetFirstDocumentNamed(info.Type.Split(' ')[0].ToLower() + ".png");
-
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                this.GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version,
-                    Path.GetFileName(section.Name),
-                    "Offline");
-            }));
+            string typeImagePath = FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed(info.Type.Split(' ')[0].ToLower() + ".png");
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name), "Offline"); }));
 
             // Sets all of the start button rows' buttons to "Start" (default)
             this.GetRowFromName(section.SimpleName).Cells[5].Value = "Start";
@@ -172,6 +152,7 @@ namespace MCSMLauncher.gui
         {
             // Iterates over every row in the server list, and removes the row if the server name matches.
             foreach (DataGridViewRow row in this.GridServerList.Rows)
+                
                 // Checks the third column (the server name column) to see if the server name matches.
                 if (row.Cells[2].Value.Equals(Path.GetFileName(serverName)))
                 {
@@ -195,7 +176,7 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="serverName">The name of the server to check</param>
         [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-        public void UpdateServerButtonState(string serverName)
+        private void UpdateServerButtonState(string serverName)
         {
             // Gets the necessary information to update the server button state.
             Section serverSection = FileSystem.AddSection("servers/" + serverName);
@@ -203,7 +184,7 @@ namespace MCSMLauncher.gui
             DataGridViewRow row = this.GetRowFromName(serverName);
             if (row == null || settingsPath == null) return;
 
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            ServerInformation info = ServerInformation.FromFile(settingsPath);
             string procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
 
             // Handles the server if it is running; In which case there will be a process
@@ -212,14 +193,13 @@ namespace MCSMLauncher.gui
             {
                 row.Cells[5].Value = "Running";
                 this.UpdateServerIP(serverName);
-                return;
+                return; 
             }
 
             row.Cells[5].Value = "Start";
             row.Cells[3].Value = "";
             info.CurrentServerProcessID = -1;
-            File.Delete(settingsPath);
-            XMLUtils.SerializeToFile<ServerInformation>(settingsPath, info);
+            info.ToFile(settingsPath);
         }
 
         /// <summary>
@@ -262,18 +242,19 @@ namespace MCSMLauncher.gui
         /// Updates the server's IP address in the server list.
         /// </summary>
         /// <param name="serverName">The server to update the IP to</param>
-        private void UpdateServerIP(string serverName)
+        public void UpdateServerIP(string serverName)
         {
             // Gets the server's IP address and updates the server list.
             Section serverSection = FileSystem.AddSection("servers/" + serverName);
             ServerEditor editor = new ServerEditor(serverSection);
+            ServerInformation settings = ServerEditor.GetServerInformation(serverSection);
             Dictionary<string, string> properties = editor.LoadProperties();
             DataGridViewRow row = this.GetRowFromName(serverName);
 
             if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
             row.Cells[3].Value = properties["server-ip"] != ""
                 ? properties["server-ip"]
-                : NetworkUtils.GetLocalIPAddress() + ":" + properties["server-port"];
+                : settings.IPAddress + ":" + properties["server-port"];
         }
 
         /// <summary>
@@ -331,8 +312,7 @@ namespace MCSMLauncher.gui
 
                         // Updates the server state, starts it, and displays the IP address.
                         this.ForceUpdateServerState(serverName, "Running");
-                        serverStarter.Run(serverSection);
-                        this.UpdateServerIP(serverName);
+                        await serverStarter.Run(serverSection);
                     }
                     catch (Exception ex)
                     {

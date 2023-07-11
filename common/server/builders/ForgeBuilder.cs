@@ -115,7 +115,7 @@ namespace MCSMLauncher.common.server.builders
             serverSection.AddDocument("server.properties"); // Adds the server properties just in case
 
             // Gets the java runtime and creates the run command from it
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(serverSection.GetFirstDocumentNamed("server_settings.xml"));
+            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
             string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {this.StartupArguments}";
 
             // Creates the run.bat file if it doesn't already exist, with simple running params

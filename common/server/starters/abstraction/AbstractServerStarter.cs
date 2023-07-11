@@ -26,18 +26,13 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="startupArguments">The startup arguments for the server</param>
         protected AbstractServerStarter(string otherArguments, string startupArguments)
         {
-            StartupArguments = otherArguments + startupArguments;
+            this.StartupArguments = otherArguments + startupArguments;
         }
 
         /// <summary>
         /// The startup arguments for the server.
         /// </summary>
         protected string StartupArguments { get; set; }
-
-        /// <summary>
-        /// Other arguments that might be needed for the server.
-        /// </summary>
-        protected string OtherArguments { get; }
 
         /// <summary>
         /// Runs the server with the given startup arguments.
@@ -47,26 +42,41 @@ namespace MCSMLauncher.common.server.starters.abstraction
         {
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
-            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
-            ServerInformation info = GetServerInformation(serverSection);
+            ServerInformation info = this.GetServerInformation(serverSection);
 
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");
             if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
+
             
             // Builds the startup arguments for the server.
-            StartupArguments = StartupArguments.Replace("%SERVER_JAR%", PathUtils.NormalizePath(serverJarPath))
+            this.StartupArguments = this.StartupArguments
+                .Replace("%SERVER_JAR%", PathUtils.NormalizePath(serverJarPath))
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             // Creates the process and starts it.
-            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", StartupArguments,
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", this.StartupArguments,
                 serverSection.SectionFullPath);
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+            proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+
+            // Finds the port and IP to start the server with, and starts the server.
+            this.StartServer(serverSection, proc, info);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serverSection">The server section to work with</param>
+        /// <param name="proc">The server process to track</param>
+        /// <param name="info">The ServerInformation object with the server's info</param>
+        private void StartServer(Section serverSection, Process proc, ServerInformation info)
+        {
+            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             if (new ServerEditor(serverSection).HandlePortForServer() == 1)
             {
-                ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
+                this.ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return;
             }
 

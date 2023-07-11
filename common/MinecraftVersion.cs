@@ -14,8 +14,10 @@ namespace MCSMLauncher.common
         /// <param name="rawVersion"></param>
         public MinecraftVersion(string rawVersion)
         {
-            Version = rawVersion.Replace("?", "0");
-            Version = rawVersion.Split('.').Length is var str && str < 3 && str != 1 ? $"{Version}.0" : Version;
+            this.Version = rawVersion.Replace("?", "0");
+            this.Version = rawVersion.Split('.').Length is var str && str < 3 && str != 1
+                ? $"{this.Version}.0"
+                : this.Version;
         }
 
         /// <summary>
@@ -38,16 +40,16 @@ namespace MCSMLauncher.common
         public int CompareTo(MinecraftVersion other)
         {
             // The version 00.00.00 is the lowest version that there can be.
-            if (Version.Equals("00.00.00")) return -1;
+            if (this.Version.Equals("00.00.00")) return -1;
             if (other.Version.Equals("00.00.00")) return 1;
 
             // If the versions are the same, then they are equal.
-            if (Version == other.Version) return 0;
+            if (this.Version == other.Version) return 0;
 
             // Tries to compare the two version with the version API.
             try
             {
-                return new Version(Version).CompareTo(new Version(other.Version));
+                return new Version(this.Version).CompareTo(new Version(other.Version));
             }
             catch (ArgumentException)
             {
@@ -56,7 +58,7 @@ namespace MCSMLauncher.common
             // If the current version is the issue, then this one follows the other one.
             try
             {
-                Version _ = new Version(Version);
+                Version _ = new Version(this.Version);
             }
             catch (ArgumentException)
             {

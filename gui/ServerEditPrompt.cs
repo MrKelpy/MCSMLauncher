@@ -30,36 +30,36 @@ namespace MCSMLauncher.gui
         /// <param name="serverSection"></param>
         public ServerEditPrompt(Section serverSection)
         {
-            InitializeComponent();
-            StartPosition = FormStartPosition.CenterParent;
-            ServerSection = serverSection;
+            this.InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.ServerSection = serverSection;
 
             // Loads the properties and settings into the form
             ServerEditor editor = new ServerEditor(serverSection);
             Dictionary<string, string> properties = editor.LoadProperties();
             Dictionary<string, string> settings = editor.LoadSettings();
-            LoadToForm(properties);
-            LoadToForm(settings);
+            this.LoadToForm(properties);
+            this.LoadToForm(settings);
 
             // Edits some values in the form that have to be manually placed
-            CheckBoxCracked.Checked = !CheckBoxCracked.Checked;
-            CheckBoxSpawnProtection.Checked = properties.ContainsKey("spawn-protection") &&
-                                              int.Parse(properties["spawn-protection"]) > 0;
-            TextBoxServerName.Text = ServerSection.SimpleName;
+            this.CheckBoxCracked.Checked = !this.CheckBoxCracked.Checked;
+            this.CheckBoxSpawnProtection.Checked = properties.ContainsKey("spawn-protection") &&
+                                                   int.Parse(properties["spawn-protection"]) > 0;
+            this.TextBoxServerName.Text = this.ServerSection.SimpleName;
 
             // Loads the icons for the folder browsing buttons
-            ButtonFolderBrowsing.Image =
+            this.ButtonFolderBrowsing.Image =
                 Image.FromFile(FileSystem.GetFirstDocumentNamed(
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
-            ButtonFolderBrowsing2.Image =
+            this.ButtonFolderBrowsing2.Image =
                 Image.FromFile(FileSystem.GetFirstDocumentNamed(
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
-            ButtonFolderBrowsing3.Image =
+            this.ButtonFolderBrowsing3.Image =
                 Image.FromFile(FileSystem.GetFirstDocumentNamed(
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
             // Sets the info layout pictures
-            foreach (Label label in Controls.OfType<Label>()
+            foreach (Label label in this.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
                 label.BackgroundImage =
@@ -77,7 +77,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ServerEditPrompt_Load(object sender, EventArgs e)
         {
-            ActiveControl = label1;
+            this.ActiveControl = this.label1;
         }
 
         /// <summary>
@@ -90,19 +90,19 @@ namespace MCSMLauncher.gui
 
             // Gets the information from the valid controls, excluding the buttons and the checkboxes,
             // and adds it them to the dictionary
-            Controls.OfType<Control>()
+            this.Controls.OfType<Control>()
                 .Where(x => x.GetType() != typeof(CheckBox) && x.GetType() != typeof(Button) && x.Tag != null &&
                             x.Tag.ToString() != string.Empty).ToList()
                 .ForEach(x => formInformation.Add(x.Tag.ToString(), x.Text));
 
             // Does the same, but specifically for checkboxes, since they have to be parsed for booleans
-            Controls.OfType<CheckBox>().Where(x => x.Tag != null && x.Tag.ToString() != string.Empty).ToList()
+            this.Controls.OfType<CheckBox>().Where(x => x.Tag != null && x.Tag.ToString() != string.Empty).ToList()
                 .ForEach(x => formInformation.Add(x.Tag.ToString(), x.Checked.ToString().ToLower()));
 
             // Inverts the online mode since the checkbox is named "Cracked" (Opposite of online mode), and
             // sets the spawn protection to 0 if it is disabled in the form
             formInformation["online-mode"] = (!bool.Parse(formInformation["online-mode"])).ToString().ToLower();
-            if (!CheckBoxSpawnProtection.Checked) formInformation["spawn-protection"] = "0";
+            if (!this.CheckBoxSpawnProtection.Checked) formInformation["spawn-protection"] = "0";
 
             return formInformation;
         }
@@ -118,7 +118,8 @@ namespace MCSMLauncher.gui
             foreach (KeyValuePair<string, string> item in dictionaryToLoad)
             {
                 // Finds the control with the same tag as the key in the dictionary
-                Control control = Controls.OfType<Control>().Where(x => x.GetType() != typeof(Button) && x.Tag != null)
+                Control control = this.Controls.OfType<Control>()
+                    .Where(x => x.GetType() != typeof(Button) && x.Tag != null)
                     .FirstOrDefault(x => x.Tag.ToString().Equals(item.Key));
                 if (control == null) continue;
 
@@ -138,7 +139,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ButtonOpenServerFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(ServerSection.SectionFullPath);
+            Process.Start(this.ServerSection.SectionFullPath);
         }
 
         /// <summary>
@@ -150,15 +151,15 @@ namespace MCSMLauncher.gui
         {
             // Gets the necessary resources to edit save the server's properties and settings
             string newServerSectionPath =
-                Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+                Path.GetDirectoryName(this.ServerSection.SectionFullPath) + "/" + this.TextBoxServerName.Text;
 
-            ServerEditor editor = new ServerEditor(ServerSection);
+            ServerEditor editor = new ServerEditor(this.ServerSection);
             Dictionary<string, string> properties = editor.LoadProperties();
             Dictionary<string, string> settings = editor.LoadSettings();
 
             // Iterates through all of the items in the form, and decides whether they should be updated
             // in the server.properties file or in the server_settings.xml file, and then does it.
-            foreach (KeyValuePair<string, string> item in FormToDictionary())
+            foreach (KeyValuePair<string, string> item in this.FormToDictionary())
                 // Updates the key for the server properties
                 if (properties.ContainsKey(item.Key))
                     properties[item.Key] = item.Value;
@@ -180,17 +181,17 @@ namespace MCSMLauncher.gui
             }
 
             // Renames the server's folder to the new name if it changed.
-            if (!ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
+            if (!this.ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
             {
-                ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
-                Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
+                ServerList.INSTANCE.RemoveFromList(this.ServerSection.Name);
+                Directory.Move(this.ServerSection.SectionFullPath, newServerSectionPath);
 
                 // Updates the ServerSection property to the new path.
-                ServerSection = FileSystem.AddSection("servers/" + TextBoxServerName.Text);
-                ServerList.INSTANCE.AddServerToList(ServerSection);
+                this.ServerSection = FileSystem.AddSection("servers/" + this.TextBoxServerName.Text);
+                ServerList.INSTANCE.AddServerToList(this.ServerSection);
             }
 
-            Close();
+            this.Close();
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void CheckBoxSpawnProtection_CheckedChanged(object sender, EventArgs e)
         {
-            NumericSpawnProtection.Visible = CheckBoxSpawnProtection.Checked;
+            this.NumericSpawnProtection.Visible = this.CheckBoxSpawnProtection.Checked;
         }
 
         /// <summary>
@@ -218,9 +219,9 @@ namespace MCSMLauncher.gui
             // Removes the server from the list, deletes the directory and closes the form.
             try
             {
-                Directory.Delete(ServerSection.SectionFullPath, true);
-                ServerList.INSTANCE.RemoveFromList(ServerSection.SimpleName);
-                Close();
+                Directory.Delete(this.ServerSection.SectionFullPath, true);
+                ServerList.INSTANCE.RemoveFromList(this.ServerSection.SimpleName);
+                this.Close();
             }
             catch (Exception exception)
             {
@@ -238,10 +239,11 @@ namespace MCSMLauncher.gui
         private void ButtonFolderBrowsing_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
-            TextBox boundTextBox = Controls.OfType<TextBox>().First(x => x.Tag.ToString() == button.Tag.ToString());
+            TextBox boundTextBox =
+                this.Controls.OfType<TextBox>().First(x => x.Tag.ToString() == button.Tag.ToString());
 
-            DialogResult result = FolderBrowser.ShowDialog();
-            if (result == DialogResult.OK) boundTextBox.Text = FolderBrowser.SelectedPath;
+            DialogResult result = this.FolderBrowser.ShowDialog();
+            if (result == DialogResult.OK) boundTextBox.Text = this.FolderBrowser.SelectedPath;
         }
 
         /// <summary>

@@ -47,9 +47,10 @@ namespace MCSMLauncher.common.server.builders
 
             // Set the output and error data handlers
             forgeBuildingProcess.OutputDataReceived +=
-                (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
-            forgeBuildingProcess.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
-            TerminationCode = 0;
+                (sender, e) => this.ProcessMergedData(sender, e, forgeBuildingProcess);
+            forgeBuildingProcess.ErrorDataReceived +=
+                (sender, e) => this.ProcessMergedData(sender, e, forgeBuildingProcess);
+            this.TerminationCode = 0;
 
             // Start the process
             forgeBuildingProcess.Start();
@@ -74,10 +75,14 @@ namespace MCSMLauncher.common.server.builders
         {
             if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
 
-            if (e.Data.Contains("ERROR") || e.Data.StartsWith("Exception")) ProcessErrorMessages(e.Data, proc);
-            else if (e.Data.Contains("WARN")) ProcessWarningMessages(e.Data, proc);
-            else if (e.Data.Contains("INFO") || e.Data.Contains("LOADING")) ProcessInfoMessages(e.Data, proc);
-            else ProcessOtherMessages(e.Data, proc);
+            if (e.Data.Contains("ERROR") || e.Data.StartsWith("Exception"))
+                this.ProcessErrorMessages(e.Data, proc);
+            else if (e.Data.Contains("WARN"))
+                this.ProcessWarningMessages(e.Data, proc);
+            else if (e.Data.Contains("INFO") || e.Data.Contains("LOADING"))
+                this.ProcessInfoMessages(e.Data, proc);
+            else
+                this.ProcessOtherMessages(e.Data, proc);
         }
 
         /// <summary>
@@ -88,7 +93,7 @@ namespace MCSMLauncher.common.server.builders
         /// <terminationCode>0 - The server.jar fired a normal info message</terminationCode>
         protected override void ProcessInfoMessages(string message, Process proc)
         {
-            TerminationCode = TerminationCode != 1 ? 0 : 1;
+            this.TerminationCode = this.TerminationCode != 1 ? 0 : 1;
 
             if (message.ToLower().Contains("preparing level") || message.ToLower().Contains("agree to the eula"))
                 proc.KillProcessAndChildren();
@@ -103,27 +108,26 @@ namespace MCSMLauncher.common.server.builders
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        protected override async Task<int> RunAndCloseSilently(string serverJarPath)
+        protected override async Task<int> FirstSetupRun(string serverJarPath)
         {
             // Due to how forge works, we need to generate a run.bat file to run the forge.
-            Section serverSection = GetSectionFromFile(serverJarPath);
+            Section serverSection = this.GetSectionFromFile(serverJarPath);
             serverSection.AddDocument("server.properties"); // Adds the server properties just in case
 
             // Gets the java runtime and creates the run command from it
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(
-                serverSection.GetFirstDocumentNamed("server_settings.xml"));
-            string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
+            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(serverSection.GetFirstDocumentNamed("server_settings.xml"));
+            string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {this.StartupArguments}";
 
             // Creates the run.bat file if it doesn't already exist, with simple running params
             string runFilepath = Path.Combine(serverSection.SectionFullPath, "run.bat");
+
             if (!File.Exists(runFilepath))
                 File.WriteAllText(runFilepath, runCommand.Replace("%SERVER_JAR%", serverJarPath));
 
             // Gets the run.bat file and adds nogui to the end of the java command
             List<string> lines = FileUtils.ReadFromFile(runFilepath);
-            int lineIndex = lines.IndexOf(lines.FirstOrDefault(x => x.StartsWith("java"))) is var index && index != -1
-                ? index
-                : 0;
+            int index = lines.IndexOf(lines.FirstOrDefault(x => x.StartsWith("java")));
+            int lineIndex = index != -1 ? index : 0;
 
             if (!lines[lineIndex].Contains("nogui"))
             {
@@ -147,9 +151,7 @@ namespace MCSMLauncher.common.server.builders
             ServerEditor editor = new ServerEditor(serverSection);
             if (editor.HandlePortForServer() == 1)
             {
-                ProcessErrorMessages(
-                    "Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.",
-                    proc);
+                this.ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;
             }
 
@@ -158,8 +160,8 @@ namespace MCSMLauncher.common.server.builders
             editor.DumpToProperties(properties);
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+            proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
 
             // Waits for the termination of the process by the OutputDataReceived event or ErrorDataReceived event.
             proc.Start();
@@ -167,14 +169,17 @@ namespace MCSMLauncher.common.server.builders
             proc.BeginOutputReadLine();
             await proc.WaitForExitAsync();
 
-            // Disposes of the process and checks if the termination code is 1. If so, return 1.
+            // Disposes of the process and checks if the termination code is 1 or -1. If so, return 1.
             proc.Dispose();
             serverSection.RemoveSection("world"); // Finds the world folder and deletes it if it exists
-            if (TerminationCode * TerminationCode == 1) return 1;
+            
+            // The math here is because if nothing happened, it errored with no changes, so the code is -1
+            // and we can simply return 1.
+            if (this.TerminationCode * this.TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
-            TerminationCode = -1;
+            this.OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
+            this.TerminationCode = -1;
             return 0;
         }
     }

@@ -27,13 +27,13 @@ namespace MCSMLauncher.requests.spigot
         {
             try
             {
-                HtmlDocument document = await Handler.LoadFromWebAsync(BaseUrl);
+                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
 
                 IEnumerable<HtmlNode> columnDiv = from div in document.DocumentNode.Descendants("div")
                     where div.HasClass("col-md-12")
                     select div;
 
-                return new SpigotRequestParser().GetVersionUrlMap(BaseUrl, columnDiv.ElementAt(0));
+                return new SpigotRequestParser().GetVersionUrlMap(this.BaseUrl, columnDiv.ElementAt(0));
             }
             catch (Exception e)
             {

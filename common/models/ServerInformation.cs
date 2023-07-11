@@ -98,14 +98,14 @@ namespace MCSMLauncher.common.models
         /// <param name="updateDict">The dictionary to </param>
         public void Update(Dictionary<string, string> updateDict)
         {
-            Port = int.Parse(updateDict["port"]);
-            Ram = int.Parse(updateDict["ram"]);
-            PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
-            ServerBackupsPath = updateDict["serverbackupspath"];
-            PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
-            ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
-            CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
-            JavaRuntimePath = updateDict["javaruntimepath"];
+            this.Port = int.Parse(updateDict["port"]);
+            this.Ram = int.Parse(updateDict["ram"]);
+            this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
+            this.ServerBackupsPath = updateDict["serverbackupspath"];
+            this.PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
+            this.ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
+            this.CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
+            this.JavaRuntimePath = updateDict["javaruntimepath"];
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -24,8 +25,8 @@ namespace MCSMLauncher.common.background
         /// <param name="pid">The process ID, for status checking purposes</param>
         public ServerBackupHandler(Section serverSection, int pid)
         {
-            ServerSection = serverSection;
-            ProcessID = pid;
+            this.ServerSection = serverSection;
+            this.ProcessID = pid;
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace MCSMLauncher.common.background
         /// </summary>
         public void RunTask()
         {
-            settings = new ServerEditor(ServerSection).LoadSettings();
+            Dictionary<string, string> settings = new ServerEditor(this.ServerSection).LoadSettings();
             bool serverBackupsEnabled =
                 !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
             bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") ||
@@ -54,22 +55,22 @@ namespace MCSMLauncher.common.background
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;
 
             // Creates initial backups regardless of the current time.
-            if (playerdataBackupsEnabled) CreatePlayerdataBackup(ServerSection);
-            if (serverBackupsEnabled) CreateServerBackup(ServerSection);
+            if (playerdataBackupsEnabled) CreatePlayerdataBackup(this.ServerSection);
+            if (serverBackupsEnabled) CreateServerBackup(this.ServerSection);
 
             // Until the process is no longer active, keep creating backups.
-            while (ProcessUtils.GetProcessById(ProcessID)?.ProcessName is var procName &&
+            while (ProcessUtils.GetProcessById(this.ProcessID)?.ProcessName is var procName &&
                    (procName == "java" || procName == "cmd"))
             {
                 DateTime now = DateTime.Now;
 
                 // Creates a server backup if the current hour is divisible by 2 (every 2 hours)
                 if (serverBackupsEnabled && now.Hour % 2 == 0 && now.Minute == 0)
-                    CreateServerBackup(ServerSection);
+                    CreateServerBackup(this.ServerSection);
 
                 // Creates a playerdata backup if the current min is divisible by 5 (every 5 minutes)
                 if (playerdataBackupsEnabled && now.Minute % 5 == 0)
-                    CreatePlayerdataBackup(ServerSection);
+                    CreatePlayerdataBackup(this.ServerSection);
 
                 Thread.Sleep(1 * 1000 * 60); // Sleeps for a minute
             }
@@ -94,7 +95,8 @@ namespace MCSMLauncher.common.background
             }
             catch (Exception)
             {
-            } // Ignored, try again later.
+                // ignored
+            }
         }
 
         /// <summary>
@@ -121,7 +123,8 @@ namespace MCSMLauncher.common.background
             }
             catch (Exception)
             {
-            } // Ignored, try again later
+                // ignored
+            }
         }
 
         /// <summary>

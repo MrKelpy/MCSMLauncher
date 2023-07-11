@@ -21,7 +21,7 @@ namespace MCSMLauncher.common
         /// <param name="serverSection"></param>
         public ServerEditor(Section serverSection)
         {
-            ServerSection = serverSection;
+            this.ServerSection = serverSection;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace MCSMLauncher.common
         public Dictionary<string, string> LoadProperties()
         {
             Dictionary<string, string> propertiesDictionary = new Dictionary<string, string>();
-            string propertiesPath = ServerSection.GetFirstDocumentNamed("server.properties");
+            string propertiesPath = this.ServerSection.GetFirstDocumentNamed("server.properties");
 
             if (propertiesPath == null) return propertiesDictionary;
 
@@ -60,7 +60,7 @@ namespace MCSMLauncher.common
         {
             // Creates a new dictionary to store the settings in.
             Dictionary<string, string> settingsDictionary = new Dictionary<string, string>();
-            string settingsPath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
+            string settingsPath = this.ServerSection.GetFirstDocumentNamed("server_settings.xml");
 
             // If the server_settings.xml doesn't exist, return an empty dictionary.
             if (settingsPath == null) return settingsDictionary;
@@ -83,7 +83,7 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void DumpToProperties(Dictionary<string, string> dictionaryToLoad)
         {
-            string propertiesFilepath = Path.Combine(ServerSection.SectionFullPath, "server.properties");
+            string propertiesFilepath = Path.Combine(this.ServerSection.SectionFullPath, "server.properties");
             if (!File.Exists(propertiesFilepath)) File.Create(propertiesFilepath).Close();
 
             List<string> propertiesFile = FileUtils.ReadFromFile(propertiesFilepath);
@@ -109,11 +109,11 @@ namespace MCSMLauncher.common
         public void DumpToSettings(Dictionary<string, string> dictionaryToLoad)
         {
             // Get the path to the server_settings.xml file.
-            string settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");
+            string settingsFilepath = Path.Combine(this.ServerSection.SectionFullPath, "server_settings.xml");
 
             // If the server_settings.xml file doesn't exist, create it with minimal information.
             if (!File.Exists(settingsFilepath))
-                new ServerInformation().GetMinimalInformation(ServerSection).ToFile(settingsFilepath);
+                new ServerInformation().GetMinimalInformation(this.ServerSection).ToFile(settingsFilepath);
 
             // Loads the information from the form into the ServerInformation object and serializes it again
             ServerInformation serverInformation = ServerInformation.FromFile(settingsFilepath);
@@ -130,8 +130,8 @@ namespace MCSMLauncher.common
         /// <returns>A code signaling the success of the operation.</returns>
         public int HandlePortForServer()
         {
-            Dictionary<string, string> properties = LoadProperties();
-            Dictionary<string, string> settings = LoadSettings();
+            Dictionary<string, string> properties = this.LoadProperties();
+            Dictionary<string, string> settings = this.LoadSettings();
             int port = settings.TryGetValue("base-port", out string setting) ? int.Parse(setting) : 25565;
             if (settings.ContainsKey("server-ip") && properties["server-ip"] != "") return 0;
 
@@ -140,7 +140,7 @@ namespace MCSMLauncher.common
             if (availablePort == -1) return 1;
 
             properties["server-port"] = availablePort.ToString();
-            DumpToProperties(properties);
+            this.DumpToProperties(properties);
             return 0;
         }
     }

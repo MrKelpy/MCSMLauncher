@@ -191,7 +191,7 @@ namespace MCSMLauncher.gui
             // with a set PID, specified in the server settings file, running as an mc server.
             if (Math.Pow(info.CurrentServerProcessID, 2) != 1 && (procName == "java" || procName == "cmd"))
             {
-                row.Cells[5].Value = "Running";
+                this.ForceUpdateServerState(serverName, "Running");
                 this.UpdateServerIP(serverName);
                 return; 
             }
@@ -310,15 +310,13 @@ namespace MCSMLauncher.gui
                         string serverType = new ServerEditor(serverSection).LoadSettings()["type"];
                         AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
-                        // Updates the server state, starts it, and displays the IP address.
-                        this.ForceUpdateServerState(serverName, "Running");
+                        // Starts the server
                         await serverStarter.Run(serverSection);
                     }
                     catch (Exception ex)
                     {
                         Logging.LOGGER.Error(ex.Message + "\n" + ex.StackTrace);
-                        MessageBox.Show(
-                            $@"An error occurred whilst trying to start the server. {Environment.NewLine}Please check the integrity of the server and try again.",
+                        MessageBox.Show($@"An error occurred whilst trying to start the server. {Environment.NewLine}Please check the integrity of the server and try again.",
                             @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
@@ -89,7 +90,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             */
             if (await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
-            
+
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
 
             // Updates the server_settings.xml file with the correct IP prematurely.
@@ -98,6 +99,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Starts both the process, and the backup handler attached to it.
             proc.Start();
             ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName);
+            ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
             new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
             
             // Records the PID of the process into the server_settings.xml file.

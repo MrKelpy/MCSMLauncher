@@ -201,16 +201,14 @@ namespace MCSMLauncher.gui
             catch (TimeoutException err)
             {
                 Logging.LOGGER.Error(err.StackTrace);
-                MessageBox.Show(
-                    $"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.",
-                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 serversSection.RemoveSection(this.TextBoxServerName.Text);
             }
 
             // If a network error happened, log it and tell the user that a network error happened
             catch (HttpRequestException err)
             {
-                Logging.LOGGER.Error(err.StackTrace);
+                Logging.LOGGER.Error(err);
                 string errorMessage = !NetworkUtils.IsWifiConnected()
                     ? $"A network error happened while building the server. {Environment.NewLine}Please check your internet connection and try again."
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
@@ -222,7 +220,7 @@ namespace MCSMLauncher.gui
             // If an unknown exception was raised, log it as such and tell the user that an error occured
             catch (Exception err)
             {
-                Logging.LOGGER.Error(err.StackTrace);
+                Logging.LOGGER.Error(err);
                 MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 serversSection.RemoveSection(this.TextBoxServerName.Text);

@@ -41,7 +41,7 @@ namespace MCSMLauncher.requests.mcversions.snapshots
             catch (Exception e)
             {
                 Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla snapshot versions.");
-                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
+                Logging.LOGGER.Error(e, LoggingType.FILE);
                 return null;
             }
         }

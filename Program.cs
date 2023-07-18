@@ -16,8 +16,7 @@ namespace MCSMLauncher
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Logging.LOGGER.LoggingFilePath = Path.Combine(Constants.FileSystem.AddSection("logs").SectionFullPath,
-                Logging.LOGGER.LoggingSession + ".log");
+            Logging.LOGGER.LoggingFilePath = Path.Combine(Constants.FileSystem.AddSection("logs").SectionFullPath, Logging.LOGGER.LoggingSession + ".log");
 
             try
             {
@@ -25,8 +24,9 @@ namespace MCSMLauncher
                 Application.Run(new LoadingScreen());
                 Application.Run(Mainframe.INSTANCE);
             }
+            
             // Logs whatever fatal issue happens as a last resource.
-            catch (ArithmeticException e)
+            catch (Exception e)
             {
                 Logging.LOGGER.Fatal(@"An unexpected error occured and the program was forced to exit.");
                 Logging.LOGGER.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.FILE);

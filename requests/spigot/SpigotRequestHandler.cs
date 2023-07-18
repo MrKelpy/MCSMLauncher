@@ -38,7 +38,7 @@ namespace MCSMLauncher.requests.spigot
             catch (Exception e)
             {
                 Logging.LOGGER.Info("An error happened whilst trying to retrieve the spigot versions.");
-                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
+                Logging.LOGGER.Error(e, LoggingType.FILE);
                 return null;
             }
         }

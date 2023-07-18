@@ -92,7 +92,17 @@ namespace MCSMLauncher.common
         {
             return this._internalLog(message, "ERROR", loggingType);
         }
-
+        
+        /// <summary>
+        /// Logs an error in a specified way, according to the set format, at the ERROR level.
+        /// </summary>
+        /// <param name="err">The error to be logged</param>
+        /// <param name="loggingType">The type of logging to be performed</param>
+        public string Error(Exception err, LoggingType loggingType = LoggingType.ALL)
+        {
+            return this._internalLog(err.Message + '\n' + err.StackTrace, "ERROR", loggingType);
+        }
+        
         /// <summary>
         /// Logs a message in a specified way, according to the set format, at the FATAL level.
         /// </summary>
@@ -101,6 +111,16 @@ namespace MCSMLauncher.common
         public string Fatal(string message, LoggingType loggingType = LoggingType.ALL)
         {
             return this._internalLog(message, "FATAL", loggingType);
+        }
+        
+        /// <summary>
+        /// Logs an error in a specified way, according to the set format, at the FATAL level.
+        /// </summary>
+        /// <param name="err">The error to be logged</param>
+        /// <param name="loggingType">The type of logging to be performed</param>
+        public string Fatal(Exception err, LoggingType loggingType = LoggingType.ALL)
+        {
+            return this._internalLog(err.Message + '\n' + err.StackTrace, "FATAL", loggingType);
         }
 
         /// <summary>

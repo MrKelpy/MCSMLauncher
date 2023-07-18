@@ -93,10 +93,7 @@ namespace MCSMLauncher.common.background
 
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
             }
-            catch (Exception)
-            {
-                // ignored
-            }
+            catch (Exception e) { Logging.LOGGER.Error(e); }
         }
 
         /// <summary>
@@ -129,10 +126,7 @@ namespace MCSMLauncher.common.background
                 }
                 
             }
-            catch (Exception)
-            {
-                // ignored
-            }
+            catch (Exception e) { Logging.LOGGER.Error(e); }
         }
 
         /// <summary>

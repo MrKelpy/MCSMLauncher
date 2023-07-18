@@ -51,9 +51,8 @@ namespace MCSMLauncher.common
             {
                 return new Version(this.Version).CompareTo(new Version(other.Version));
             }
-            catch (ArgumentException)
-            {
-            } // There was an issue, needs further evaluation.
+            
+            catch (ArgumentException) { } // There was an issue, needs further evaluation.
 
             // If the current version is the issue, then this one follows the other one.
             try

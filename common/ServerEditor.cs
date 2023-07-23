@@ -71,7 +71,7 @@ namespace MCSMLauncher.common
             info.GetType().GetProperties().ToList()
                 .ForEach(x => settingsDictionary[x.Name.ToLower()] = x.GetValue(info)?.ToString() ?? "");
 
-            // Adds the port with the key "base-port" to the dictionary.
+            // Adds the port with the key "baseport" to the dictionary.
             return settingsDictionary;
         }
 
@@ -128,7 +128,7 @@ namespace MCSMLauncher.common
         {
             Dictionary<string, string> properties = this.LoadProperties();
             Dictionary<string, string> settings = this.LoadSettings();
-            int port = settings.TryGetValue("base-port", out string setting) ? int.Parse(setting) : 25565;
+            int port = settings.TryGetValue("baseport", out string setting) ? int.Parse(setting) : 25565;
             if (settings.ContainsKey("server-ip") && properties["server-ip"] != "") return 0;
 
             // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.

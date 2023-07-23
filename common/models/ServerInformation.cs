@@ -43,7 +43,7 @@ namespace MCSMLauncher.common.models
         /// <summary>
         /// The base port to try to use for the server.
         /// </summary>
-        public int Port { get; set; } = 25565;
+        public int BasePort { get; set; } = 25565;
 
         /// <summary>
         /// The IP Address used to connect to the server.
@@ -52,6 +52,11 @@ namespace MCSMLauncher.common.models
         /// Defaults to the local IP address.
         /// </summary>
         public string IPAddress { get; set; } = NetworkUtils.GetLocalIPAddress();
+        
+        /// <summary>
+        /// Whether or not to use UPnP to try to open the port on the router.
+        /// </summary>
+        public bool UPnPOn { get; set; } = false;
 
         /// <summary>
         /// The path to the directory where the backups should be stored at.
@@ -97,7 +102,8 @@ namespace MCSMLauncher.common.models
                 Type = "unknown",
                 Version = "??.??.??",
                 ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath,
-                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath
+                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath,
+                UPnPOn = false
             };
         }
 
@@ -107,8 +113,8 @@ namespace MCSMLauncher.common.models
         /// <param name="updateDict">The dictionary to </param>
         public void Update(Dictionary<string, string> updateDict)
         {
-            this.Port = int.Parse(updateDict["base-port"]);
-            this.IPAddress = updateDict.TryGetValue("ipaddress", out string value) ? value : this.IPAddress;
+            this.BasePort = int.Parse(updateDict["baseport"]);
+            this.IPAddress = updateDict.TryGetValue("ipaddress", out string ipaddr) ? ipaddr : this.IPAddress;
             this.Ram = int.Parse(updateDict["ram"]);
             this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
             this.ServerBackupsPath = updateDict["serverbackupspath"];
@@ -116,6 +122,7 @@ namespace MCSMLauncher.common.models
             this.ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
             this.CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
             this.JavaRuntimePath = updateDict["javaruntimepath"];
+            this.UPnPOn = updateDict.TryGetValue("upnpon", out string upnp) ? bool.Parse(upnp) : this.UPnPOn;
         }
 
         /// <summary>

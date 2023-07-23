@@ -88,7 +88,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
              file with the correct ip based on the success of the operation.
              This will inevitably fail if the router does not support UPnP.
             */
-            if (await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
+            if (info.UPnPOn && await NetworkUtils.TryCreatePortMapping(info.BasePort, info.BasePort))
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();

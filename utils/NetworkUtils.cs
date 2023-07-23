@@ -112,12 +112,11 @@ namespace MCSMLauncher.utils
                 var device = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, new CancellationTokenSource(10000));
 
                 // Create a new port mapping in the router identified by the external port.
-                // TODO: UNCOMMENT THESE LINES
-                // await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort,
-                //    $"TCP-MCSMLauncher@{internalPort}"));
+                await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort, 
+                    $"TCP-MCSMLauncher@{internalPort}"));
                 
-                // await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort,
-                //    $"UDP-MCSMLauncher@{internalPort}"));
+                await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort, 
+                    $"UDP-MCSMLauncher@{internalPort}"));
 
                 return true;
             }

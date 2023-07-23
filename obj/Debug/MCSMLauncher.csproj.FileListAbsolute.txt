@@ -52,3 +52,5 @@ C:\dev\MCSMLauncher\obj\Debug\MCSMLauncher.csproj.CoreCompileInputs.cache
 C:\dev\MCSMLauncher\obj\Debug\MCSMLauncher.csproj.CopyComplete
 C:\dev\MCSMLauncher\obj\Debug\MCSMLauncher.exe
 C:\dev\MCSMLauncher\obj\Debug\MCSMLauncher.pdb
+C:\dev\C#\MCSMLauncher\bin\Debug\Open.Nat.dll
+C:\dev\C#\MCSMLauncher\bin\Debug\Open.Nat.xml

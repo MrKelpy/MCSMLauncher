@@ -111,23 +111,27 @@ namespace MCSMLauncher.utils
                 NatDiscoverer discoverer = new NatDiscoverer();
                 var device = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, new CancellationTokenSource(10000));
 
-                // Create a new port mapping in the router identified by the external port.
-                // TODO: UNCOMMENT THESE LINES
-                // await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort,
-                //    $"TCP-MCSMLauncher@{internalPort}"));
-                
-                // await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort,
-                //    $"UDP-MCSMLauncher@{internalPort}"));
+                // Create a new TCP port mapping in the router identified by the external port.
+                try
+                {
+                    await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort,
+                        $"TCP-MCSMLauncher@{internalPort}"));
+                }
+                // If the port mapping already exists, ignore it.
+                catch (MappingException) { Logging.LOGGER.Warn(@$"The I{internalPort}@E{externalPort} TCP port mapping already exists. Ignoring..."); }
+
+                // Create a new UDP port mapping in the router identified by the external port.
+                try
+                {
+                    await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort,
+                        $"UDP-MCSMLauncher@{internalPort}"));
+                }
+                // If the port mapping already exists, ignore it.
+                catch (MappingException) { Logging.LOGGER.Warn(@$"The I{internalPort}@E{externalPort} UDP port mapping already exists. Ignoring..."); }
 
                 return true;
             }
-            // If the port mapping already exists, ignore it.
-            catch (MappingException)
-            {
-                Logging.LOGGER.Warn(@"The port mapping already exists. Ignoring...");
-                return true;
-            }
-            
+
             // If the network does not support UPnP, ignore it.
             catch (NatDeviceNotFoundException)
             {

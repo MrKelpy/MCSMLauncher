@@ -118,7 +118,7 @@ namespace MCSMLauncher.gui
             if (!File.Exists(settingsPath))
             {
                 new ServerInformation().GetMinimalInformation(section).ToFile(settingsPath);
-                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed("unknown.png")), "Unknown", Path.GetFileName(section.Name), "Offline"); }));
+                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed("unknown.png")), "Unknown", Path.GetFileName(section.Name)); }));
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace MCSMLauncher.gui
             // We have to parse the type to get the first word, since there could be snapshots of the type,
             // making the type similar to "serverType snapshots".
             string typeImagePath = FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed(info.Type.Split(' ')[0].ToLower() + ".png");
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name), "Offline"); }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name)); }));
 
             // Sets all of the start button rows' buttons to "Start" (default)
             this.GetRowFromName(section.SimpleName).Cells[5].Value = "Start";

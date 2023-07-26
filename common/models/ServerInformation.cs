@@ -131,6 +131,7 @@ namespace MCSMLauncher.common.models
         /// <param name="path">The path to write the information into</param>
         public void ToFile(string path)
         {
+            Logging.LOGGER.Info($"Dumping server information to {path}");
             if (File.Exists(path)) File.Delete(path);
             XMLUtils.SerializeToFile<ServerInformation>(path, this);
         }
@@ -142,6 +143,7 @@ namespace MCSMLauncher.common.models
         /// <returns>The ServerInformation instance with the information present in the xml file</returns>
         public static ServerInformation FromFile(string path)
         {
+            Logging.LOGGER.Info($"Obtaining server information from {path}");
             return XMLUtils.DeserializeFromFile<ServerInformation>(path);
         }
     }

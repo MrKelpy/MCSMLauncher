@@ -45,6 +45,9 @@ namespace MCSMLauncher.common.background
         /// </summary>
         public void RunTask()
         {
+            Logging.LOGGER.Info($"Starting backup thread for server: '{this.ServerSection}'");
+            
+            // Loads the settings from the server section.
             Dictionary<string, string> settings = new ServerEditor(this.ServerSection).LoadSettings();
             bool serverBackupsEnabled = !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
             bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
@@ -93,8 +96,13 @@ namespace MCSMLauncher.common.background
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
+                Logging.LOGGER.Info($"Backed up {serverSection.Name} Server to {backupsPath}");
             }
-            catch (Exception e) { Logging.LOGGER.Error(e); }
+            catch (Exception e)
+            {
+                Logging.LOGGER.Info("Failed to create server backup for server: " + serverSection.Name);
+                Logging.LOGGER.Error(e);
+            }
         }
 
         /// <summary>
@@ -110,23 +118,29 @@ namespace MCSMLauncher.common.background
             {
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
-                
+
                 // Gets all the 'playerdata' folders in the server, excluding the backups folder.
                 List<Section> filteredSections = serverSection.GetSectionsNamed("playerdata")
                     .Where(section => !backupsPath.Contains(section.Name))
                     .ToList();
-                
+
                 // Creates a playerdata backup for every world in the server.
                 foreach (Section section in filteredSections)
                 {
-                    string backupFileName = $"{Path.GetFileName(Path.GetDirectoryName(section.SectionFullPath))}-{backupName}";
+                    string backupFileName =
+                        $"{Path.GetFileName(Path.GetDirectoryName(section.SectionFullPath))}-{backupName}";
                     string backupFilePath = Path.Combine(backupsPath, backupFileName);
 
                     ZipDirectory(section.SectionFullPath, backupFilePath);
+                    Logging.LOGGER.Info($"Backed up {serverSection.Name}.{section.Name} Playerdata to {backupsPath}");
                 }
-                
+
             }
-            catch (Exception e) { Logging.LOGGER.Error(e); }
+            catch (Exception e)
+            {
+                Logging.LOGGER.Error($"Failed to create playerdata backup for server: {serverSection.Name}");
+                Logging.LOGGER.Error(e);
+            }
         }
 
         /// <summary>

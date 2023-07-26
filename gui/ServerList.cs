@@ -252,6 +252,8 @@ namespace MCSMLauncher.gui
             DataGridViewRow row = this.GetRowFromName(serverName);
 
             if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
+            
+            // Updates the server's IP address in the server list.
             row.Cells[3].Value = properties["server-ip"] != ""
                 ? properties["server-ip"]
                 : settings.IPAddress + ":" + properties["server-port"];

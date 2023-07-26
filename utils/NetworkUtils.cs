@@ -45,6 +45,8 @@ namespace MCSMLauncher.utils
         /// <returns>Either the starting port or the next available port after it</returns>
         public static int GetNextAvailablePort(int startingPort)
         {
+            Logging.LOGGER.Info($"Checking for an available port, starting from {startingPort}...");
+            
             // Iterates through the ports until it finds one that's available, starting from the given port.
             for (int currentPort = startingPort; currentPort < IPEndPoint.MaxPort; currentPort++)
                 if (!PortInUse(currentPort)) return currentPort;
@@ -114,6 +116,7 @@ namespace MCSMLauncher.utils
                 // Create a new TCP port mapping in the router identified by the external port.
                 try
                 {
+                    Logging.LOGGER.Info(@$"Creating a new TCP port mapping for I{internalPort}@E{externalPort}...");
                     await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort,
                         $"TCP-MCSMLauncher@{internalPort}"));
                 }
@@ -123,6 +126,7 @@ namespace MCSMLauncher.utils
                 // Create a new UDP port mapping in the router identified by the external port.
                 try
                 {
+                    Logging.LOGGER.Info(@$"Creating a new UDP port mapping for I{internalPort}@E{externalPort}...");
                     await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort,
                         $"UDP-MCSMLauncher@{internalPort}"));
                 }

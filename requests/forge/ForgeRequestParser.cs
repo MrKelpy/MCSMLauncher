@@ -29,11 +29,10 @@ namespace MCSMLauncher.requests.forge
                 using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 30));
                 HtmlDocument document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token);
 
+                // Gets the recommended forge version from the website
                 HtmlNode downloadsDiv = document.DocumentNode.SelectSingleNode("//div[@class=\"downloads\"]");
-                string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small")
-                    .InnerText.Replace(" ", "");
-                string directLink =
-                    $"https://maven.minecraftforge.net/net/minecraftforge/forge/{recommendedForgeVersion}/forge-{recommendedForgeVersion}-installer.jar";
+                string recommendedForgeVersion = downloadsDiv.SelectSingleNode(downloadsDiv.XPath + "/div/div/small").InnerText.Replace(" ", "");
+                string directLink = $"https://maven.minecraftforge.net/net/minecraftforge/forge/{recommendedForgeVersion}/forge-{recommendedForgeVersion}-installer.jar";
 
                 // Gets the response code from the primary direct link
                 HttpStatusCode statusCode = HttpStatusCode.NotFound;
@@ -42,11 +41,9 @@ namespace MCSMLauncher.requests.forge
                 {
                     HttpWebRequest request = (HttpWebRequest)WebRequest.Create(directLink);
                     request.Method = "HEAD";
-                    statusCode = ((HttpWebResponse)request.GetResponse()).StatusCode;
+                    statusCode = ((HttpWebResponse) request.GetResponse()).StatusCode;
                 }
-                catch (WebException)
-                {
-                } // Ignored, the status code will remain 404
+                catch (WebException) { } // Ignored, the status code will remain 404
 
                 // Gets the extended version of the recommended forge version, with itself repeated afterwards.
                 string extendedVersion = recommendedForgeVersion + "-" + version;

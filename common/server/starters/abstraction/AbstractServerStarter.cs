@@ -74,12 +74,14 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="info">The ServerInformation object with the server's info</param>
         protected async Task StartServer(Section serverSection, Process proc, ServerInformation info)
         {
+            Logging.LOGGER.Info($"Starting the {serverSection.SimpleName} server...");
             string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
             if (new ServerEditor(serverSection).HandlePortForServer() == 1)
             {
-                this.ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
+                string errorMessage = Logging.LOGGER.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
+                this.ProcessErrorMessages(errorMessage, proc);
                 return;
             }
             
@@ -98,9 +100,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
             
             // Starts both the process, and the backup handler attached to it.
             proc.Start();
+            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
+            
+            // Updates the visual elements of the server and logs the start.
             ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName);
             ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
-            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
+            Logging.LOGGER.Info($"Started the {serverSection.SimpleName} server on {info.IPAddress}:{info.BasePort}.");
             
             // Records the PID of the process into the server_settings.xml file.
             info.CurrentServerProcessID = proc.Id;

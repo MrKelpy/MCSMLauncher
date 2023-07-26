@@ -72,10 +72,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         {
             // Ensures that there's a clean section for the server to be built on
             this.OutputConsole.Clear();
-            this.OutputConsole.AppendText(
-                Logging.LOGGER.Info(
-                    $"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") +
-                Environment.NewLine);
+            this.OutputConsole.AppendText(Logging.LOGGER.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
 
             Section serversSection = FileSystem.GetFirstSectionNamed("servers");
             serversSection.RemoveSection(serverName);
@@ -175,9 +172,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         {
             // Creates a new process to run the server silently, and waits for it to finish.
             this.StartupArguments = this.StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
-            this.OutputConsole.AppendText(
-                Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") +
-                Environment.NewLine);
+            this.OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
             Section serverSection = this.GetSectionFromFile(serverJarPath);

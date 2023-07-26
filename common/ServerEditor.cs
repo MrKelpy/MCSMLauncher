@@ -35,6 +35,8 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the key:val's of the properties file</returns>
         public Dictionary<string, string> LoadProperties()
         {
+            Logging.LOGGER.Info($"Loading properties for {this.ServerSection.SimpleName}");
+            
             Dictionary<string, string> propertiesDictionary = new Dictionary<string, string>();
             string propertiesPath = this.ServerSection.GetFirstDocumentNamed("server.properties");
 
@@ -58,6 +60,8 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the deserialized server_settings.xml</returns>
         public Dictionary<string, string> LoadSettings()
         {
+            Logging.LOGGER.Info($"Loading settings for {this.ServerSection.SimpleName}");
+            
             // Creates a new dictionary to store the settings in.
             Dictionary<string, string> settingsDictionary = new Dictionary<string, string>();
             string settingsPath = this.ServerSection.GetFirstDocumentNamed("server_settings.xml");
@@ -82,6 +86,8 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void DumpToProperties(Dictionary<string, string> dictionaryToLoad)
         {
+            Logging.LOGGER.Info($"Updating properties for {this.ServerSection.SimpleName}");
+            
             string propertiesFilepath = Path.Combine(this.ServerSection.SectionFullPath, "server.properties");
             if (!File.Exists(propertiesFilepath)) File.Create(propertiesFilepath).Close();
 
@@ -108,6 +114,8 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public void DumpToSettings(Dictionary<string, string> dictionaryToLoad)
         {
+            Logging.LOGGER.Info($"Updating settings for {this.ServerSection.SimpleName}");
+            
             // Get the path to the server_settings.xml file.
             string settingsFilepath = Path.Combine(this.ServerSection.SectionFullPath, "server_settings.xml");
 

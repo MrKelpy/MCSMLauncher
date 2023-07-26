@@ -55,8 +55,8 @@ namespace MCSMLauncher.common.background
             ServerEditor editor = new ServerEditor(ServerSection);
             
             // Loads the settings from the server section.
-            bool serverBackupsEnabled = !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
-            bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
+            bool serverBackupsEnabled = editor.GetFromBuffers("serverbackupson") || bool.Parse(settings["serverbackupson"]);
+            bool playerdataBackupsEnabled = !editor.GetFromBuffers("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
 
             // If neither of the backups are activated, stop the thread to save resources.
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;

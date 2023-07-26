@@ -100,7 +100,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
 
             // Starts both the process, and the backup handler attached to it.
             proc.Start();
-            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask) {IsBackground = false}.Start();
+            new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) {IsBackground = false}.Start();
             
             // Updates the visual elements of the server and logs the start.
             ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName, editor);

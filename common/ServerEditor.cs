@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -92,6 +94,27 @@ namespace MCSMLauncher.common
             if (PropertiesBuffer.ContainsKey(key)) return PropertiesBuffer[key];
             return null;
         }
+        
+        /// <summary>
+        /// Looks inside both buffers for the given key, and returns the value of the first one found, parsed
+        /// to the given type parameter.
+        /// </summary>
+        /// <param name="key">The key to look for</param>
+        /// <typeparam name="T">The type that the object should be returned as</typeparam>
+        /// <returns>The value for the requested key</returns>
+        public T? GetFromBuffers<T>(string key) where T: class
+        {
+            if (SettingsBuffer.ContainsKey(key)) return (T) Convert.ChangeType(SettingsBuffer[key], typeof(T));
+            if (PropertiesBuffer.ContainsKey(key)) return (T) Convert.ChangeType(PropertiesBuffer[key], typeof(T));
+            return null;
+        }
+        
+        /// <summary>
+        /// Checks if the buffers contain the given key.
+        /// </summary>
+        /// <param name="key">The key to look for</param>
+        /// <returns>Whether or not the buffers contain the specified key</returns>
+        public bool BuffersContain(string key) => SettingsBuffer.ContainsKey(key) || PropertiesBuffer.ContainsKey(key);
 
         /// <summary>
         /// Handles the determination of the server port of a server, based on its defined base

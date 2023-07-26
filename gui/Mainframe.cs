@@ -43,7 +43,7 @@ namespace MCSMLauncher.gui
             BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
 
             // Starts any background tasks.
-            new Thread(new ServerProcessStateHandler().RunTask) { IsBackground = false }.Start();
+            new Thread(new ServerProcessStateHandler().RunTask) { IsBackground = true }.Start();
         }
 
         /// <summary>

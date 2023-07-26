@@ -43,10 +43,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="serverSection">The section to get the resources from</param>
         public virtual async Task Run(Section serverSection)
         {
+            // Get the server.jar and server.properties paths.
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
-            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
-
+            ServerEditor editor = new ServerEditor(serverSection);
+            ServerInformation info = editor.GetServerInformation();
+            
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");
             if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
             
@@ -58,11 +60,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", StartupArguments,
                 serverSection.SectionFullPath);
+            
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Finds the port and IP to start the server with, and starts the server.
-            await StartServer(serverSection, proc, info);
+            await StartServer(serverSection, proc, editor);
         }
 
         /// <summary>
@@ -71,14 +74,14 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// </summary>
         /// <param name="serverSection">The server section to work with</param>
         /// <param name="proc">The server process to track</param>
-        /// <param name="info">The ServerInformation object with the server's info</param>
-        protected async Task StartServer(Section serverSection, Process proc, ServerInformation info)
+        /// <param name="editor">The editor instance to use to interact with the files</param>
+        protected async Task StartServer(Section serverSection, Process proc, ServerEditor editor)
         {
             Logging.LOGGER.Info($"Starting the {serverSection.SimpleName} server...");
-            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
+            ServerInformation info = editor.GetServerInformation();
 
-            // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (new ServerEditor(serverSection).HandlePortForServer() == 1)
+            // Gets an available port starting on the one specified, automatically update and flush the buffers.
+            if (editor.HandlePortForServer() == 1)
             {
                 string errorMessage = Logging.LOGGER.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
                 ProcessErrorMessages(errorMessage, proc);
@@ -90,26 +93,23 @@ namespace MCSMLauncher.common.server.starters.abstraction
              file with the correct ip based on the success of the operation.
              This will inevitably fail if the router does not support UPnP.
             */
-            if (info.UPnPOn && await NetworkUtils.TryCreatePortMapping(info.BasePort, info.BasePort))
+            if (info.UPnPOn && await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
 
-            // Updates the server_settings.xml file with the correct IP prematurely.
-            info.ToFile(settings);
-            
             // Starts both the process, and the backup handler attached to it.
             proc.Start();
-            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask) {IsBackground = true}.Start();
+            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask) {IsBackground = false}.Start();
             
             // Updates the visual elements of the server and logs the start.
-            ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName);
+            ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName, editor);
             ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
-            Logging.LOGGER.Info($"Started the {serverSection.SimpleName} server on {info.IPAddress}:{info.BasePort}.");
+            Logging.LOGGER.Info($"Started the {serverSection.SimpleName} server on {info.IPAddress}:{info.Port}.");
             
-            // Records the PID of the process into the server_settings.xml file.
-            info.CurrentServerProcessID = proc.Id;
-            info.ToFile(settings);
+            // Updated and flushes the buffers, writing the changes to the files.
+            editor.UpdateBuffers(info.ToDictionary());
+            editor.FlushBuffers(); 
         }
     }
 }

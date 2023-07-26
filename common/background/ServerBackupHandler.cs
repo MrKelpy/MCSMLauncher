@@ -21,17 +21,22 @@ namespace MCSMLauncher.common.background
         /// <summary>
         /// Main constructor for the ServerBackupHandler, sets the ServerSection and pid properties
         /// </summary>
-        /// <param name="serverSection">The server section to work with</param>
+        /// <param name="editor">The server editor to work with</param>
         /// <param name="pid">The process ID, for status checking purposes</param>
-        public ServerBackupHandler(Section serverSection, int pid)
+        public ServerBackupHandler(ServerEditor editor, int pid)
         {
-            ServerSection = serverSection;
+            ServerEditor = editor;
             ProcessID = pid;
+            ServerSection = editor.ServerSection;
         }
 
         /// <summary>
-        /// The server section bound to the handler instance, used to access the files to backup, as well as
-        /// the settings.
+        /// The server editor to use for the backups.
+        /// </summary>
+        private ServerEditor ServerEditor { get; }
+        
+        /// <summary>
+        /// The server section to use for the backups. (This is a property purely for convenience and clarity)
         /// </summary>
         private Section ServerSection { get; }
 
@@ -45,10 +50,11 @@ namespace MCSMLauncher.common.background
         /// </summary>
         public void RunTask()
         {
+            // Logs and starts the backup thread.
             Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection}'");
+            ServerEditor editor = new ServerEditor(ServerSection);
             
             // Loads the settings from the server section.
-            Dictionary<string, string> settings = new ServerEditor(ServerSection).LoadSettings();
             bool serverBackupsEnabled = !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
             bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
 

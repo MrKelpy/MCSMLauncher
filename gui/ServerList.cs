@@ -242,21 +242,19 @@ namespace MCSMLauncher.gui
         /// Updates the server's IP address in the server list.
         /// </summary>
         /// <param name="serverName">The server to update the IP to</param>
-        public void UpdateServerIP(string serverName)
+        /// <param name="editor">The ServerEditor instance to use</param>
+        public void UpdateServerIP(string serverName, ServerEditor editor)
         {
             // Gets the server's IP address and updates the server list.
-            Section serverSection = FileSystem.AddSection("servers/" + serverName);
-            ServerEditor editor = new ServerEditor(serverSection);
-            ServerInformation settings = ServerEditor.GetServerInformation(serverSection);
-            Dictionary<string, string> properties = editor.LoadProperties();
             DataGridViewRow row = GetRowFromName(serverName);
+            ServerInformation settings = editor.GetServerInformation();
 
             if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
             
             // Updates the server's IP address in the server list.
-            row.Cells[3].Value = properties["server-ip"] != ""
-                ? properties["server-ip"]
-                : settings.IPAddress + ":" + properties["server-port"];
+            row.Cells[3].Value = editor.GetFromBuffers("server-ip") != ""
+                ? editor.GetFromBuffers("server-ip")
+                : settings.IPAddress + ":" + editor.GetFromBuffers("server-port");
         }
 
         /// <summary>
@@ -284,8 +282,10 @@ namespace MCSMLauncher.gui
                 
                 // In case the user clicks on... The Server IP cell.
                 case 3 when e.RowIndex >= 0:
+                {
                     await IPAddressCellClick(selectedRow);
                     break;
+                }
 
                 // In case the user clicks on... Any Options button.
                 case 4 when e.RowIndex >= 0:
@@ -326,10 +326,12 @@ namespace MCSMLauncher.gui
         /// <param name="buttonRow">The row where the button was clicked</param>
         private static void OptionsButtonClick(DataGridViewRow buttonRow)
         {
+            // Get the edit prompt for the server, given its name.
             string serverName = buttonRow.Cells[2].Value.ToString();
             Section serverSection = FileSystem.AddSection($"servers/{serverName}");
             ServerEditPrompt editPrompt = new ServerEditPrompt(serverSection);
             
+            // Show the edit prompt.
             editPrompt.ShowDialog();
         }
 
@@ -341,19 +343,23 @@ namespace MCSMLauncher.gui
         {
             try
             {
-                // Gathers the necessary resources to start the server
+                // Get the server's section from its name
                 string serverName = buttonRow.Cells[2].Value.ToString();
                 Section serverSection = FileSystem.AddSection($"servers/{serverName}");
+                
+                // Get the server's type and starter
                 string serverType = new ServerEditor(serverSection).LoadSettings()["type"];
                 AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
-                // Starts the server
+                // Start the server
                 await serverStarter.Run(serverSection);
             }
+            
+            // If an error occurs, let the user know.
             catch (Exception ex)
             {
                 Logging.LOGGER.Error(ex.Message + "\n" + ex.StackTrace);
-                MessageBox.Show($@"An error occurred whilst trying to start the server. {Environment.NewLine}Please check the integrity of the server and try again.",
+                MessageBox.Show($@"An error occurred whilst starting the server. {Environment.NewLine}Please check the integrity of the server files.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

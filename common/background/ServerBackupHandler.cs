@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using Ionic.Zip;
 using MCSMLauncher.common.interfaces;
+using MCSMLauncher.common.models;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
@@ -25,15 +26,15 @@ namespace MCSMLauncher.common.background
         /// <param name="pid">The process ID, for status checking purposes</param>
         public ServerBackupHandler(ServerEditor editor, int pid)
         {
-            ServerEditor = editor;
+            Editor = editor;
             ProcessID = pid;
             ServerSection = editor.ServerSection;
         }
 
         /// <summary>
-        /// The server editor to use for the backups.
+        /// The server Editor to use for the backups.
         /// </summary>
-        private ServerEditor ServerEditor { get; }
+        private ServerEditor Editor { get; }
         
         /// <summary>
         /// The server section to use for the backups. (This is a property purely for convenience and clarity)
@@ -52,26 +53,25 @@ namespace MCSMLauncher.common.background
         {
             // Logs and starts the backup thread.
             Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection}'");
-            ServerEditor editor = new ServerEditor(ServerSection);
+            ServerInformation info = Editor.GetServerInformation();
             
             // Loads the settings from the server section.
-            bool serverBackupsEnabled = editor.GetFromBuffers("serverbackupson") || bool.Parse(settings["serverbackupson"]);
-            bool playerdataBackupsEnabled = !editor.GetFromBuffers("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
+            bool serverBackupsEnabled = Editor.BuffersContain("serverbackupson") && Editor.GetFromBuffers<bool>("serverbackupson");
+            bool playerdataBackupsEnabled = Editor.BuffersContain("playerdatabackupson") && Editor.GetFromBuffers<bool>("playerdatabackupson");
 
             // If neither of the backups are activated, stop the thread to save resources.
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;
             
             // Get the server and playerdata backups paths, and create them if they don't exist.
-            string serverBackupsPath = PathUtils.NormalizePath(settings["serverbackupspath"]);
-            string playerdataBackupsPath = PathUtils.NormalizePath(settings["playerdatabackupspath"]);
+            string serverBackupsPath = PathUtils.NormalizePath(info.ServerBackupsPath);
+            string playerdataBackupsPath = PathUtils.NormalizePath(info.PlayerdataBackupsPath);
 
             // Creates initial backups regardless of the current time.
             if (playerdataBackupsEnabled) CreatePlayerdataBackup(playerdataBackupsPath, ServerSection);
             if (serverBackupsEnabled) CreateServerBackup(serverBackupsPath, ServerSection);
 
             // Until the process is no longer active, keep creating backups.
-            while (ProcessUtils.GetProcessById(ProcessID)?.ProcessName is var procName &&
-                   (procName == "java" || procName == "cmd"))
+            while (ProcessUtils.GetProcessById(ProcessID)?.ProcessName is "java" or "cmd")
             {
                 DateTime now = DateTime.Now;
 
@@ -157,7 +157,7 @@ namespace MCSMLauncher.common.background
         private static void ZipDirectory(string directory, string destination)
         {
             // Creates and opens the zipping file, using a resource manager
-            using ZipFile zipper = new ZipFile(destination);
+            using ZipFile zipper = new (destination);
             zipper.ZipErrorAction = ZipErrorAction.Skip;  // Skips any errors that may occur during the zipping process.
 
             // Adds every file into the zip file, parsing their path to exclude the root directory path.

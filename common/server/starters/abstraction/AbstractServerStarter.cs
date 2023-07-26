@@ -46,7 +46,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Get the server.jar and server.properties paths.
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
-            ServerEditor editor = new ServerEditor(serverSection);
+            ServerEditor editor = new (serverSection);
             ServerInformation info = editor.GetServerInformation();
             
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");

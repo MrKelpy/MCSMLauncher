@@ -102,12 +102,13 @@ namespace MCSMLauncher.common
         /// <param name="key">The key to look for</param>
         /// <typeparam name="T">The type that the object should be returned as</typeparam>
         /// <returns>The value for the requested key</returns>
-        public T? GetFromBuffers<T>(string key) where T: class
+        public T? GetFromBuffers<T>(string key)
         {
             if (SettingsBuffer.ContainsKey(key)) return (T) Convert.ChangeType(SettingsBuffer[key], typeof(T));
             if (PropertiesBuffer.ContainsKey(key)) return (T) Convert.ChangeType(PropertiesBuffer[key], typeof(T));
-            return null;
+            return default;
         }
+        
         
         /// <summary>
         /// Checks if the buffers contain the given key.

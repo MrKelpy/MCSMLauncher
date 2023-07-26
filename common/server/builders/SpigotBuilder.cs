@@ -44,13 +44,13 @@ namespace MCSMLauncher.common.server.builders
             if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
 
             if (e.Data.Contains("INFO"))
-                this.ProcessInfoMessages(e.Data, proc);
+                ProcessInfoMessages(e.Data, proc);
             else if (e.Data.Contains("WARN"))
-                this.ProcessWarningMessages(e.Data, proc);
+                ProcessWarningMessages(e.Data, proc);
             else if (e.Data.Contains("ERROR"))
-                this.ProcessErrorMessages(e.Data, proc);
+                ProcessErrorMessages(e.Data, proc);
             else
-                this.ProcessOtherMessages(e.Data, proc);
+                ProcessOtherMessages(e.Data, proc);
         }
 
         /// <summary>
@@ -63,13 +63,13 @@ namespace MCSMLauncher.common.server.builders
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected override void ProcessOtherMessages(string message, Process proc)
         {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.OutputConsole.SelectionColor = Color.Gray; }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                this.OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
             }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.OutputConsole.SelectionColor = Color.Black; }));
-            this.TerminationCode = this.TerminationCode != 1
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            TerminationCode = TerminationCode != 1
                                    && !message.ToLower().Split(' ').Contains("error")
                                    && !message.ToLower().Split(' ').Contains("unsupported")
                 ? 3

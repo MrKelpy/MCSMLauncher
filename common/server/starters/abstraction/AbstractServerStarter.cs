@@ -29,7 +29,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="startupArguments">The startup arguments for the server</param>
         protected AbstractServerStarter(string otherArguments, string startupArguments)
         {
-            this.StartupArguments = otherArguments + startupArguments;
+            StartupArguments = otherArguments + startupArguments;
         }
 
         /// <summary>
@@ -51,18 +51,18 @@ namespace MCSMLauncher.common.server.starters.abstraction
             if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
             
             // Builds the startup arguments for the server.
-            this.StartupArguments = this.StartupArguments
+            StartupArguments = StartupArguments
                 .Replace("%SERVER_JAR%", PathUtils.NormalizePath(serverJarPath))
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             // Creates the process and starts it.
-            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", this.StartupArguments,
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", StartupArguments,
                 serverSection.SectionFullPath);
-            proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Finds the port and IP to start the server with, and starts the server.
-            await this.StartServer(serverSection, proc, info);
+            await StartServer(serverSection, proc, info);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             if (new ServerEditor(serverSection).HandlePortForServer() == 1)
             {
                 string errorMessage = Logging.LOGGER.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
-                this.ProcessErrorMessages(errorMessage, proc);
+                ProcessErrorMessages(errorMessage, proc);
                 return;
             }
             
@@ -100,7 +100,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             
             // Starts both the process, and the backup handler attached to it.
             proc.Start();
-            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask).Start();
+            new Thread(new ServerBackupHandler(serverSection, proc.Id).RunTask) {IsBackground = true}.Start();
             
             // Updates the visual elements of the server and logs the start.
             ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName);

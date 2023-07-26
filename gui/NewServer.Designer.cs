@@ -28,255 +28,255 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewServer));
-            this.NewServerLayout = new System.Windows.Forms.Panel();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.RichTextBoxConsoleOutput = new System.Windows.Forms.RichTextBox();
-            this.ButtonFolderBrowser = new System.Windows.Forms.Button();
-            this.ComboBoxJavaVersion = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.PictureBoxLoading = new System.Windows.Forms.PictureBox();
-            this.LabelServerNameError = new System.Windows.Forms.Label();
-            this.ButtonBuild = new System.Windows.Forms.Button();
-            this.ComboServerVersion = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.ComboBoxServerType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.TextBoxServerName = new System.Windows.Forms.TextBox();
-            this.miniToolStrip = new System.Windows.Forms.MenuStrip();
-            this.FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
-            this.ToolTips = new System.Windows.Forms.ToolTip(this.components);
-            this.NewServerLayout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).BeginInit();
-            this.SuspendLayout();
+            NewServerLayout = new System.Windows.Forms.Panel();
+            label8 = new System.Windows.Forms.Label();
+            label7 = new System.Windows.Forms.Label();
+            label6 = new System.Windows.Forms.Label();
+            label5 = new System.Windows.Forms.Label();
+            RichTextBoxConsoleOutput = new System.Windows.Forms.RichTextBox();
+            ButtonFolderBrowser = new System.Windows.Forms.Button();
+            ComboBoxJavaVersion = new System.Windows.Forms.ComboBox();
+            label4 = new System.Windows.Forms.Label();
+            PictureBoxLoading = new System.Windows.Forms.PictureBox();
+            LabelServerNameError = new System.Windows.Forms.Label();
+            ButtonBuild = new System.Windows.Forms.Button();
+            ComboServerVersion = new System.Windows.Forms.ComboBox();
+            label3 = new System.Windows.Forms.Label();
+            ComboBoxServerType = new System.Windows.Forms.ComboBox();
+            label2 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            TextBoxServerName = new System.Windows.Forms.TextBox();
+            miniToolStrip = new System.Windows.Forms.MenuStrip();
+            FolderBrowser = new System.Windows.Forms.FolderBrowserDialog();
+            ToolTips = new System.Windows.Forms.ToolTip(components);
+            NewServerLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(PictureBoxLoading)).BeginInit();
+            SuspendLayout();
             // 
             // NewServerLayout
             // 
-            this.NewServerLayout.BackColor = System.Drawing.SystemColors.Control;
-            this.NewServerLayout.Controls.Add(this.label8);
-            this.NewServerLayout.Controls.Add(this.label7);
-            this.NewServerLayout.Controls.Add(this.label6);
-            this.NewServerLayout.Controls.Add(this.label5);
-            this.NewServerLayout.Controls.Add(this.RichTextBoxConsoleOutput);
-            this.NewServerLayout.Controls.Add(this.ButtonFolderBrowser);
-            this.NewServerLayout.Controls.Add(this.ComboBoxJavaVersion);
-            this.NewServerLayout.Controls.Add(this.label4);
-            this.NewServerLayout.Controls.Add(this.PictureBoxLoading);
-            this.NewServerLayout.Controls.Add(this.LabelServerNameError);
-            this.NewServerLayout.Controls.Add(this.ButtonBuild);
-            this.NewServerLayout.Controls.Add(this.ComboServerVersion);
-            this.NewServerLayout.Controls.Add(this.label3);
-            this.NewServerLayout.Controls.Add(this.ComboBoxServerType);
-            this.NewServerLayout.Controls.Add(this.label2);
-            this.NewServerLayout.Controls.Add(this.label1);
-            this.NewServerLayout.Controls.Add(this.TextBoxServerName);
-            this.NewServerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.NewServerLayout.Location = new System.Drawing.Point(0, 0);
-            this.NewServerLayout.Name = "NewServerLayout";
-            this.NewServerLayout.Size = new System.Drawing.Size(800, 450);
-            this.NewServerLayout.TabIndex = 2;
+            NewServerLayout.BackColor = System.Drawing.SystemColors.Control;
+            NewServerLayout.Controls.Add(label8);
+            NewServerLayout.Controls.Add(label7);
+            NewServerLayout.Controls.Add(label6);
+            NewServerLayout.Controls.Add(label5);
+            NewServerLayout.Controls.Add(RichTextBoxConsoleOutput);
+            NewServerLayout.Controls.Add(ButtonFolderBrowser);
+            NewServerLayout.Controls.Add(ComboBoxJavaVersion);
+            NewServerLayout.Controls.Add(label4);
+            NewServerLayout.Controls.Add(PictureBoxLoading);
+            NewServerLayout.Controls.Add(LabelServerNameError);
+            NewServerLayout.Controls.Add(ButtonBuild);
+            NewServerLayout.Controls.Add(ComboServerVersion);
+            NewServerLayout.Controls.Add(label3);
+            NewServerLayout.Controls.Add(ComboBoxServerType);
+            NewServerLayout.Controls.Add(label2);
+            NewServerLayout.Controls.Add(label1);
+            NewServerLayout.Controls.Add(TextBoxServerName);
+            NewServerLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            NewServerLayout.Location = new System.Drawing.Point(0, 0);
+            NewServerLayout.Name = "NewServerLayout";
+            NewServerLayout.Size = new System.Drawing.Size(800, 450);
+            NewServerLayout.TabIndex = 2;
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(350, 67);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(14, 14);
-            this.label8.TabIndex = 19;
-            this.label8.Tag = "tooltip";
-            this.ToolTips.SetToolTip(this.label8, "This is the server\'s name, which is used to identify each server internally. \r\nTh" + "is name will also be the one displayed in the listings when you try to run it.");
+            label8.Location = new System.Drawing.Point(350, 67);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(14, 14);
+            label8.TabIndex = 19;
+            label8.Tag = "tooltip";
+            ToolTips.SetToolTip(label8, "This is the server\'s name, which is used to identify each server internally. \r\nTh" + "is name will also be the one displayed in the listings when you try to run it.");
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(350, 147);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(14, 14);
-            this.label7.TabIndex = 18;
-            this.label7.Tag = "tooltip";
-            this.ToolTips.SetToolTip(this.label7, resources.GetString("label7.ToolTip"));
+            label7.Location = new System.Drawing.Point(350, 147);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(14, 14);
+            label7.TabIndex = 18;
+            label7.Tag = "tooltip";
+            ToolTips.SetToolTip(label7, resources.GetString("label7.ToolTip"));
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(350, 227);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(14, 14);
-            this.label6.TabIndex = 17;
-            this.label6.Tag = "tooltip";
-            this.ToolTips.SetToolTip(this.label6, "This is the server\'s version, according to the selected server type.\r\nEach type h" + "as slightly different version ranges to be selected.");
+            label6.Location = new System.Drawing.Point(350, 227);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(14, 14);
+            label6.TabIndex = 17;
+            label6.Tag = "tooltip";
+            ToolTips.SetToolTip(label6, "This is the server\'s version, according to the selected server type.\r\nEach type h" + "as slightly different version ranges to be selected.");
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(350, 304);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(14, 14);
-            this.label5.TabIndex = 16;
-            this.label5.Tag = "tooltip";
-            this.ToolTips.SetToolTip(this.label5, resources.GetString("label5.ToolTip"));
+            label5.Location = new System.Drawing.Point(350, 304);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(14, 14);
+            label5.TabIndex = 16;
+            label5.Tag = "tooltip";
+            ToolTips.SetToolTip(label5, resources.GetString("label5.ToolTip"));
             // 
             // RichTextBoxConsoleOutput
             // 
-            this.RichTextBoxConsoleOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.RichTextBoxConsoleOutput.BackColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.RichTextBoxConsoleOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.RichTextBoxConsoleOutput.HideSelection = false;
-            this.RichTextBoxConsoleOutput.Location = new System.Drawing.Point(440, 24);
-            this.RichTextBoxConsoleOutput.Name = "RichTextBoxConsoleOutput";
-            this.RichTextBoxConsoleOutput.ReadOnly = true;
-            this.RichTextBoxConsoleOutput.Size = new System.Drawing.Size(328, 377);
-            this.RichTextBoxConsoleOutput.TabIndex = 15;
-            this.RichTextBoxConsoleOutput.Text = "";
+            RichTextBoxConsoleOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            RichTextBoxConsoleOutput.BackColor = System.Drawing.SystemColors.ButtonHighlight;
+            RichTextBoxConsoleOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            RichTextBoxConsoleOutput.HideSelection = false;
+            RichTextBoxConsoleOutput.Location = new System.Drawing.Point(440, 24);
+            RichTextBoxConsoleOutput.Name = "RichTextBoxConsoleOutput";
+            RichTextBoxConsoleOutput.ReadOnly = true;
+            RichTextBoxConsoleOutput.Size = new System.Drawing.Size(328, 377);
+            RichTextBoxConsoleOutput.TabIndex = 15;
+            RichTextBoxConsoleOutput.Text = "";
             // 
             // ButtonFolderBrowser
             // 
-            this.ButtonFolderBrowser.Location = new System.Drawing.Point(96, 296);
-            this.ButtonFolderBrowser.Margin = new System.Windows.Forms.Padding(2);
-            this.ButtonFolderBrowser.Name = "ButtonFolderBrowser";
-            this.ButtonFolderBrowser.Size = new System.Drawing.Size(28, 28);
-            this.ButtonFolderBrowser.TabIndex = 14;
-            this.ButtonFolderBrowser.UseVisualStyleBackColor = true;
-            this.ButtonFolderBrowser.Click += new System.EventHandler(this.FolderBrowserButton_Click);
+            ButtonFolderBrowser.Location = new System.Drawing.Point(96, 296);
+            ButtonFolderBrowser.Margin = new System.Windows.Forms.Padding(2);
+            ButtonFolderBrowser.Name = "ButtonFolderBrowser";
+            ButtonFolderBrowser.Size = new System.Drawing.Size(28, 28);
+            ButtonFolderBrowser.TabIndex = 14;
+            ButtonFolderBrowser.UseVisualStyleBackColor = true;
+            ButtonFolderBrowser.Click += new System.EventHandler(FolderBrowserButton_Click);
             // 
             // ComboBoxJavaVersion
             // 
-            this.ComboBoxJavaVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboBoxJavaVersion.FormattingEnabled = true;
-            this.ComboBoxJavaVersion.Location = new System.Drawing.Point(129, 301);
-            this.ComboBoxJavaVersion.Name = "ComboBoxJavaVersion";
-            this.ComboBoxJavaVersion.Size = new System.Drawing.Size(215, 21);
-            this.ComboBoxJavaVersion.TabIndex = 13;
+            ComboBoxJavaVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            ComboBoxJavaVersion.FormattingEnabled = true;
+            ComboBoxJavaVersion.Location = new System.Drawing.Point(129, 301);
+            ComboBoxJavaVersion.Name = "ComboBoxJavaVersion";
+            ComboBoxJavaVersion.Size = new System.Drawing.Size(215, 21);
+            ComboBoxJavaVersion.TabIndex = 13;
             // 
             // label4
             // 
-            this.label4.BackColor = System.Drawing.Color.Transparent;
-            this.label4.Location = new System.Drawing.Point(96, 268);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(248, 32);
-            this.label4.TabIndex = 12;
-            this.label4.Text = "Java Runtime Version";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            label4.BackColor = System.Drawing.Color.Transparent;
+            label4.Location = new System.Drawing.Point(96, 268);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(248, 32);
+            label4.TabIndex = 12;
+            label4.Text = "Java Runtime Version";
+            label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // PictureBoxLoading
             // 
-            this.PictureBoxLoading.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.PictureBoxLoading.BackColor = System.Drawing.Color.Transparent;
-            this.PictureBoxLoading.Location = new System.Drawing.Point(189, 354);
-            this.PictureBoxLoading.Name = "PictureBoxLoading";
-            this.PictureBoxLoading.Size = new System.Drawing.Size(66, 62);
-            this.PictureBoxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.PictureBoxLoading.TabIndex = 11;
-            this.PictureBoxLoading.TabStop = false;
-            this.PictureBoxLoading.Visible = false;
+            PictureBoxLoading.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            PictureBoxLoading.BackColor = System.Drawing.Color.Transparent;
+            PictureBoxLoading.Location = new System.Drawing.Point(189, 354);
+            PictureBoxLoading.Name = "PictureBoxLoading";
+            PictureBoxLoading.Size = new System.Drawing.Size(66, 62);
+            PictureBoxLoading.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            PictureBoxLoading.TabIndex = 11;
+            PictureBoxLoading.TabStop = false;
+            PictureBoxLoading.Visible = false;
             // 
             // LabelServerNameError
             // 
-            this.LabelServerNameError.BackColor = System.Drawing.Color.Transparent;
-            this.LabelServerNameError.ForeColor = System.Drawing.Color.Firebrick;
-            this.LabelServerNameError.Location = new System.Drawing.Point(96, 87);
-            this.LabelServerNameError.Name = "LabelServerNameError";
-            this.LabelServerNameError.Size = new System.Drawing.Size(248, 14);
-            this.LabelServerNameError.TabIndex = 10;
-            this.LabelServerNameError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            LabelServerNameError.BackColor = System.Drawing.Color.Transparent;
+            LabelServerNameError.ForeColor = System.Drawing.Color.Firebrick;
+            LabelServerNameError.Location = new System.Drawing.Point(96, 87);
+            LabelServerNameError.Name = "LabelServerNameError";
+            LabelServerNameError.Size = new System.Drawing.Size(248, 14);
+            LabelServerNameError.TabIndex = 10;
+            LabelServerNameError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ButtonBuild
             // 
-            this.ButtonBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.ButtonBuild.Enabled = false;
-            this.ButtonBuild.Location = new System.Drawing.Point(96, 353);
-            this.ButtonBuild.Name = "ButtonBuild";
-            this.ButtonBuild.Size = new System.Drawing.Size(248, 48);
-            this.ButtonBuild.TabIndex = 7;
-            this.ButtonBuild.Text = "Build Server";
-            this.ButtonBuild.UseVisualStyleBackColor = true;
-            this.ButtonBuild.Click += new System.EventHandler(this.ButtonBuild_Click);
+            ButtonBuild.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            ButtonBuild.Enabled = false;
+            ButtonBuild.Location = new System.Drawing.Point(96, 353);
+            ButtonBuild.Name = "ButtonBuild";
+            ButtonBuild.Size = new System.Drawing.Size(248, 48);
+            ButtonBuild.TabIndex = 7;
+            ButtonBuild.Text = "Build Server";
+            ButtonBuild.UseVisualStyleBackColor = true;
+            ButtonBuild.Click += new System.EventHandler(ButtonBuild_Click);
             // 
             // ComboServerVersion
             // 
-            this.ComboServerVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboServerVersion.Enabled = false;
-            this.ComboServerVersion.FormattingEnabled = true;
-            this.ComboServerVersion.Location = new System.Drawing.Point(96, 224);
-            this.ComboServerVersion.Name = "ComboServerVersion";
-            this.ComboServerVersion.Size = new System.Drawing.Size(248, 21);
-            this.ComboServerVersion.TabIndex = 6;
-            this.ComboServerVersion.SelectedIndexChanged += new System.EventHandler(this.ComboServerVersion_SelectedIndexChanged);
+            ComboServerVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            ComboServerVersion.Enabled = false;
+            ComboServerVersion.FormattingEnabled = true;
+            ComboServerVersion.Location = new System.Drawing.Point(96, 224);
+            ComboServerVersion.Name = "ComboServerVersion";
+            ComboServerVersion.Size = new System.Drawing.Size(248, 21);
+            ComboServerVersion.TabIndex = 6;
+            ComboServerVersion.SelectedIndexChanged += new System.EventHandler(ComboServerVersion_SelectedIndexChanged);
             // 
             // label3
             // 
-            this.label3.BackColor = System.Drawing.Color.Transparent;
-            this.label3.Location = new System.Drawing.Point(96, 192);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(248, 32);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Server Version";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            label3.BackColor = System.Drawing.Color.Transparent;
+            label3.Location = new System.Drawing.Point(96, 192);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(248, 32);
+            label3.TabIndex = 5;
+            label3.Text = "Server Version";
+            label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ComboBoxServerType
             // 
-            this.ComboBoxServerType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ComboBoxServerType.FormattingEnabled = true;
-            this.ComboBoxServerType.Location = new System.Drawing.Point(96, 144);
-            this.ComboBoxServerType.Name = "ComboBoxServerType";
-            this.ComboBoxServerType.Size = new System.Drawing.Size(248, 21);
-            this.ComboBoxServerType.TabIndex = 4;
-            this.ComboBoxServerType.SelectedIndexChanged += new System.EventHandler(this.ComboBoxServerType_SelectedIndexChanged);
+            ComboBoxServerType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            ComboBoxServerType.FormattingEnabled = true;
+            ComboBoxServerType.Location = new System.Drawing.Point(96, 144);
+            ComboBoxServerType.Name = "ComboBoxServerType";
+            ComboBoxServerType.Size = new System.Drawing.Size(248, 21);
+            ComboBoxServerType.TabIndex = 4;
+            ComboBoxServerType.SelectedIndexChanged += new System.EventHandler(ComboBoxServerType_SelectedIndexChanged);
             // 
             // label2
             // 
-            this.label2.BackColor = System.Drawing.Color.Transparent;
-            this.label2.Location = new System.Drawing.Point(96, 112);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(248, 32);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Server Type";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            label2.BackColor = System.Drawing.Color.Transparent;
+            label2.Location = new System.Drawing.Point(96, 112);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(248, 32);
+            label2.TabIndex = 3;
+            label2.Text = "Server Type";
+            label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
             // 
-            this.label1.BackColor = System.Drawing.Color.Transparent;
-            this.label1.Location = new System.Drawing.Point(96, 32);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(248, 32);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Server Name";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            label1.BackColor = System.Drawing.Color.Transparent;
+            label1.Location = new System.Drawing.Point(96, 32);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(248, 32);
+            label1.TabIndex = 1;
+            label1.Text = "Server Name";
+            label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // TextBoxServerName
             // 
-            this.TextBoxServerName.Location = new System.Drawing.Point(96, 64);
-            this.TextBoxServerName.Name = "TextBoxServerName";
-            this.TextBoxServerName.Size = new System.Drawing.Size(248, 20);
-            this.TextBoxServerName.TabIndex = 0;
-            this.TextBoxServerName.TextChanged += new System.EventHandler(this.TextBoxServerName_TextChanged);
+            TextBoxServerName.Location = new System.Drawing.Point(96, 64);
+            TextBoxServerName.Name = "TextBoxServerName";
+            TextBoxServerName.Size = new System.Drawing.Size(248, 20);
+            TextBoxServerName.TabIndex = 0;
+            TextBoxServerName.TextChanged += new System.EventHandler(TextBoxServerName_TextChanged);
             // 
             // miniToolStrip
             // 
-            this.miniToolStrip.AutoSize = false;
-            this.miniToolStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this.miniToolStrip.Location = new System.Drawing.Point(0, 0);
-            this.miniToolStrip.Name = "miniToolStrip";
-            this.miniToolStrip.Size = new System.Drawing.Size(800, 24);
-            this.miniToolStrip.TabIndex = 3;
-            this.miniToolStrip.Visible = false;
+            miniToolStrip.AutoSize = false;
+            miniToolStrip.Dock = System.Windows.Forms.DockStyle.None;
+            miniToolStrip.Location = new System.Drawing.Point(0, 0);
+            miniToolStrip.Name = "miniToolStrip";
+            miniToolStrip.Size = new System.Drawing.Size(800, 24);
+            miniToolStrip.TabIndex = 3;
+            miniToolStrip.Visible = false;
             // 
             // NewServer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.NewServerLayout);
-            this.Controls.Add(this.miniToolStrip);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Location = new System.Drawing.Point(15, 15);
-            this.Name = "NewServer";
-            this.NewServerLayout.ResumeLayout(false);
-            this.NewServerLayout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxLoading)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.SystemColors.Control;
+            ClientSize = new System.Drawing.Size(800, 450);
+            Controls.Add(NewServerLayout);
+            Controls.Add(miniToolStrip);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            Location = new System.Drawing.Point(15, 15);
+            Name = "NewServer";
+            NewServerLayout.ResumeLayout(false);
+            NewServerLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(PictureBoxLoading)).EndInit();
+            ResumeLayout(false);
         }
 
         private System.Windows.Forms.Label label6;

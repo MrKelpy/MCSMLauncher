@@ -28,18 +28,18 @@ namespace MCSMLauncher.gui
         /// </summary>
         private NewServer()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             // Loads the images for the form
-            this.PictureBoxLoading.Image =
+            PictureBoxLoading.Image =
                 Image.FromFile(
                     FileSystem.GetFirstDocumentNamed(
                         Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Loader"))));
-            this.ButtonFolderBrowser.Image =
+            ButtonFolderBrowser.Image =
                 Image.FromFile(FileSystem.GetFirstDocumentNamed(
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
-            foreach (Label label in this.NewServerLayout.Controls.OfType<Label>()
+            foreach (Label label in NewServerLayout.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
                 label.BackgroundImage =
@@ -49,7 +49,7 @@ namespace MCSMLauncher.gui
             }
 
             // Sets the server types inside the server type box
-            this.ComboBoxServerType.Items.AddRange(new ServerTypeMappingsFactory().GetSupportedServerTypes()
+            ComboBoxServerType.Items.AddRange(new ServerTypeMappingsFactory().GetSupportedServerTypes()
                 .Select(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x)).ToArray<object>());
 
             // Checks all the java versions available in Program Files and sets them in the java version box
@@ -59,15 +59,15 @@ namespace MCSMLauncher.gui
                 Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
 
             if (Directory.Exists(programFilesJavaPath))
-                this.ComboBoxJavaVersion.Items.AddRange(
+                ComboBoxJavaVersion.Items.AddRange(
                     Directory.GetDirectories(programFilesJavaPath).ToArray<object>());
 
             if (Directory.Exists(programFilesX86JavaPath))
-                this.ComboBoxJavaVersion.Items.AddRange(Directory.GetDirectories(programFilesX86JavaPath)
+                ComboBoxJavaVersion.Items.AddRange(Directory.GetDirectories(programFilesX86JavaPath)
                     .ToArray<object>());
 
             // Automatically selects the first java version if there is one
-            this.ComboBoxJavaVersion.SelectedIndex = this.ComboBoxJavaVersion.Items.Count > 0 ? 0 : -1;
+            ComboBoxJavaVersion.SelectedIndex = ComboBoxJavaVersion.Items.Count > 0 ? 0 : -1;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace MCSMLauncher.gui
         /// <returns>A Panel representing this form's layout.</returns>
         public Panel GetLayout()
         {
-            return this.NewServerLayout;
+            return NewServerLayout;
         }
 
         /// <summary>
@@ -102,10 +102,10 @@ namespace MCSMLauncher.gui
         /// <param name="enabled">Whether or not the user can interact with the controls.</param>
         public void ToggleControlsState(bool enabled)
         {
-            this.TextBoxServerName.Enabled = this.ComboServerVersion.Enabled = this.ComboBoxServerType.Enabled
-                = this.ComboBoxJavaVersion.Enabled =
-                    this.ButtonFolderBrowser.Enabled = this.ButtonBuild.Visible = enabled;
-            this.PictureBoxLoading.Visible = !enabled;
+            TextBoxServerName.Enabled = ComboServerVersion.Enabled = ComboBoxServerType.Enabled
+                = ComboBoxJavaVersion.Enabled =
+                    ButtonFolderBrowser.Enabled = ButtonBuild.Visible = enabled;
+            PictureBoxLoading.Visible = !enabled;
         }
 
         /// <summary>
@@ -116,34 +116,34 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ComboBoxServerType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.ComboBoxServerType.Text == "") return;
+            if (ComboBoxServerType.Text == "") return;
 
             // Prepares the server version box for the new server type version list
-            this.ButtonBuild.Enabled = false;
-            this.ComboServerVersion.Enabled = true;
-            this.ComboServerVersion.Items.Clear();
-            this.ComboServerVersion.ForeColor = Color.Black;
+            ButtonBuild.Enabled = false;
+            ComboServerVersion.Enabled = true;
+            ComboServerVersion.Items.Clear();
+            ComboServerVersion.ForeColor = Color.Black;
 
             // Adds the versions and snapshots (if applicable) to the server version box. If the server type is not
             // recognized, the versions box is disabled.
             try
             {
                 Dictionary<string, string> cache =
-                    new ServerTypeMappingsFactory().GetCacheContentsForType(this.ComboBoxServerType.Text);
+                    new ServerTypeMappingsFactory().GetCacheContentsForType(ComboBoxServerType.Text);
 
-                foreach (KeyValuePair<string, string> item in cache) this.ComboServerVersion.Items.Add(item.Key);
+                foreach (KeyValuePair<string, string> item in cache) ComboServerVersion.Items.Add(item.Key);
             }
 
             // If we can't find any versions for the server type, a null reference exception will be thrown.
             // In that case, block the version selection with a message.
             catch (NullReferenceException)
             {
-                Logging.LOGGER.Warn($"Couldn't load any versions for the {this.ComboBoxServerType.Text} server type.",
+                Logging.LOGGER.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.",
                     LoggingType.FILE);
-                this.ComboServerVersion.Items.Add(@"Couldn't load any versions for this server type.");
-                this.ComboServerVersion.ForeColor = Color.Firebrick;
-                this.ComboServerVersion.SelectedIndex = 0;
-                this.ComboServerVersion.Enabled = this.ButtonBuild.Enabled = false;
+                ComboServerVersion.Items.Add(@"Couldn't load any versions for this server type.");
+                ComboServerVersion.ForeColor = Color.Firebrick;
+                ComboServerVersion.SelectedIndex = 0;
+                ComboServerVersion.Enabled = ButtonBuild.Enabled = false;
             }
         }
 
@@ -156,45 +156,45 @@ namespace MCSMLauncher.gui
         private async void ButtonBuild_Click(object sender, EventArgs e)
         {
             Section serversSection = FileSystem.AddSection("servers");
-            this.LabelServerNameError.Visible = false;
-            this.RichTextBoxConsoleOutput.Clear();
-            this.RichTextBoxConsoleOutput.ForeColor = Color.Black;
+            LabelServerNameError.Visible = false;
+            RichTextBoxConsoleOutput.Clear();
+            RichTextBoxConsoleOutput.ForeColor = Color.Black;
 
             // Prevents invalid characters in the server name
-            if (this.TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains) ||
-                this.TextBoxServerName.Text.Contains(' '))
+            if (TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains) ||
+                TextBoxServerName.Text.Contains(' '))
             {
-                this.LabelServerNameError.Text = @"Invalid characters in server name.";
-                this.LabelServerNameError.Visible = true;
+                LabelServerNameError.Text = @"Invalid characters in server name.";
+                LabelServerNameError.Visible = true;
                 return;
             }
 
             // Prevents invalid server names
-            if (this.InvalidServerNames.Any(x => x.ToUpper().Equals(this.TextBoxServerName.Text.ToUpper())))
+            if (InvalidServerNames.Any(x => x.ToUpper().Equals(TextBoxServerName.Text.ToUpper())))
             {
-                this.LabelServerNameError.Text = @"Invalid server name.";
-                this.LabelServerNameError.Visible = true;
+                LabelServerNameError.Text = @"Invalid server name.";
+                LabelServerNameError.Visible = true;
                 return;
             }
 
             // Prevent two servers from having the same name
-            if (serversSection.GetAllSections().Any(x => x.SimpleName == this.TextBoxServerName.Text))
+            if (serversSection.GetAllSections().Any(x => x.SimpleName == TextBoxServerName.Text))
             {
-                this.LabelServerNameError.Text = @"A server with that name already exists.";
-                this.LabelServerNameError.Visible = true;
+                LabelServerNameError.Text = @"A server with that name already exists.";
+                LabelServerNameError.Visible = true;
                 return;
             }
 
             // Starts to build the server, first disabling the controls so the user can't interact with them,
             // then building the server, and finally re-enabling the controls.
-            this.ToggleControlsState(false);
+            ToggleControlsState(false);
 
             try
             {
                 AbstractServerBuilder builder =
-                    new ServerTypeMappingsFactory().GetBuilderFor(this.ComboBoxServerType.Text);
-                await builder.Build(this.TextBoxServerName.Text, this.ComboBoxServerType.Text,
-                    this.ComboServerVersion.Text);
+                    new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text,
+                    ComboServerVersion.Text);
             }
 
             // If a timeout exception happened, log it and tell the user that a timeout happened
@@ -202,7 +202,7 @@ namespace MCSMLauncher.gui
             {
                 Logging.LOGGER.Error(err.StackTrace);
                 MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                serversSection.RemoveSection(this.TextBoxServerName.Text);
+                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             // If a network error happened, log it and tell the user that a network error happened
@@ -214,7 +214,7 @@ namespace MCSMLauncher.gui
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
 
                 MessageBox.Show(errorMessage, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                serversSection.RemoveSection(this.TextBoxServerName.Text);
+                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             // If an unknown exception was raised, log it as such and tell the user that an error occured
@@ -223,10 +223,10 @@ namespace MCSMLauncher.gui
                 Logging.LOGGER.Error(err);
                 MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                serversSection.RemoveSection(this.TextBoxServerName.Text);
+                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
-            this.ToggleControlsState(true);
+            ToggleControlsState(true);
             await ServerList.INSTANCE.RefreshGridAsync();
         }
 
@@ -238,7 +238,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ComboServerVersion_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.ButtonBuild.Enabled = this.TextBoxServerName.Text.Length > 0 && this.ComboServerVersion.Enabled;
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 && ComboServerVersion.Enabled;
         }
 
         /// <summary>
@@ -249,9 +249,9 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void TextBoxServerName_TextChanged(object sender, EventArgs e)
         {
-            this.LabelServerNameError.Visible = false;
-            this.ButtonBuild.Enabled = this.TextBoxServerName.Text.Length > 0 &&
-                                       this.ComboServerVersion.Text.Length > 0 && this.ComboServerVersion.Enabled;
+            LabelServerNameError.Visible = false;
+            ButtonBuild.Enabled = TextBoxServerName.Text.Length > 0 &&
+                                       ComboServerVersion.Text.Length > 0 && ComboServerVersion.Enabled;
         }
 
         /// <summary>
@@ -262,11 +262,11 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void FolderBrowserButton_Click(object sender, EventArgs e)
         {
-            DialogResult result = this.FolderBrowser.ShowDialog();
+            DialogResult result = FolderBrowser.ShowDialog();
             if (result == DialogResult.OK)
             {
-                int index = this.ComboBoxJavaVersion.Items.Add(this.FolderBrowser.SelectedPath);
-                this.ComboBoxJavaVersion.SelectedItem = this.ComboBoxJavaVersion.Items[index];
+                int index = ComboBoxJavaVersion.Items.Add(FolderBrowser.SelectedPath);
+                ComboBoxJavaVersion.SelectedItem = ComboBoxJavaVersion.Items[index];
             }
         }
     }

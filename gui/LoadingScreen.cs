@@ -27,14 +27,14 @@ namespace MCSMLauncher.gui
         /// </summary>
         public LoadingScreen()
         {
-            this.InitializeComponent();
-            this.CenterToScreen();
+            InitializeComponent();
+            CenterToScreen();
 
-            this.PictureBoxLoading.Image =
+            PictureBoxLoading.Image =
                 Image.FromFile(
                     FileSystem.GetFirstDocumentNamed(
                         Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Clock"))));
-            this.BackgroundImage =
+            BackgroundImage =
                 Image.FromFile(FileSystem.GetFirstDocumentNamed(
                     Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Image.LoadingScreen"))));
             FileSystem.AddSection("versioncache");
@@ -50,11 +50,11 @@ namespace MCSMLauncher.gui
         private async void LoadingScreen_Load(object sender, EventArgs e)
         {
             // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkUtils.RecurrentTestAsync(this.LabelStatus);
+            await NetworkUtils.RecurrentTestAsync(LabelStatus);
 
             // Updates the cache and stops the loading phase.
-            await this.UpdateVersionCache();
-            this.Close();
+            await UpdateVersionCache();
+            Close();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace MCSMLauncher.gui
             // Iterates through every server type, and updates the cache for each one.
             foreach (string serverType in mappingsFactory.GetSupportedServerTypes())
             {
-                this.LabelStatus.Text = Logging.LOGGER.Info(@$"Updating the {serverType} cache...");
+                LabelStatus.Text = Logging.LOGGER.Info(@$"Updating the {serverType} cache...");
 
                 Dictionary<string, string> versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
                 string cachePath = mappingsFactory.GetCacheFileFor(serverType);

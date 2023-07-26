@@ -21,8 +21,8 @@ namespace MCSMLauncher.common.factories
         /// <returns>An instance of AbstractBaseRequestHandler mapped to the server type</returns>
         public AbstractBaseRequestHandler GetHandlerFor(string serverType)
         {
-            return this.Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractBaseRequestHandler)this.Mappings[serverType.ToLower()]["handler"]
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractBaseRequestHandler)Mappings[serverType.ToLower()]["handler"]
                 : null;
         }
 
@@ -34,8 +34,8 @@ namespace MCSMLauncher.common.factories
         /// <returns>An instance of AbstractBaseRequestParser mapped to the server type</returns>
         public AbstractBaseRequestParser GetParserFor(string serverType)
         {
-            return this.Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractBaseRequestParser)this.Mappings[serverType.ToLower()]["parser"]
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractBaseRequestParser)Mappings[serverType.ToLower()]["parser"]
                 : null;
         }
 
@@ -47,8 +47,8 @@ namespace MCSMLauncher.common.factories
         /// <returns>An instance of AbstractServerBuilder mapped to the server type</returns>
         public AbstractServerBuilder GetBuilderFor(string serverType)
         {
-            return this.Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractServerBuilder)this.Mappings[serverType.ToLower()]["builder"]
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractServerBuilder)Mappings[serverType.ToLower()]["builder"]
                 : null;
         }
 
@@ -60,8 +60,8 @@ namespace MCSMLauncher.common.factories
         /// <returns>An instance of AbstractServerStarter mapped to the server typ1</returns>
         public AbstractServerStarter GetStarterFor(string serverType)
         {
-            return this.Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractServerStarter)this.Mappings[serverType.ToLower()]["starter"]
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (AbstractServerStarter)Mappings[serverType.ToLower()]["starter"]
                 : null;
         }
 
@@ -73,8 +73,8 @@ namespace MCSMLauncher.common.factories
         /// <returns>The path for the cache file mapped to the server type</returns>
         public string GetCacheFileFor(string serverType)
         {
-            return this.Mappings.ContainsKey(serverType.ToLower())
-                ? (string)this.Mappings[serverType.ToLower()]["cache_file"]
+            return Mappings.ContainsKey(serverType.ToLower())
+                ? (string)Mappings[serverType.ToLower()]["cache_file"]
                 : null;
         }
 
@@ -86,7 +86,7 @@ namespace MCSMLauncher.common.factories
         /// <returns>A dictionary mapping the version names to their server download links</returns>
         public Dictionary<string, string> GetCacheContentsForType(string serverType)
         {
-            return FileToDictionary(this.GetCacheFileFor(serverType));
+            return FileToDictionary(GetCacheFileFor(serverType));
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace MCSMLauncher.common.factories
         /// <returns>A List(string) containing all the supported server types.</returns>
         public List<string> GetSupportedServerTypes()
         {
-            return new List<string>(this.Mappings.Keys).Where(x => x != "unknown").ToList();
+            return new List<string>(Mappings.Keys).Where(x => x != "unknown").ToList();
         }
 
         /// <summary>

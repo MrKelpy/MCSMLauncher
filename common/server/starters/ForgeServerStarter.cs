@@ -54,17 +54,17 @@ namespace MCSMLauncher.common.server.starters
             ServerInformation info = ServerEditor.GetServerInformation(serverSection);
             
             // Builds the startup arguments for the server.
-            this.StartupArguments = this.StartupArguments
+            StartupArguments = StartupArguments
                 .Replace("%SERVER_JAR%", PathUtils.NormalizePath(runBatFilepath))
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runBatFilepath}", serverSection.SectionFullPath);
-            proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Finds the port and IP to start the server with, and starts the server.
-            await this.StartServer(serverSection, proc, info);
+            await StartServer(serverSection, proc, info);
         }
     }
 }

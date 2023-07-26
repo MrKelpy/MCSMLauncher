@@ -21,8 +21,8 @@ namespace MCSMLauncher.gui
         /// </summary>
         private Mainframe()
         {
-            this.InitializeComponent();
-            this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            InitializeComponent();
+            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
         }
 
         /// <summary>
@@ -37,13 +37,13 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_Load(object sender, EventArgs e)
         {
-            this.Text += @" v" + ConfigurationManager.AppSettings.Get("Version.App");
+            Text += @" v" + ConfigurationManager.AppSettings.Get("Version.App");
 
             // Updates the server list.
-            this.BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
+            BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
 
             // Starts any background tasks.
-            new Thread(new ServerProcessStateHandler().RunTask) { IsBackground = true }.Start();
+            new Thread(new ServerProcessStateHandler().RunTask) { IsBackground = false }.Start();
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void NewServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
-            this.MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            if (MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
+            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
         }
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private async void ServersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (this.MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
-            this.MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
+            if (MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
+            MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
             await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
         }
 
@@ -76,7 +76,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_SizeChanged(object sender, EventArgs e)
         {
-            NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = this.Size;
+            NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = Size;
         }
 
         /// <summary>

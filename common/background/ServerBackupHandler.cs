@@ -25,8 +25,8 @@ namespace MCSMLauncher.common.background
         /// <param name="pid">The process ID, for status checking purposes</param>
         public ServerBackupHandler(Section serverSection, int pid)
         {
-            this.ServerSection = serverSection;
-            this.ProcessID = pid;
+            ServerSection = serverSection;
+            ProcessID = pid;
         }
 
         /// <summary>
@@ -45,10 +45,10 @@ namespace MCSMLauncher.common.background
         /// </summary>
         public void RunTask()
         {
-            Logging.LOGGER.Info($"Starting backup thread for server: '{this.ServerSection}'");
+            Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection}'");
             
             // Loads the settings from the server section.
-            Dictionary<string, string> settings = new ServerEditor(this.ServerSection).LoadSettings();
+            Dictionary<string, string> settings = new ServerEditor(ServerSection).LoadSettings();
             bool serverBackupsEnabled = !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
             bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
 
@@ -60,22 +60,22 @@ namespace MCSMLauncher.common.background
             string playerdataBackupsPath = PathUtils.NormalizePath(settings["playerdatabackupspath"]);
 
             // Creates initial backups regardless of the current time.
-            if (playerdataBackupsEnabled) CreatePlayerdataBackup(playerdataBackupsPath, this.ServerSection);
-            if (serverBackupsEnabled) CreateServerBackup(serverBackupsPath, this.ServerSection);
+            if (playerdataBackupsEnabled) CreatePlayerdataBackup(playerdataBackupsPath, ServerSection);
+            if (serverBackupsEnabled) CreateServerBackup(serverBackupsPath, ServerSection);
 
             // Until the process is no longer active, keep creating backups.
-            while (ProcessUtils.GetProcessById(this.ProcessID)?.ProcessName is var procName &&
+            while (ProcessUtils.GetProcessById(ProcessID)?.ProcessName is var procName &&
                    (procName == "java" || procName == "cmd"))
             {
                 DateTime now = DateTime.Now;
 
                 // Creates a server backup if the current hour is divisible by 2 (every 2 hours)
                 if (serverBackupsEnabled && now.Hour % 2 == 0 && now.Minute == 0)
-                    CreateServerBackup(serverBackupsPath, this.ServerSection);
+                    CreateServerBackup(serverBackupsPath, ServerSection);
 
                 // Creates a playerdata backup if the current min is divisible by 5 (every 5 minutes)
                 if (playerdataBackupsEnabled && now.Minute % 5 == 0)
-                    CreatePlayerdataBackup(playerdataBackupsPath, this.ServerSection);
+                    CreatePlayerdataBackup(playerdataBackupsPath, ServerSection);
 
                 Thread.Sleep(1 * 1000 * 60); // Sleeps for a minute
             }

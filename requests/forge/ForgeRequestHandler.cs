@@ -26,8 +26,8 @@ namespace MCSMLauncher.requests.forge
         {
             try
             {
-                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
-                return new ForgeRequestParser().GetVersionUrlMap(this.BaseUrl, document.DocumentNode);
+                HtmlDocument document = await Handler.LoadFromWebAsync(BaseUrl);
+                return new ForgeRequestParser().GetVersionUrlMap(BaseUrl, document.DocumentNode);
             }
             catch (Exception e)
             {

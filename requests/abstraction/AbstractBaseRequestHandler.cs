@@ -17,7 +17,7 @@ namespace MCSMLauncher.requests.abstraction
         /// <param name="url">The URL to look for</param>
         protected AbstractBaseRequestHandler(string url)
         {
-            this.BaseUrl = url;
+            BaseUrl = url;
         }
 
         /// <summary>

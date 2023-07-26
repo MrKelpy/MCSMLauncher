@@ -27,8 +27,8 @@ namespace MCSMLauncher.gui
         /// </summary>
         public PreLoadingScreen()
         {
-            this.InitializeComponent();
-            this.CenterToParent();
+            InitializeComponent();
+            CenterToParent();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace MCSMLauncher.gui
             // Downloads the initial assets
             try
             {
-                await this.DownloadInitialAssets();
+                await DownloadInitialAssets();
             }
             catch (Exception err)
             {
@@ -56,7 +56,7 @@ namespace MCSMLauncher.gui
         /// <param name="assetName">The currently downloading asset name</param>
         public void SetDownloadingAssetName(string assetName)
         {
-            this.LabelDownloadingAsset.Text = $@"Downloading Assets... ({assetName})";
+            LabelDownloadingAsset.Text = $@"Downloading Assets... ({assetName})";
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace MCSMLauncher.gui
                     using (Bitmap _ = new Bitmap(filepath)) { }
                 }
 
-                this.Close();
+                Close();
                 return;
             }
             catch (ArgumentException)
@@ -91,7 +91,7 @@ namespace MCSMLauncher.gui
             } // ignored
 
             // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkUtils.RecurrentTestAsync(this.LabelDownloadingAsset);
+            await NetworkUtils.RecurrentTestAsync(LabelDownloadingAsset);
 
             // Resets the assets folder just in case
             FileSystem.RemoveSection(assets?.Name);
@@ -106,12 +106,12 @@ namespace MCSMLauncher.gui
                 string filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
                 string filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
 
-                this.SetDownloadingAssetName(filename);
+                SetDownloadingAssetName(filename);
                 await FileDownloader.DownloadFileAsync(filepath, ConfigurationManager.AppSettings.Get(settingKey));
-                this.ProgressBarDownload.Value = (int)(((double)index + 1) / config.Count * 100);
+                ProgressBarDownload.Value = (int)(((double)index + 1) / config.Count * 100);
             }
 
-            this.Close();
+            Close();
         }
 
         /// <summary>

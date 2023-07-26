@@ -30,13 +30,13 @@ namespace MCSMLauncher.requests.mcversions.snapshots
         {
             try
             {
-                HtmlDocument document = await Handler.LoadFromWebAsync(this.BaseUrl);
+                HtmlDocument document = await Handler.LoadFromWebAsync(BaseUrl);
 
                 IEnumerable<HtmlNode> itemDivs = from div in document.DocumentNode.Descendants("div")
                     where div.HasClass("items")
                     select div;
 
-                return new MCVRequestParser().GetVersionUrlMap(this.BaseUrl, itemDivs.ElementAt(1));
+                return new MCVRequestParser().GetVersionUrlMap(BaseUrl, itemDivs.ElementAt(1));
             }
             catch (Exception e)
             {

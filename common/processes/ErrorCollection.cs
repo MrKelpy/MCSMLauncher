@@ -18,7 +18,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// The amount of items inside the Error Collection
         /// </summary>
-        public int Count => this.InternalErrorCollection.Count;
+        public int Count => InternalErrorCollection.Count;
 
         /// <summary>
         /// Whether the Error Collection is ReadOnly or not
@@ -31,12 +31,12 @@ namespace MCSMLauncher.common.processes
         /// </summary>
         public IEnumerator<string> GetEnumerator()
         {
-            return this.InternalErrorCollection.GetEnumerator();
+            return InternalErrorCollection.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace MCSMLauncher.common.processes
         /// <param name="item">The string containing the pattern</param>
         public void Add(string item)
         {
-            this.InternalErrorCollection.Add(item);
+            InternalErrorCollection.Add(item);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MCSMLauncher.common.processes
         /// <returns></returns>
         public bool Remove(string item)
         {
-            return this.InternalErrorCollection.Remove(item);
+            return InternalErrorCollection.Remove(item);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace MCSMLauncher.common.processes
         /// </summary>
         public void Clear()
         {
-            this.InternalErrorCollection.Clear();
+            InternalErrorCollection.Clear();
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace MCSMLauncher.common.processes
         /// <returns>Whether the collection contains the item or not</returns>
         public bool Contains(string item)
         {
-            return this.InternalErrorCollection.Contains(item);
+            return InternalErrorCollection.Contains(item);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace MCSMLauncher.common.processes
         /// <param name="arrayIndex">The starting index of the copying</param>
         public void CopyTo(string[] array, int arrayIndex)
         {
-            this.InternalErrorCollection.ToArray().CopyTo(array, arrayIndex);
+            InternalErrorCollection.ToArray().CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace MCSMLauncher.common.processes
         /// <returns>Whether there's an error matching the string or not</returns>
         public bool StringMatches(string match)
         {
-            return this.InternalErrorCollection.Any(match.Contains);
+            return InternalErrorCollection.Any(match.Contains);
         }
     }
 }

@@ -113,16 +113,16 @@ namespace MCSMLauncher.common.models
         /// <param name="updateDict">The dictionary to </param>
         public void Update(Dictionary<string, string> updateDict)
         {
-            this.BasePort = int.Parse(updateDict["baseport"]);
-            this.IPAddress = updateDict.TryGetValue("ipaddress", out string ipaddr) ? ipaddr : this.IPAddress;
-            this.Ram = int.Parse(updateDict["ram"]);
-            this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
-            this.ServerBackupsPath = updateDict["serverbackupspath"];
-            this.PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
-            this.ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
-            this.CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
-            this.JavaRuntimePath = updateDict["javaruntimepath"];
-            this.UPnPOn = updateDict.TryGetValue("upnpon", out string upnp) ? bool.Parse(upnp) : this.UPnPOn;
+            BasePort = int.Parse(updateDict["baseport"]);
+            IPAddress = updateDict.TryGetValue("ipaddress", out string ipaddr) ? ipaddr : IPAddress;
+            Ram = int.Parse(updateDict["ram"]);
+            PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
+            ServerBackupsPath = updateDict["serverbackupspath"];
+            PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
+            ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
+            CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
+            JavaRuntimePath = updateDict["javaruntimepath"];
+            UPnPOn = updateDict.TryGetValue("upnpon", out string upnp) ? bool.Parse(upnp) : UPnPOn;
         }
 
         /// <summary>

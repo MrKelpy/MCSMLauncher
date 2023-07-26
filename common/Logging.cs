@@ -25,7 +25,7 @@ namespace MCSMLauncher.common
         /// </summary>
         private Logging()
         {
-            this.LoggingFilePath = Path.Combine(".", this.LoggingSession + ".log");
+            LoggingFilePath = Path.Combine(".", LoggingSession + ".log");
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Debug(string message, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(message, "DEBUG", loggingType);
+            return _internalLog(message, "DEBUG", loggingType);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Info(string message, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(message, "INFO", loggingType);
+            return _internalLog(message, "INFO", loggingType);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Warn(string message, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(message, "WARN", loggingType);
+            return _internalLog(message, "WARN", loggingType);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Error(string message, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(message, "ERROR", loggingType);
+            return _internalLog(message, "ERROR", loggingType);
         }
         
         /// <summary>
@@ -100,7 +100,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Error(Exception err, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(err.Message + '\n' + err.StackTrace, "ERROR", loggingType);
+            return _internalLog(err.Message + '\n' + err.StackTrace, "ERROR", loggingType);
         }
         
         /// <summary>
@@ -110,7 +110,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Fatal(string message, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(message, "FATAL", loggingType);
+            return _internalLog(message, "FATAL", loggingType);
         }
         
         /// <summary>
@@ -120,7 +120,7 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging to be performed</param>
         public string Fatal(Exception err, LoggingType loggingType = LoggingType.ALL)
         {
-            return this._internalLog(err.Message + '\n' + err.StackTrace, "FATAL", loggingType);
+            return _internalLog(err.Message + '\n' + err.StackTrace, "FATAL", loggingType);
         }
 
         /// <summary>
@@ -131,11 +131,11 @@ namespace MCSMLauncher.common
         /// <param name="loggingType">The type of logging, either in a file, console, or both.</param>
         private string _internalLog(string message, string level, LoggingType loggingType)
         {
-            string[] preparedStrings = this._buildFormats(message, level);
-            FileUtils.EnsurePath(this.LoggingFilePath);
+            string[] preparedStrings = _buildFormats(message, level);
+            FileUtils.EnsurePath(LoggingFilePath);
 
             if (loggingType == LoggingType.FILE || loggingType == LoggingType.ALL)
-                FileUtils.AppendToFile(this.LoggingFilePath, preparedStrings[1]);
+                FileUtils.AppendToFile(LoggingFilePath, preparedStrings[1]);
 
             if (loggingType == LoggingType.CONSOLE || loggingType == LoggingType.ALL)
                 Console.WriteLine(preparedStrings[0]);
@@ -153,12 +153,12 @@ namespace MCSMLauncher.common
         {
             string[] formats = new string[2];
 
-            formats[0] = this.ConsoleLoggingFormat.Clone().ToString()
+            formats[0] = ConsoleLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))
                 .Replace("%LEVEL%", level)
                 .Replace("%MESSAGE%", message);
 
-            formats[1] = this.FileLoggingFormat.Clone().ToString()
+            formats[1] = FileLoggingFormat.Clone().ToString()
                 .Replace("%DATE%", DateTime.Now.ToString("F"))
                 .Replace("%LEVEL%", level)
                 .Replace("%MESSAGE%", message);

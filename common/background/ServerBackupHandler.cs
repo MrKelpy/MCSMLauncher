@@ -46,17 +46,19 @@ namespace MCSMLauncher.common.background
         public void RunTask()
         {
             Dictionary<string, string> settings = new ServerEditor(this.ServerSection).LoadSettings();
-            bool serverBackupsEnabled =
-                !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
-            bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") ||
-                                            bool.Parse(settings["playerdatabackupson"]);
+            bool serverBackupsEnabled = !settings.ContainsKey("serverbackupson") || bool.Parse(settings["serverbackupson"]);
+            bool playerdataBackupsEnabled = !settings.ContainsKey("playerdatabackupson") || bool.Parse(settings["playerdatabackupson"]);
 
             // If neither of the backups are activated, stop the thread to save resources.
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;
+            
+            // Get the server and playerdata backups paths, and create them if they don't exist.
+            string serverBackupsPath = PathUtils.NormalizePath(settings["serverbackupspath"]);
+            string playerdataBackupsPath = PathUtils.NormalizePath(settings["playerdatabackupspath"]);
 
             // Creates initial backups regardless of the current time.
-            if (playerdataBackupsEnabled) CreatePlayerdataBackup(this.ServerSection);
-            if (serverBackupsEnabled) CreateServerBackup(this.ServerSection);
+            if (playerdataBackupsEnabled) CreatePlayerdataBackup(playerdataBackupsPath, this.ServerSection);
+            if (serverBackupsEnabled) CreateServerBackup(serverBackupsPath, this.ServerSection);
 
             // Until the process is no longer active, keep creating backups.
             while (ProcessUtils.GetProcessById(this.ProcessID)?.ProcessName is var procName &&
@@ -66,11 +68,11 @@ namespace MCSMLauncher.common.background
 
                 // Creates a server backup if the current hour is divisible by 2 (every 2 hours)
                 if (serverBackupsEnabled && now.Hour % 2 == 0 && now.Minute == 0)
-                    CreateServerBackup(this.ServerSection);
+                    CreateServerBackup(serverBackupsPath, this.ServerSection);
 
                 // Creates a playerdata backup if the current min is divisible by 5 (every 5 minutes)
                 if (playerdataBackupsEnabled && now.Minute % 5 == 0)
-                    CreatePlayerdataBackup(this.ServerSection);
+                    CreatePlayerdataBackup(playerdataBackupsPath, this.ServerSection);
 
                 Thread.Sleep(1 * 1000 * 60); // Sleeps for a minute
             }
@@ -80,14 +82,13 @@ namespace MCSMLauncher.common.background
         /// Creates a server backup by zipping the entirety of the server section into the
         /// specified server backups path.
         /// </summary>
-        /// <param name="serverSection">The server section to use for the backup</param>
+        /// <param name="backupsPath">The server backups path</param>
+        /// <param name="serverSection">The server section to use</param>
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        private static void CreateServerBackup(Section serverSection)
+        private static void CreateServerBackup(string backupsPath, Section serverSection)
         {
             try
             {
-                ServerEditor editor = new ServerEditor(serverSection);
-                string backupsPath = editor.LoadSettings()["serverbackupspath"];
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
@@ -100,14 +101,13 @@ namespace MCSMLauncher.common.background
         /// Creates a playerdata backup by zipping the world/playerdata files into the specified
         /// playerdata backups path.
         /// </summary>
-        /// <param name="serverSection">The server section to use for the backup</param>
+        /// <param name="backupsPath">The playerdata backups path</param>
+        /// <param name="serverSection">The server section to use</param>
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
-        private static void CreatePlayerdataBackup(Section serverSection)
+        private static void CreatePlayerdataBackup(string backupsPath, Section serverSection)
         {
             try
             {
-                ServerEditor editor = new ServerEditor(serverSection);
-                string backupsPath = PathUtils.NormalizePath(editor.LoadSettings()["playerdatabackupspath"]);
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
                 
@@ -138,6 +138,7 @@ namespace MCSMLauncher.common.background
         {
             // Creates and opens the zipping file, using a resource manager
             using ZipFile zipper = new ZipFile(destination);
+            zipper.ZipErrorAction = ZipErrorAction.Skip;  // Skips any errors that may occur during the zipping process.
 
             // Adds every file into the zip file, parsing their path to exclude the root directory path.
             foreach (string file in Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories))

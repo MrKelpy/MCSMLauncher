@@ -88,7 +88,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="key">The key to look for</param>
         /// <returns>The value for the requested key</returns>
-        public string GetFromBuffers(string key)
+        public string? GetFromBuffers(string key)
         {
             if (SettingsBuffer.ContainsKey(key)) return SettingsBuffer[key];
             if (PropertiesBuffer.ContainsKey(key)) return PropertiesBuffer[key];

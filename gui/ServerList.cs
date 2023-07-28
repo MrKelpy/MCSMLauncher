@@ -363,7 +363,7 @@ namespace MCSMLauncher.gui
                 AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
                 // Start the server
-                await serverStarter.Run(serverSection);
+                await serverStarter.Run(serverSection, editor);
             }
             
             // If an error occurs, let the user know.

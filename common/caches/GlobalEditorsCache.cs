@@ -53,7 +53,7 @@ namespace MCSMLauncher.common.caches
         /// <param name="serverSection">The server section to match the editor to</param>
         /// <returns>The ServerEditor matching the server name provided</returns>
         private ServerEditor? Get(Section serverSection) =>
-            ServerEditorsCache.FirstOrDefault(x => x.ServerSection == serverSection);
+            ServerEditorsCache.FirstOrDefault(x => x.ServerSection.SectionFullPath.Equals(serverSection.SectionFullPath));
         
         /// <summary>
         /// Adds a server editor to the cache, returning it afterwards.

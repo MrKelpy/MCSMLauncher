@@ -46,10 +46,8 @@ namespace MCSMLauncher.gui
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public static ServerList INSTANCE { get; } = new ServerList();
+        public static ServerList INSTANCE { get; } = new ();
         
-        public List<ServerEditor> Servers { get; } = new();
-
         /// <summary>
         /// Refreshes the grid asynchronously, clearing everything and reading all of the existing
         /// servers, re-adding them into the grid.

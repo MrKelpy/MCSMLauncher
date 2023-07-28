@@ -67,7 +67,6 @@ namespace MCSMLauncher.gui
         {
             if (MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
             MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
-            await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
         }
 
         /// <summary>

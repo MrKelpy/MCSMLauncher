@@ -45,12 +45,10 @@ namespace MCSMLauncher.common.server.starters.abstraction
         {
             // Get the server.jar and server.properties paths.
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
-            string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
             ServerEditor editor = new (serverSection);
             ServerInformation info = editor.GetServerInformation();
             
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");
-            if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
             
             // Builds the startup arguments for the server.
             StartupArguments = StartupArguments
@@ -102,14 +100,14 @@ namespace MCSMLauncher.common.server.starters.abstraction
             proc.Start();
             new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) {IsBackground = false}.Start();
             
-            // Updates the visual elements of the server and logs the start.
-            ServerList.INSTANCE.UpdateServerIP(serverSection.SimpleName, editor);
-            ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
-            Logging.LOGGER.Info($"Started the {serverSection.SimpleName} server on {info.IPAddress}:{info.Port}.");
-            
-            // Updated and flushes the buffers, writing the changes to the files.
+            // Updates and flushes the buffers, writing the changes to the files.
             editor.UpdateBuffers(info.ToDictionary());
             editor.FlushBuffers(); 
+            
+            // Updates the visual elements of the server and logs the start.
+            ServerList.INSTANCE.UpdateServerIP(editor);
+            ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
+            Logging.LOGGER.Info($"Started the {serverSection.SimpleName} server on {info.IPAddress}:{info.Port}.");
         }
     }
 }

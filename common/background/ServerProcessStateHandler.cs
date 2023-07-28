@@ -1,7 +1,11 @@
-﻿using System.Threading;
+﻿#nullable enable
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using MCSMLauncher.common.interfaces;
 using MCSMLauncher.gui;
+using PgpsUtilsAEFC.common;
 
 namespace MCSMLauncher.common.background
 {
@@ -11,6 +15,12 @@ namespace MCSMLauncher.common.background
     /// </summary>
     public class ServerProcessStateHandler : IBackgroundRunner
     {
+        
+        /// <summary>
+        /// A cache of the server editors, used to avoid having to re-fetch them every time.
+        /// </summary>
+        private List<ServerEditor> ServerEditorsCache { get; set; } = new List<ServerEditor>();
+        
         /// <summary>
         /// Runs the background task.
         /// </summary>
@@ -25,11 +35,39 @@ namespace MCSMLauncher.common.background
                     // Targets only the servers that are running.
                     if (row.Cells[5].Value?.ToString() != "Running") continue;
 
-                    // Updates the server state.
-                    string serverName = row.Cells[2]?.Value.ToString();
-                    await ServerList.INSTANCE.UpdateServerButtonStateAsync(serverName);
+                    // Gets the server name from the row.
+                    string? serverName = row.Cells[2]?.Value.ToString();
+                    if (serverName == null) continue;
+                    
+                    // Gets the server editor from the cache, or adds it to the cache if it's not there, and updates the button state.
+                    ServerEditor editor = GetFromCache(serverName) ?? AddToCache(serverName);
+                    await ServerList.INSTANCE.UpdateServerButtonStateAsync(editor);
                 }
             }
+        }
+        
+        /// <summary>
+        /// Gets the server editor from the cache.
+        /// </summary>
+        /// <param name="serverName">The server name to look for</param>
+        /// <returns>The ServerEditor matching the server name provided</returns>
+        private ServerEditor? GetFromCache(string serverName) =>
+            ServerEditorsCache.FirstOrDefault(x => x.ServerSection.SimpleName.Equals(serverName));
+        
+        /// <summary>
+        /// Adds a server editor to the cache, returning it afterwards.
+        /// </summary>
+        /// <param name="serverName">The server name to match the editor to</param>
+        /// <returns>The ServerEditor instance</returns>
+        private ServerEditor AddToCache(string serverName)
+        {
+            // Gets the server section and creates the editor.
+            Section serverSection = Constants.FileSystem.GetFirstSectionNamed($"servers/{serverName}");
+            ServerEditor editor = new (serverSection);
+            
+            // Adds the editor to the cache and returns it.
+            ServerEditorsCache.Add(editor);
+            return editor;
         }
     }
 }

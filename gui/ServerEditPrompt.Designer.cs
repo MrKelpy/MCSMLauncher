@@ -466,6 +466,7 @@ namespace MCSMLauncher.gui
             CheckBoxSpawnProtection.Tag = "";
             CheckBoxSpawnProtection.Text = "Spawn Protection";
             CheckBoxSpawnProtection.UseVisualStyleBackColor = true;
+            CheckBoxSpawnProtection.CheckedChanged += new System.EventHandler(CheckBoxSpawnProtection_CheckedChanged);
             // 
             // checkBox1
             // 

@@ -12,6 +12,7 @@ using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
+// ReSharper disable AccessToDisposedClosure
 
 namespace MCSMLauncher.common.server.builders
 {
@@ -41,15 +42,12 @@ namespace MCSMLauncher.common.server.builders
             Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
 
             // Creates the process that will build the server
-            Process forgeBuildingProcess =
-                ProcessUtils.CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"",
+            Process forgeBuildingProcess = ProcessUtils.CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"",
                     $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
 
             // Set the output and error data handlers
-            forgeBuildingProcess.OutputDataReceived +=
-                (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
-            forgeBuildingProcess.ErrorDataReceived +=
-                (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
+            forgeBuildingProcess.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
+            forgeBuildingProcess.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
             TerminationCode = 0;
 
             // Start the process
@@ -60,8 +58,7 @@ namespace MCSMLauncher.common.server.builders
 
             // Returns the path to the server.jar file, which in this case, is a forge file.
             serverSection.RemoveDocument("server.jar");
-            return serverSection.GetAllDocuments().First(x =>
-                Path.GetFileName(x).Contains("forge") && Path.GetFileName(x).EndsWith("jar"));
+            return serverSection.GetAllDocuments().First(x => Path.GetFileName(x).Contains("forge") && Path.GetFileName(x).EndsWith("jar"));
         }
 
         /// <summary>
@@ -107,15 +104,16 @@ namespace MCSMLauncher.common.server.builders
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
+        /// <param name="editor">The ServerEditor instance to use with this run</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        protected override async Task<int> FirstSetupRun(string serverJarPath)
+        protected override async Task<int> FirstSetupRun(ServerEditor editor, string serverJarPath)
         {
             // Due to how forge works, we need to generate a run.bat file to run the forge.
             Section serverSection = GetSectionFromFile(serverJarPath);
             serverSection.AddDocument("server.properties"); // Adds the server properties just in case
 
             // Gets the java runtime and creates the run command from it
-            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
+            ServerInformation info = editor.GetServerInformation();
             string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
 
             // Creates the run.bat file if it doesn't already exist, with simple running params
@@ -148,16 +146,11 @@ namespace MCSMLauncher.common.server.builders
             Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            ServerEditor editor = new ServerEditor(serverSection);
             if (editor.HandlePortForServer() == 1)
             {
                 ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;
             }
-
-            Dictionary<string, string> properties = editor.LoadProperties();
-            properties["level-type"] = @"minecraft\:normal";
-            editor.DumpToProperties(properties);
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);

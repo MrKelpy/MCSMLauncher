@@ -21,14 +21,14 @@ namespace MCSMLauncher.common
         /// <summary>
         /// Main constructor for the ServerEditor class. Sets the server section to work with.
         /// </summary>
-        /// <param name="serverSection"></param>
+        /// <param name="serverSection">The server section to bind to the editor</param>
         public ServerEditor(Section serverSection)
         {
             ServerSection = serverSection;
             this.SettingsBuffer = LoadSettings();
             this.PropertiesBuffer = LoadProperties();
         }
-        
+
         /// <summary>
         /// The server section that the editor will work with.
         /// </summary>
@@ -48,6 +48,8 @@ namespace MCSMLauncher.common
 
         /// <summary>
         /// Selects which buffers should be updated based on the given dictionary's keys, and updates them.
+        /// This method is specifically written so you don't have to worry about dictionary formats
+        /// nor where they go. It's all handled automatically.
         /// </summary>
         /// <param name="dictionary">The dictionary to update the buffers with</param>
         public void UpdateBuffers(Dictionary<string, string> dictionary)
@@ -109,13 +111,19 @@ namespace MCSMLauncher.common
             return default;
         }
         
-        
         /// <summary>
         /// Checks if the buffers contain the given key.
         /// </summary>
         /// <param name="key">The key to look for</param>
         /// <returns>Whether or not the buffers contain the specified key</returns>
         public bool BuffersContain(string key) => SettingsBuffer.ContainsKey(key) || PropertiesBuffer.ContainsKey(key);
+
+        /// <summary>
+        /// Returns a copy of the properties and settings buffers as a dictionary.
+        /// </summary>
+        /// <returns>A Dictionary containing a deep copy of the buffers</returns>
+        public Dictionary<string, string> GetBuffersCopy() => 
+            new (SettingsBuffer.Concat(PropertiesBuffer).ToDictionary(pair => pair.Key, pair => pair.Value));
 
         /// <summary>
         /// Handles the determination of the server port of a server, based on its defined base
@@ -164,7 +172,7 @@ namespace MCSMLauncher.common
             Logging.LOGGER.Info($"Loading properties for {ServerSection.SimpleName}");
             
             // Creates a new dictionary to store the properties.
-            Dictionary<string, string> propertiesDictionary = new Dictionary<string, string>();
+            Dictionary<string, string> propertiesDictionary = new () { { "server-port", "25565" } };
             string propertiesPath = ServerSection.GetFirstDocumentNamed("server.properties");
 
             if (propertiesPath == null) return propertiesDictionary;
@@ -239,10 +247,13 @@ namespace MCSMLauncher.common
             
             // Get the path to the server_settings.xml file.
             string settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");
-
+            
             // Writes the ServerInformation into the file
             if (File.Exists(settingsFilepath)) File.Delete(settingsFilepath);
             XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath, GetServerInformation());
+            
+            // Sets the settings file to hidden if it isn't already.
+            File.SetAttributes(settingsFilepath, File.GetAttributes(settingsFilepath) | FileAttributes.Hidden);
         }
     }
 }

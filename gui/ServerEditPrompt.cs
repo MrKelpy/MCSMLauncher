@@ -19,32 +19,33 @@ namespace MCSMLauncher.gui
     public partial class ServerEditPrompt : Form
     {
         /// <summary>
-        /// The server directory to edit.
+        /// The server directory to edit. This is purely here for clarity.
         /// </summary>
         private Section ServerSection { get; set; }
+        
+        /// <summary>
+        /// The ServerEditor instance to use with this editing prompt.
+        /// </summary>
+        private ServerEditor Editor { get; }
 
         /// <summary>
         /// Main constructor for the ServerEditPrompt form. Initialises the form and loads the
         /// information from the server.properties file into the form.
         /// </summary>
-        /// <param name="serverSection"></param>
-        public ServerEditPrompt(Section serverSection)
+        /// <param name="editor">The ServerEditor instance to use with this editing prompt</param>
+        public ServerEditPrompt(ServerEditor editor)
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
-            ServerSection = serverSection;
+            ServerSection = editor.ServerSection;
+            Editor = editor;
 
             // Loads the properties and settings into the form
-            ServerEditor editor = new ServerEditor(serverSection);
-            Dictionary<string, string> properties = editor.LoadProperties();
-            Dictionary<string, string> settings = editor.LoadSettings();
-            LoadToForm(properties);
-            LoadToForm(settings);
+            LoadToForm(editor.GetBuffersCopy());
 
             // Edits some values in the form that have to be manually placed
             CheckBoxCracked.Checked = !CheckBoxCracked.Checked;
-            CheckBoxSpawnProtection.Checked = properties.ContainsKey("spawn-protection") &&
-                                                   int.Parse(properties["spawn-protection"]) > 0;
+            CheckBoxSpawnProtection.Checked = editor.BuffersContain("spawn-protection") && editor.GetFromBuffers<int>("spawn-protection") > 0;
             TextBoxServerName.Text = ServerSection.SimpleName;
 
             // Loads the icons for the folder browsing buttons
@@ -75,26 +76,26 @@ namespace MCSMLauncher.gui
         /// Collects all the information from the form and returns it as a dictionary.
         /// </summary>
         /// <returns>A dictionary containing all of the settings in the form as a dictionary</returns>
-        public Dictionary<string, string> FormToDictionary()
+        private Dictionary<string, string> FormToDictionary()
         {
-            Dictionary<string, string> formInformation = new Dictionary<string, string>();
+            Dictionary<string, string> formInformation = new();
 
             // Gets the information from the valid controls, excluding the buttons and the checkboxes,
             // and adds it them to the dictionary
             Controls.OfType<Control>()
-                .Where(x => x.GetType() != typeof(CheckBox) && x.GetType() != typeof(Button) && x.Tag != null &&
-                            x.Tag.ToString() != string.Empty).ToList()
+                .Where(x => x.GetType() != typeof(CheckBox) && x.GetType() != typeof(Button) && x.Tag != null && x.Tag.ToString() != string.Empty).ToList()
                 .ForEach(x => formInformation.Add(x.Tag.ToString(), x.Text));
 
             // Does the same, but specifically for checkboxes, since they have to be parsed for booleans
-            Controls.OfType<CheckBox>().Where(x => x.Tag != null && x.Tag.ToString() != string.Empty).ToList()
+            Controls.OfType<CheckBox>()
+                .Where(x => x.Tag != null && x.Tag.ToString() != string.Empty).ToList()
                 .ForEach(x => formInformation.Add(x.Tag.ToString(), x.Checked.ToString().ToLower()));
 
             // Inverts the online mode since the checkbox is named "Cracked" (Opposite of online mode), and
             // sets the spawn protection to 0 if it is disabled in the form
             formInformation["online-mode"] = (!bool.Parse(formInformation["online-mode"])).ToString().ToLower();
             if (!CheckBoxSpawnProtection.Checked) formInformation["spawn-protection"] = "0";
-
+            
             return formInformation;
         }
 
@@ -104,7 +105,7 @@ namespace MCSMLauncher.gui
         /// Text, Combo and Numeric box.
         /// </summary>
         /// <param name="dictionaryToLoad">The dictionary to load into the form</param>
-        public void LoadToForm(Dictionary<string, string> dictionaryToLoad)
+        private void LoadToForm(Dictionary<string, string> dictionaryToLoad)
         {
             foreach (KeyValuePair<string, string> item in dictionaryToLoad)
             {
@@ -112,14 +113,15 @@ namespace MCSMLauncher.gui
                 Control control = Controls.OfType<Control>()
                     .Where(x => x.GetType() != typeof(Button) && x.Tag != null)
                     .FirstOrDefault(x => x.Tag.ToString().Equals(item.Key));
+                
                 if (control == null) continue;
 
                 // If the control is a checkbox, we have to parse the value to a boolean, otherwise we
                 // just set the text of the control to the value.
                 if (control.GetType() == typeof(CheckBox))
                     ((CheckBox)control).Checked = bool.Parse(item.Value);
-                else
-                    control.Text = item.Value;
+                
+                else control.Text = item.Value;
             }
         }
 
@@ -141,33 +143,17 @@ namespace MCSMLauncher.gui
         private void ButtonSave_Click(object sender, EventArgs e)
         {
             // Gets the necessary resources to edit save the server's properties and settings
-            string newServerSectionPath =
-                Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+            string newServerSectionPath = Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
 
-            ServerEditor editor = new ServerEditor(ServerSection);
-            Dictionary<string, string> properties = editor.LoadProperties();
-            Dictionary<string, string> settings = editor.LoadSettings();
-
-            // Iterates through all of the items in the form, and decides whether they should be updated
-            // in the server.properties file or in the server_settings.xml file, and then does it.
-            foreach (KeyValuePair<string, string> item in FormToDictionary())
-                // Updates the key for the server properties
-                if (properties.ContainsKey(item.Key))
-                    properties[item.Key] = item.Value;
-
-                // Updates the key for the server settings
-                else if (settings.ContainsKey(item.Key))
-                    settings[item.Key] = item.Value;
             try
             {
-                // Saves the server properties and settings
-                editor.DumpToProperties(properties);
-                editor.DumpToSettings(settings);
+                // Updates and flushes the buffers
+                Editor.UpdateBuffers(FormToDictionary());
+                Editor.FlushBuffers();
             }
             catch (SystemException)
             {
-                MessageBox.Show(@"One or more fields are incorrectly filled. Please correct them and try again.",
-                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"One or more fields are incorrectly filled. Please correct them and try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -179,7 +165,7 @@ namespace MCSMLauncher.gui
 
                 // Updates the ServerSection property to the new path.
                 ServerSection = FileSystem.AddSection("servers/" + TextBoxServerName.Text);
-                ServerList.INSTANCE.AddServerToList(ServerSection);
+                ServerList.INSTANCE.AddServerToList(Editor);
             }
 
             Close();
@@ -207,9 +193,9 @@ namespace MCSMLauncher.gui
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
-            // Removes the server from the list, deletes the directory and closes the form.
             try
             {
+                // Removes the server from the list, deletes the directory and closes the form.
                 Directory.Delete(ServerSection.SectionFullPath, true);
                 ServerList.INSTANCE.RemoveFromList(ServerSection.SimpleName);
                 Close();

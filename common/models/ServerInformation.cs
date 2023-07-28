@@ -62,7 +62,7 @@ namespace MCSMLauncher.common.models
         /// <summary>
         /// Whether or not to use UPnP to try to open the port on the router.
         /// </summary>
-        public bool UPnPOn { get; set; } = false;
+        public bool UPnPOn { get; set; }
 
         /// <summary>
         /// The path to the directory where the backups should be stored at.
@@ -77,12 +77,12 @@ namespace MCSMLauncher.common.models
         /// <summary>
         /// Whether or not to create server backups whilst running the server
         /// </summary>
-        public bool ServerBackupsOn { get; set; } = true;
+        public bool ServerBackupsOn { get; set; } = false;
 
         /// <summary>
         /// Whether or not to create playerdata backups whilst running the server
         /// </summary>
-        public bool PlayerdataBackupsOn { get; set; } = true;
+        public bool PlayerdataBackupsOn { get; set; } = false;
 
         /// <summary>
         /// The path to the java runtime to use for the server.

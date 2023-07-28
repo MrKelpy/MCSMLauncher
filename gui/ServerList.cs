@@ -14,7 +14,6 @@ using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui
@@ -27,6 +26,7 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public static ServerList INSTANCE { get; } = new ServerList();
         
         /// <summary>
@@ -55,10 +55,11 @@ namespace MCSMLauncher.gui
             // Iterates over every server in the servers section and creates an addition task for them
             GridServerList.Rows.Clear();
 
-            // Creates a list of tasks invoking AddServerToList in the original thread, sorted.
-            List<Section> sections = FileSystem.AddSection("servers").GetAllTopLevelSections().ToList();
-            List<Task> taskList = sections.Select(AddServerToListAsync).ToList();
+            // Creates a list of sorted editors to work with, to then create a task list
+            List<ServerEditor> editors = FileSystem.AddSection("servers").GetAllTopLevelSections().Select(x => new ServerEditor(x)).ToList();
+            List<Task> taskList = editors.Select(AddServerToListAsync).ToList();
 
+            // Waits for all of the tasks to complete
             await Task.WhenAll(taskList);
             Logging.LOGGER.Info("Refreshed the server list.");
 
@@ -81,7 +82,7 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="serverName">The server name to check for</param>
         /// <returns>The row that contains the server name</returns>
-        public DataGridViewRow GetRowFromName(string serverName)
+        private DataGridViewRow GetRowFromName(string serverName)
         {
             foreach (DataGridViewRow row in GridServerList.Rows)
                 if (row.Cells[2].Value.Equals(serverName))
@@ -105,43 +106,38 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// Adds a server to the server list given the server section.
         /// </summary>
-        /// <param name="section">The section to add into the server list</param>
-        public void AddServerToList(Section section)
+        /// <param name="editor">The editor to work with</param>
+        public void AddServerToList(ServerEditor editor)
         {
             // Prevents server duplicates from being displayed
-            if (GetRowFromName(section.SimpleName) != null) return;
-
-            // First checks if the server settings file exists, and if it doesn't, adds the server to the
-            // list as "Unknown", creating the settings file.
-            string settingsPath = Path.Combine(section.SectionFullPath, "server_settings.xml");
-            
-            if (!File.Exists(settingsPath))
-            {
-                new ServerInformation().GetMinimalInformation(section).ToFile(settingsPath);
-                Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { GridServerList.Rows.Add(Image.FromFile(FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed("unknown.png")), "Unknown", Path.GetFileName(section.Name)); }));
-                return;
-            }
+            if (GetRowFromName(editor.ServerSection.SimpleName) != null) return;
 
             // Deserializes the server settings file to access the server information.
-            ServerInformation info = ServerInformation.FromFile(settingsPath);
+            ServerInformation info = editor.GetServerInformation();
 
             // Gets the image path for the server type, and adds the server to the list.
             // We have to parse the type to get the first word, since there could be snapshots of the type,
             // making the type similar to "serverType snapshots".
             string typeImagePath = FileSystem.GetFirstSectionNamed("assets").GetFirstDocumentNamed(info.Type.Split(' ')[0].ToLower() + ".png");
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { GridServerList.Rows.Add(Image.FromFile(typeImagePath), info.Version, Path.GetFileName(section.Name)); }));
+            
+            // Invokes the addition of the server to the list in the main thread.
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(() =>
+            {
+                Image typeImage = Image.FromFile(typeImagePath);
+                GridServerList.Rows.Add(typeImage, info.Version, editor.ServerSection.SimpleName); 
+            }));
 
-            // Sets all of the start button rows' buttons to "Start" (default)
-            GetRowFromName(section.SimpleName).Cells[5].Value = "Start";
+            // Sets the server button's text to "Start" by default.
+            GetRowFromName(editor.ServerSection.SimpleName).Cells[5].Value = "Start";
         }
 
         /// <summary>
         /// Performs an addition to the server list asynchronously.
         /// </summary>
-        /// <param name="section">The section to add into the server list</param>
-        public async Task AddServerToListAsync(Section section)
+        /// <param name="editor">The editor to work with</param>
+        public async Task AddServerToListAsync(ServerEditor editor)
         {
-            await Task.Run(() => AddServerToList(section));
+            await Task.Run(() => AddServerToList(editor));
         }
 
         /// <summary>
@@ -174,32 +170,36 @@ namespace MCSMLauncher.gui
         /// Updates a given server's play button state to either "Start" or "Running" depending on whether
         /// the server is running or not.
         /// </summary>
-        /// <param name="serverName">The name of the server to check</param>
+        /// <param name="editor">The server editor to work with</param>
         [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-        private void UpdateServerButtonState(string serverName)
+        private void UpdateServerButtonState(ServerEditor editor)
         {
             // Gets the necessary information to update the server button state.
-            Section serverSection = FileSystem.AddSection("servers/" + serverName);
-            string settingsPath = serverSection.GetFirstDocumentNamed("server_settings.xml");
-            DataGridViewRow row = GetRowFromName(serverName);
-            if (row == null || settingsPath == null) return;
-
-            ServerInformation info = ServerInformation.FromFile(settingsPath);
+            ServerInformation info = editor.GetServerInformation();
             string procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
+            string serverName = editor.ServerSection.SimpleName;
 
+            // Makes sure that the row exists before trying to update it.
+            DataGridViewRow row = GetRowFromName(serverName);
+            if (row == null) return;
+            
             // Handles the server if it is running; In which case there will be a process
             // with a set PID, specified in the server settings file, running as an mc server.
             if (Math.Pow(info.CurrentServerProcessID, 2) != 1 && (procName == "java" || procName == "cmd"))
             {
                 ForceUpdateServerState(serverName, "Running");
-                UpdateServerIP(serverName);
+                UpdateServerIP(editor);
                 return; 
             }
 
+            // Changes the button state to "Start" if the server is not running, and resets the process ID.
             row.Cells[5].Value = "Start";
             row.Cells[3].Value = "";
             info.CurrentServerProcessID = -1;
-            info.ToFile(settingsPath);
+            
+            // Updates and flushes the buffers with the new information.
+            editor.UpdateBuffers(info.ToDictionary());
+            editor.FlushBuffers();
         }
 
         /// <summary>
@@ -217,11 +217,12 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// Performs an update to the server's play button state asynchronously.
         /// </summary>
-        /// <param name="serverName">The name of the server to update</param>
-        public async Task UpdateServerButtonStateAsync(string serverName)
+        /// <param name="editor">The editor to work with</param>
+        public async Task UpdateServerButtonStateAsync(ServerEditor editor)
         {
-            await Task.Run(() => UpdateServerButtonState(serverName));
+            await Task.Run(() => UpdateServerButtonState(editor));
         }
+
 
         /// <summary>
         /// Iterates through all of the servers listed in the Grid, and tries to update every row's
@@ -229,11 +230,14 @@ namespace MCSMLauncher.gui
         /// </summary>
         public async Task UpdateAllButtonStatesAsync()
         {
-            List<Task> tasks = new List<Task>();
+            List<Task> tasks = new ();
 
             // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
-                tasks.Add(UpdateServerButtonStateAsync(row.Cells[2].Value.ToString()));
+            {
+                Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + row.Cells[2].Value);
+                tasks.Add(UpdateServerButtonStateAsync(new ServerEditor(serverSection)));
+            }
 
             await Task.WhenAll(tasks);
         }
@@ -241,12 +245,11 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// Updates the server's IP address in the server list.
         /// </summary>
-        /// <param name="serverName">The server to update the IP to</param>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public void UpdateServerIP(string serverName, ServerEditor editor)
+        public void UpdateServerIP(ServerEditor editor)
         {
             // Gets the server's IP address and updates the server list.
-            DataGridViewRow row = GetRowFromName(serverName);
+            DataGridViewRow row = GetRowFromName(editor.ServerSection.SimpleName);
             ServerInformation settings = editor.GetServerInformation();
 
             if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
@@ -326,12 +329,12 @@ namespace MCSMLauncher.gui
         /// <param name="buttonRow">The row where the button was clicked</param>
         private static void OptionsButtonClick(DataGridViewRow buttonRow)
         {
-            // Get the edit prompt for the server, given its name.
+            // Get the server's section from its name
             string serverName = buttonRow.Cells[2].Value.ToString();
             Section serverSection = FileSystem.AddSection($"servers/{serverName}");
-            ServerEditPrompt editPrompt = new ServerEditPrompt(serverSection);
             
-            // Show the edit prompt.
+            // Create and show the edit prompt.
+            ServerEditPrompt editPrompt = new (new ServerEditor(serverSection));
             editPrompt.ShowDialog();
         }
 
@@ -348,7 +351,7 @@ namespace MCSMLauncher.gui
                 Section serverSection = FileSystem.AddSection($"servers/{serverName}");
                 
                 // Get the server's type and starter
-                string serverType = new ServerEditor(serverSection).LoadSettings()["type"];
+                string serverType = new ServerEditor(serverSection).GetServerInformation().Type;
                 AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
                 // Start the server
@@ -358,7 +361,7 @@ namespace MCSMLauncher.gui
             // If an error occurs, let the user know.
             catch (Exception ex)
             {
-                Logging.LOGGER.Error(ex.Message + "\n" + ex.StackTrace);
+                Logging.LOGGER.Error(ex);
                 MessageBox.Show($@"An error occurred whilst starting the server. {Environment.NewLine}Please check the integrity of the server files.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

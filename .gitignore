@@ -350,5 +350,5 @@ MigrationBackup/
 .ionide/
 
 # Unwanted directories
-bin/
-obj/
+bin/*
+obj/*

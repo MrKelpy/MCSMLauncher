@@ -31,11 +31,10 @@ namespace MCSMLauncher.common.server.starters
         /// the "run.bat" file.
         /// </summary>
         /// <param name="serverSection">The section of the server to be run</param>
-        public override async Task Run(Section serverSection)
+        /// <param name="editor">The ServerEditor instance to use</param>
+        public override async Task Run(Section serverSection, ServerEditor editor)
         {
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
-            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-            ServerInformation info = editor.GetServerInformation();
 
             // Makes sure the run.bat file exists and removes the "nogui" argument from it.
             if (runBatFilepath == null) throw new FileNotFoundException("run.bat file not found");

@@ -103,7 +103,7 @@ UninstPage uninstConfirm
 UninstPage instfiles
  
 ;--------------------------------
- 
+
 AutoCloseWindow false
 ShowInstDetails show
  

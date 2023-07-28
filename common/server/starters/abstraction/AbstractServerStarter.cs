@@ -42,11 +42,11 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// Runs the server with the given startup arguments.
         /// </summary>
         /// <param name="serverSection">The section to get the resources from</param>
-        public virtual async Task Run(Section serverSection)
+        /// <param name="editor">The ServerEditor instance to use</param>
+        public virtual async Task Run(Section serverSection, ServerEditor editor)
         {
             // Get the server.jar and server.properties paths.
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
-            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
             ServerInformation info = editor.GetServerInformation();
             
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");
@@ -78,7 +78,6 @@ namespace MCSMLauncher.common.server.starters.abstraction
         protected async Task StartServer(Section serverSection, Process proc, ServerEditor editor)
         {
             Logging.LOGGER.Info($"Starting the {serverSection.SimpleName} server...");
-            ServerInformation info = editor.GetServerInformation();
 
             // Gets an available port starting on the one specified, automatically update and flush the buffers.
             if (editor.HandlePortForServer() == 1)
@@ -93,6 +92,8 @@ namespace MCSMLauncher.common.server.starters.abstraction
              file with the correct ip based on the success of the operation.
              This will inevitably fail if the router does not support UPnP.
             */
+            ServerInformation info = editor.GetServerInformation();
+
             if (info.UPnPOn && await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 

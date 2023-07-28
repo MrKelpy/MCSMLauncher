@@ -126,7 +126,6 @@
   <data name="mkeq.ToolTip" xml:space="preserve">
     <value>This is the server editor prompt. It displays every setting that you can edit in your server. Choose whatever you want to customize and go wild!
 In case this isn't sufficient customization, you can open the server folder and have full control of your server.
-
-NOTE: If you change the server-ip in the server.properties file, the port will NOT be handled automatically. You're going to have to manage it yourself.</value>
+    </value>
   </data>
 </root>

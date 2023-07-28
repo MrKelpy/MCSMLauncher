@@ -63,10 +63,11 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void ServersToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void ServersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (MainLayout.Contains(ServerList.INSTANCE.GridServerList)) return;
             MainLayout.SetAllFrom(ServerList.INSTANCE.GetLayout());
+            await ServerList.INSTANCE.UpdateAllButtonStatesAsync();
         }
 
         /// <summary>

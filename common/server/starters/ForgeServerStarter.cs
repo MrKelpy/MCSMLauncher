@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MCSMLauncher.common.background;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
@@ -33,7 +34,7 @@ namespace MCSMLauncher.common.server.starters
         public override async Task Run(Section serverSection)
         {
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
-            ServerEditor editor = new (serverSection);
+            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
             ServerInformation info = editor.GetServerInformation();
 
             // Makes sure the run.bat file exists and removes the "nogui" argument from it.

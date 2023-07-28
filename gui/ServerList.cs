@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
@@ -23,12 +24,7 @@ namespace MCSMLauncher.gui
     /// </summary>
     public partial class ServerList : Form
     {
-        /// <summary>
-        /// The instance of the class to use, matching the singleton model.
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public static ServerList INSTANCE { get; } = new ServerList();
-        
+
         /// <summary>
         /// Main constructor for the ServerList form. Private to enforce the singleton model.
         /// </summary>
@@ -45,6 +41,14 @@ namespace MCSMLauncher.gui
 
             ButtonRefresh.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Refresh"))));
         }
+        
+        /// <summary>
+        /// The instance of the class to use, matching the singleton model.
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        public static ServerList INSTANCE { get; } = new ServerList();
+        
+        public List<ServerEditor> Servers { get; } = new();
 
         /// <summary>
         /// Refreshes the grid asynchronously, clearing everything and reading all of the existing
@@ -54,9 +58,12 @@ namespace MCSMLauncher.gui
         {
             // Iterates over every server in the servers section and creates an addition task for them
             GridServerList.Rows.Clear();
+            
+            // Gets the global editors cache
+            GlobalEditorsCache cache = GlobalEditorsCache.INSTANCE;
 
             // Creates a list of sorted editors to work with, to then create a task list
-            List<ServerEditor> editors = FileSystem.AddSection("servers").GetAllTopLevelSections().Select(x => new ServerEditor(x)).ToList();
+            List<ServerEditor> editors = FileSystem.AddSection("servers").GetAllTopLevelSections().Select(cache.GetOrCreate).ToList();
             List<Task> taskList = editors.Select(AddServerToListAsync).ToList();
 
             // Waits for all of the tasks to complete
@@ -236,7 +243,8 @@ namespace MCSMLauncher.gui
             foreach (DataGridViewRow row in GridServerList.Rows)
             {
                 Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + row.Cells[2].Value);
-                tasks.Add(UpdateServerButtonStateAsync(new ServerEditor(serverSection)));
+                ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
+                tasks.Add(UpdateServerButtonStateAsync(editor));
             }
 
             await Task.WhenAll(tasks);
@@ -334,7 +342,8 @@ namespace MCSMLauncher.gui
             Section serverSection = FileSystem.AddSection($"servers/{serverName}");
             
             // Create and show the edit prompt.
-            ServerEditPrompt editPrompt = new (new ServerEditor(serverSection));
+            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
+            ServerEditPrompt editPrompt = new (editor);
             editPrompt.ShowDialog();
         }
 
@@ -351,7 +360,8 @@ namespace MCSMLauncher.gui
                 Section serverSection = FileSystem.AddSection($"servers/{serverName}");
                 
                 // Get the server's type and starter
-                string serverType = new ServerEditor(serverSection).GetServerInformation().Type;
+                ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
+                string serverType = editor.GetServerInformation().Type;
                 AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
                 // Start the server

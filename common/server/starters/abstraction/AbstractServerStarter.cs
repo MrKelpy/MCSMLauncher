@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.background;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.gui;
@@ -45,7 +46,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
         {
             // Get the server.jar and server.properties paths.
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
-            ServerEditor editor = new (serverSection);
+            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
             ServerInformation info = editor.GetServerInformation();
             
             if (serverJarPath == null) throw new FileNotFoundException("server.jar file not found");

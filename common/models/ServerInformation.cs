@@ -120,13 +120,13 @@ namespace MCSMLauncher.common.models
         public ServerInformation Update(Dictionary<string, string> updateDict)
         {
             // Act as a de-serializer for the ServerInformation object, matching all the dictionary keys to the fields
-            foreach (FieldInfo field in typeof(ServerInformation).GetFields())
+            foreach (PropertyInfo field in this.GetType().GetProperties())
             {
                 // Get the value from the dictionary, or null if it doesn't exist
                 string value = updateDict.TryGetValue(field.Name.ToLower(), out string val) ? val : null;
                 
                 if (value != null)
-                    field.SetValue(this, Convert.ChangeType(value, field.FieldType));
+                    field.SetValue(this, Convert.ChangeType(value, field.PropertyType));
             }
 
             // Return the updated ServerInformation object for chaining
@@ -143,7 +143,7 @@ namespace MCSMLauncher.common.models
             Dictionary<string, string> dict = new Dictionary<string, string>();
 
             // Act as a serializer for the ServerInformation object, matching all the fields to the dictionary keys
-            foreach (FieldInfo field in typeof(ServerInformation).GetFields())
+            foreach (PropertyInfo field in typeof(ServerInformation).GetProperties())
                 dict.Add(field.Name.ToLower(), field.GetValue(this).ToString());
 
             return dict;

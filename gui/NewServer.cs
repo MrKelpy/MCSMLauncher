@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
 using MCSMLauncher.common;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.utils;
@@ -191,10 +192,8 @@ namespace MCSMLauncher.gui
 
             try
             {
-                AbstractServerBuilder builder =
-                    new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
-                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text,
-                    ComboServerVersion.Text);
+                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
+                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
             }
 
             // If a timeout exception happened, log it and tell the user that a timeout happened
@@ -202,6 +201,8 @@ namespace MCSMLauncher.gui
             {
                 Logging.LOGGER.Error(err.StackTrace);
                 MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
                 serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
@@ -214,6 +215,8 @@ namespace MCSMLauncher.gui
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
 
                 MessageBox.Show(errorMessage, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
                 serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
@@ -223,6 +226,8 @@ namespace MCSMLauncher.gui
                 Logging.LOGGER.Error(err);
                 MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
                 serversSection.RemoveSection(TextBoxServerName.Text);
             }
 

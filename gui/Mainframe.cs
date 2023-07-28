@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.background;
 using PgpsUtilsAEFC.forms.extensions;
+// ReSharper disable InconsistentNaming
 
 namespace MCSMLauncher.gui
 {
@@ -28,7 +29,7 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// The singleton instance of the Mainframe.
         /// </summary>
-        public static Mainframe INSTANCE { get; } = new Mainframe();
+        public static Mainframe INSTANCE { get; } = new ();
 
         /// <summary>
         /// Loads up anything that needs to be loaded after the mainframe handle is created.

@@ -258,7 +258,7 @@ namespace MCSMLauncher.gui
             DataGridViewRow row = GetRowFromName(editor.ServerSection.SimpleName);
             ServerInformation settings = editor.GetServerInformation();
 
-            if (row == null || row.Cells[3].Value.ToString() == "Copied to Clipboard") return;
+            if (row == null || row.Cells[3].Value?.ToString() == "Copied to Clipboard") return;
             
             // Updates the server's IP address in the server list.
             row.Cells[3].Value = editor.GetFromBuffers("server-ip") != ""
@@ -382,6 +382,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private async void ButtonRefresh_Click(object sender, EventArgs e)
         {
+            GlobalEditorsCache.INSTANCE.Clear();
             await RefreshGridAsync();
             await UpdateAllButtonStatesAsync();
         }

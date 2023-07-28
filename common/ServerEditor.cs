@@ -133,8 +133,8 @@ namespace MCSMLauncher.common
         /// <returns>A code signaling the success of the operation.</returns>
         public int HandlePortForServer()
         {
-            int port = SettingsBuffer.TryGetValue("baseport", out string setting) ? int.Parse(setting) : 25565;
-            if (SettingsBuffer.ContainsKey("server-ip") && PropertiesBuffer["server-ip"] != "") return 0;
+            int port = BuffersContain("baseport") ? GetFromBuffers<int>("baseport") : 25565;
+            if (BuffersContain("server-ip") && GetFromBuffers("server-ip") != "") return 0;
 
             // Gets an available port starting on the one specified. If it's -1, it means that there are no available ports.
             int availablePort = NetworkUtils.GetNextAvailablePort(port);
@@ -157,7 +157,7 @@ namespace MCSMLauncher.common
         public ServerInformation GetServerInformation()
         {
             // If settings buffer is not empty, return a new server information instance with the settings buffer
-            if (SettingsBuffer.Keys.Count > 0) return new ServerInformation().GetMinimalInformation(ServerSection).Update(SettingsBuffer);
+            if (SettingsBuffer.Keys.Count > 0) return new ServerInformation().Update(SettingsBuffer);
 
             // If it is empty, return a new server information instance with the minimal information
             return new ServerInformation().GetMinimalInformation(ServerSection);

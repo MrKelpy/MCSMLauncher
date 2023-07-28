@@ -44,7 +44,7 @@ namespace MCSMLauncher.gui
             LoadToForm(editor.GetBuffersCopy());
 
             // Edits some values in the form that have to be manually placed
-            CheckBoxCracked.Checked = !CheckBoxCracked.Checked;
+            CheckBoxCracked.Checked = !editor.GetFromBuffers<bool>("online-mode");
             CheckBoxSpawnProtection.Checked = editor.BuffersContain("spawn-protection") && editor.GetFromBuffers<int>("spawn-protection") > 0;
             TextBoxServerName.Text = ServerSection.SimpleName;
 

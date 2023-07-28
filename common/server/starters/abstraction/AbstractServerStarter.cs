@@ -56,9 +56,10 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 .Replace("%SERVER_JAR%", PathUtils.NormalizePath(serverJarPath))
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
+            string javaPath = info.JavaRuntimePath != "java" ? $"\"{info.JavaRuntimePath}/bin/java\"" : info.JavaRuntimePath;
+            
             // Creates the process and starts it.
-            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}/bin/java\"", StartupArguments,
-                serverSection.SectionFullPath);
+            Process proc = ProcessUtils.CreateProcess(javaPath, StartupArguments, serverSection.SectionFullPath);
             
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
@@ -96,10 +97,11 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
-
-            // Starts both the process, and the backup handler attached to it.
+            
+            // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();
             new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) {IsBackground = false}.Start();
+            info.CurrentServerProcessID = proc.Id;
             
             // Updates and flushes the buffers, writing the changes to the files.
             editor.UpdateBuffers(info.ToDictionary());

@@ -40,11 +40,6 @@ namespace MCSMLauncher.common.server.starters
             // Makes sure the run.bat file exists and removes the "nogui" argument from it.
             if (runBatFilepath == null) throw new FileNotFoundException("run.bat file not found");
             FixRunFile(runBatFilepath);
-            
-            // Builds the startup arguments for the server.
-            StartupArguments = StartupArguments
-                .Replace("%SERVER_JAR%", PathUtils.NormalizePath(runBatFilepath))
-                .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runBatFilepath}", serverSection.SectionFullPath);

@@ -96,7 +96,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             string serverJarPath = await InstallServer(serverInstallerJar);
 
             // Initialises the editor and updates the server settings file
-            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
+            ServerEditor editor = new (serverSection);
             ServerInformation info = editor.GetServerInformation();
 
             // Updates the server information with critical information about the server

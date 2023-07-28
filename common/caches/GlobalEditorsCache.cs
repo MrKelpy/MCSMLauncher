@@ -48,6 +48,11 @@ namespace MCSMLauncher.common.caches
         }
         
         /// <summary>
+        /// Clears the server editors cache.
+        /// </summary>
+        public void Clear() => ServerEditorsCache.Clear();
+        
+        /// <summary>
         /// Gets the server editor from the cache.
         /// </summary>
         /// <param name="serverSection">The server section to match the editor to</param>

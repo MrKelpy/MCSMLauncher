@@ -58,6 +58,12 @@ namespace MCSMLauncher.common.server.builders
 
             // Returns the path to the server.jar file, which in this case, is a forge file.
             serverSection.RemoveDocument("server.jar");
+            
+            // Checks if a run.bat file exists, and if it does, return it instead of the forge file.
+            string runBatFilepath = serverSection.GetFirstDocumentNamed("run.bat");
+            if (runBatFilepath != null) return runBatFilepath;
+            
+            // Return the forge file.
             return serverSection.GetAllDocuments().First(x => Path.GetFileName(x).Contains("forge") && Path.GetFileName(x).EndsWith("jar"));
         }
 
@@ -125,20 +131,22 @@ namespace MCSMLauncher.common.server.builders
             // Gets the run.bat file and adds nogui to the end of the java command
             List<string> lines = FileUtils.ReadFromFile(runFilepath);
             int index = lines.IndexOf(lines.FirstOrDefault(x => x.StartsWith("java")));
-            int lineIndex = index != -1 ? index : 0;
+            int commandIndex = index != -1 ? index : 0;
 
-            if (!lines[lineIndex].Contains("nogui"))
+            if (!lines[commandIndex].Contains("nogui"))
             {
                 // Removes the pause statement if there is one
                 if (lines.Count > 0 && lines[lines.Count - 1] == "pause") lines.RemoveAt(lines.Count - 1);
 
                 // If the bat file was generated, there's a '%*' that needs to be replaced instead of just
                 // adding nogui to the end.
-                lines[lineIndex] = lines[lineIndex].Contains("%*")
-                    ? lines[lineIndex].Replace("%*", "nogui %*")
-                    : lines[lineIndex] + " nogui";
+                lines[commandIndex] = lines[commandIndex].Contains("%*")
+                    ? lines[commandIndex].Replace("%*", "nogui %*")
+                    : lines[commandIndex] + " nogui";
 
-                lines[lineIndex] = lines[lineIndex].Replace("@user_jvm_args.txt", "-Xms1024M -Xmx1024M");
+                lines[commandIndex] = lines[commandIndex].Replace("@user_jvm_args.txt", "-Xms1024M -Xmx1024M")
+                    .Replace("java", $"\"{info.JavaRuntimePath}\\bin\\java\"");
+                
                 FileUtils.DumpToFile(runFilepath, lines);
             }
 
@@ -173,6 +181,11 @@ namespace MCSMLauncher.common.server.builders
             // Completes the run, resetting the termination code
             OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
             TerminationCode = -1;
+            
+            // Sneakily re-formats the -Xmx and -Xms arguments to be in a template format
+            lines[commandIndex] = lines[commandIndex].Replace($"\"{info.JavaRuntimePath}\\bin\\java\"", "%JAVA%");
+            lines[commandIndex] = lines[commandIndex].Replace("-Xms1024M -Xmx1024M", "-Xms%RAM%M -Xmx%RAM%M");
+            FileUtils.DumpToFile(runFilepath, lines);
             return 0;
         }
     }

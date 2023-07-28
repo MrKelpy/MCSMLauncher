@@ -133,7 +133,7 @@ It can be one with mods, plugins, vanilla, you call it! Each one needs to be tre
   </data>
     <data name="label5.ToolTip" xml:space="preserve">
     <value>This is the java version used to run the server. 
-Some versions need certain java versions to work, and most of the time every issue with building servers comes from this.
+Some versions need certain java versions to work, and most of the time every issue with building servers comes from 
 Please check the required java version for your server type and version in the internet before building it.</value>
   </data>
     <metadata name="miniToolStrip.TrayLocation"

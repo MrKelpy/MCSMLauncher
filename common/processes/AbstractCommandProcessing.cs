@@ -53,16 +53,16 @@ namespace MCSMLauncher.common.processes
                 string message = matches.Groups[1].Captures[0].Value;
 
                 // If the message is an error and not registered as a special error, handle it as such.
-                if ((!this.SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) ||
+                if ((!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) ||
                     typeSection.Contains("Exception"))
-                    this.ProcessErrorMessages(message, proc);
+                    ProcessErrorMessages(message, proc);
 
                 // Handle the warning messages.
                 else if (typeSection.Contains("WARN"))
-                    this.ProcessWarningMessages(message, proc);
+                    ProcessWarningMessages(message, proc);
 
                 // Handle the info messages.
-                else if (typeSection.Contains("INFO")) this.ProcessInfoMessages(message, proc);
+                else if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -70,7 +70,7 @@ namespace MCSMLauncher.common.processes
             }
 
             // Handle any other messages that don't fit the above criteria.
-            this.ProcessOtherMessages(e.Data, proc);
+            ProcessOtherMessages(e.Data, proc);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace MCSMLauncher.common.processes
         /// <terminationCode>0 - The server.jar fired a normal info message</terminationCode>
         protected virtual void ProcessInfoMessages(string message, Process proc)
         {
-            this.TerminationCode = this.TerminationCode != 1 ? 0 : 1;
+            TerminationCode = TerminationCode != 1 ? 0 : 1;
 
             // In some versions the EULA message is sent as INFO, so handle it here too
             if (message.ToLower().Contains("agree to the eula")) proc.KillProcessAndChildren();
@@ -100,13 +100,13 @@ namespace MCSMLauncher.common.processes
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                this.OutputConsole.SelectionColor = Color.Firebrick;
+                OutputConsole.SelectionColor = Color.Firebrick;
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                this.OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine);
             }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.OutputConsole.SelectionColor = Color.Black; }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
         }
 
         /// <summary>
@@ -121,14 +121,14 @@ namespace MCSMLauncher.common.processes
         {
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                this.OutputConsole.SelectionColor = Color.OrangeRed;
+                OutputConsole.SelectionColor = Color.OrangeRed;
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                this.OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine);
             }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.OutputConsole.SelectionColor = Color.Black; }));
-            this.TerminationCode = this.TerminationCode != 1 ? 2 : 1;
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            TerminationCode = TerminationCode != 1 ? 2 : 1;
         }
 
         /// <summary>
@@ -147,17 +147,17 @@ namespace MCSMLauncher.common.processes
             // If the message contains the word "error" in it, we're going to assume it's an error.
             if (message.ToLower().Split(' ').Any(x => x.StartsWith("error")))
             {
-                this.ProcessErrorMessages(message, proc);
+                ProcessErrorMessages(message, proc);
                 return;
             }
 
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.OutputConsole.SelectionColor = Color.Gray; }));
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                this.OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
             }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { this.OutputConsole.SelectionColor = Color.Black; }));
-            this.TerminationCode = this.TerminationCode != 1 ? 3 : 1;
+            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            TerminationCode = TerminationCode != 1 ? 3 : 1;
         }
     }
 }

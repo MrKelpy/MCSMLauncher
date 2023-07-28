@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MCSMLauncher.common.background;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
@@ -33,38 +34,36 @@ namespace MCSMLauncher.common.server.starters
         public override async Task Run(Section serverSection)
         {
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
-            string serverPropertiesPath = serverSection.GetFirstDocumentNamed("server.properties");
-            string settings = serverSection.GetFirstDocumentNamed("server_settings.xml");
+            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
+            ServerInformation info = editor.GetServerInformation();
 
+            // Makes sure the run.bat file exists and removes the "nogui" argument from it.
             if (runBatFilepath == null) throw new FileNotFoundException("run.bat file not found");
-            if (serverPropertiesPath == null) throw new FileNotFoundException("server.properties file not found");
-
-            // Removes the "nogui" argument from the run.bat file.
-            List<string> lines = FileUtils.ReadFromFile(runBatFilepath);
-            for (int index = 0; index < lines.Count; index++)
-            {
-                const string noguiArgument = "nogui";
-                if (lines[index].Contains(noguiArgument))
-                    lines[index] = lines[index].Replace(noguiArgument, "").TrimEnd();
-            }
-
-            FileUtils.DumpToFile(runBatFilepath, lines);
-
-            // Gets the server information from the server_settings.xml file or creates a new one with minimal information.
-            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
-            
-            // Builds the startup arguments for the server.
-            this.StartupArguments = this.StartupArguments
-                .Replace("%SERVER_JAR%", PathUtils.NormalizePath(runBatFilepath))
-                .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
+            FixRunFile(runBatFilepath);
 
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runBatFilepath}", serverSection.SectionFullPath);
-            proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Finds the port and IP to start the server with, and starts the server.
-            await this.StartServer(serverSection, proc, info);
+            await StartServer(serverSection, proc, editor);
+        }
+
+        /// <summary>
+        /// Removes the "nogui" argument from the run.bat file, as it causes the server to be hidden.
+        /// </summary>
+        /// <param name="path">The path to the run.bat filepath</param>
+        private void FixRunFile(string path)
+        {
+            // Reads the run.bat file.
+            List<string> lines = FileUtils.ReadFromFile(path);
+            
+            // Goes through each line, and removes the "nogui" argument from it.
+            for (int i = 0; i < lines.Count; i++)
+                lines[i] = lines[i].Replace("nogui", "").TrimEnd();
+            
+            FileUtils.DumpToFile(path, lines);
         }
     }
 }

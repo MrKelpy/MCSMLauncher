@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
@@ -34,12 +35,12 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <param name="startupArguments">The start</param>
         protected AbstractServerBuilder(string startupArguments)
         {
-            this.StartupArguments = startupArguments;
-            this.SpecialErrors.Add("Exception handling console input");
-            this.SpecialErrors.Add("Error during early discovery");
-            this.SpecialErrors.Add("Cannot read the array length");
-            this.SpecialErrors.Add("FML appears to be missing any signature data");
-            this.SpecialErrors.Add("Failed to load");
+            StartupArguments = startupArguments;
+            SpecialErrors.Add("Exception handling console input");
+            SpecialErrors.Add("Error during early discovery");
+            SpecialErrors.Add("Cannot read the array length");
+            SpecialErrors.Add("FML appears to be missing any signature data");
+            SpecialErrors.Add("Failed to load");
         }
 
         /// <summary>
@@ -70,95 +71,102 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <returns>A Task to allow the method to be awaited</returns>
         public async Task Build(string serverName, string serverType, string serverVersion)
         {
-            // Ensures that there's a clean section for the server to be built on
-            this.OutputConsole.Clear();
-            this.OutputConsole.AppendText(Logging.LOGGER.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
+            OutputConsole.Clear();
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
 
-            Section serversSection = FileSystem.GetFirstSectionNamed("servers");
-            serversSection.RemoveSection(serverName);
-            Section currentServerSection = serversSection.AddSection(serverName);
+            // Creates the server section (if it already exists, it's deleted and recreated)
+            Section allServersSection = FileSystem.GetFirstSectionNamed("servers");
+            allServersSection.RemoveSection(serverName);
+            Section serverSection = allServersSection.AddSection(serverName);
 
-            this.OutputConsole.AppendText(Logging.LOGGER.Info($"Created a new {serverName} section.") +
-                                          Environment.NewLine);
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Created a new {serverName} section.") + Environment.NewLine);
 
             // Gets the direct download link for the server jar based on the version and type
-            ServerTypeMappingsFactory multiFactory = new ServerTypeMappingsFactory();
+            ServerTypeMappingsFactory multiFactory = new ();
             string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
-            string directDownloadLink = await multiFactory.GetParserFor(serverType)
-                .GetServerDirectDownloadLink(serverVersion, downloadLink);
-            this.OutputConsole.AppendText(
-                Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") +
-                Environment.NewLine);
+            string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(serverVersion, downloadLink);
+            OutputConsole.AppendText(Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
 
             // Downloads the server jar into the server folder
-            this.OutputConsole.AppendText(Logging.LOGGER.Info("Downloading the server.jar...") + Environment.NewLine);
-            await FileDownloader.DownloadFileAsync(Path.Combine(currentServerSection.SectionFullPath, "server.jar"),
-                directDownloadLink);
+            OutputConsole.AppendText(Logging.LOGGER.Info("Downloading the server.jar...") + Environment.NewLine);
+            await FileDownloader.DownloadFileAsync(Path.Combine(serverSection.SectionFullPath, "server.jar"), directDownloadLink);
 
             // Gets the server.jar file path and installs the server
-            Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
-            string serverInstallerJar = serverSection.GetAllDocuments()
-                .FirstOrDefault(x => x.Contains("server") && x.EndsWith(".jar"));
-            string serverJarPath = await this.InstallServer(serverInstallerJar);
+            string serverInstallerJar = serverSection.GetAllDocuments().FirstOrDefault(x => x.Contains("server") && x.EndsWith(".jar"));
+            string serverJarPath = await InstallServer(serverInstallerJar);
 
-            // Creates the server_settings.xml file, marks it as hidden and serializes the ServerInformation object into it
-            string serverSettingsPath = Path.Combine(serverSection.SectionFullPath, "server_settings.xml");
-            ServerInformation serverInformation = new ServerInformation
+            // Initialises the editor and updates the server settings file
+            ServerEditor editor = new (serverSection);
+            ServerInformation info = editor.GetServerInformation();
+
+            // Updates the server information with critical information about the server
+            info.Type = serverType;
+            info.Version = serverVersion;
+            info.ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath;
+            info.PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath;
+            info.JavaRuntimePath = NewServer.INSTANCE.ComboBoxJavaVersion.Text;
+            
+            // Updates and flushes the buffers
+            editor.UpdateBuffers(info.ToDictionary());
+            editor.FlushBuffers();
+
+            // Generates the EULA file (or agrees to it if it already exists, as a failsafe)
+            if (GenerateEula(serverSection) == 1)
             {
-                Type = serverType,
-                Version = serverVersion,
-                ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath,
-                PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath,
-                JavaRuntimePath = NewServer.INSTANCE.ComboBoxJavaVersion.Text
-            };
+                OutputConsole.AppendText(Logging.LOGGER.Error("Failed to generate or agree to the EULA file. You should *never* have reached this point, but here we are.") + Environment.NewLine);
+                FileSystem.RemoveSection("servers/" + serverName);
+                return; 
+            }
 
-            serverInformation.ToFile(serverSettingsPath);
-            File.SetAttributes(serverSettingsPath, File.GetAttributes(serverSettingsPath) | FileAttributes.Hidden);
-
-            // Runs the server once and closes it, in order to create the first files.
-            if (await this.FirstSetupRun(serverJarPath) == 1)
+            // Runs the server once and closes it, in order to create the server files.
+            if (await FirstSetupRun(editor, serverJarPath) == 1)
             {
                 FileSystem.RemoveSection("servers/" + serverName);
                 return;
             }
 
-            // Agrees to the EULA if it exists, and if it doesn't, skips it.
-            string eulaPath = serverSection.GetFirstDocumentNamed("eula.txt");
+            await ServerList.INSTANCE.AddServerToListAsync(editor);
+            OutputConsole.SelectionColor = Color.LimeGreen;
+            OutputConsole.AppendText(Logging.LOGGER.Info("Finished building the server.") + Environment.NewLine);
+            OutputConsole.SelectionColor = Color.Black;
+        }
+        
+        /// <summary>
+        /// Generates an agreed upon EULA file in order to allow the server to start.
+        /// </summary>
+        /// <param name="serverSection">The server section to generate the file into</param>
+        private int GenerateEula(Section serverSection)
+        {
+            // Gets the eula.txt file path
+            string eulaPath = Path.Combine(serverSection.SectionFullPath, "eula.txt");
 
-            if (File.Exists(eulaPath))
-            {
-                this.OutputConsole.AppendText(Logging.LOGGER.Info("Agreeing to the EULA") + Environment.NewLine);
-                this.AgreeToEula(eulaPath);
-            }
+            // If the file exists, agree to the eula instead.
+            if (File.Exists(eulaPath)) return AgreeToEula(eulaPath);
 
-            // Runs the server once and closes it, in order to create the rest of the server files.
-            // Since this is a proper run now, we've got to check for an available port.
-            if (await this.FirstSetupRun(serverJarPath) == 1)
-            {
-                FileSystem.RemoveSection("servers/" + serverName);
-                return;
-            }
-
-            await ServerList.INSTANCE.AddServerToListAsync(serverSection);
-            this.OutputConsole.SelectionColor = Color.LimeGreen;
-            this.OutputConsole.AppendText(Logging.LOGGER.Info("Finished building the server.") + Environment.NewLine);
-            this.OutputConsole.SelectionColor = Color.Black;
+            File.Create(eulaPath).Close();
+            FileUtils.AppendToFile(eulaPath, "# This EULA file was generated by MCSM.");
+            FileUtils.AppendToFile(eulaPath, "# By using MCSM, you automatically agree to the Minecraft TOS - https://aka.ms/MinecraftEULA");
+            FileUtils.AppendToFile(eulaPath, "eula=true" );
+            
+            return 0;
         }
 
         /// <summary>
         /// Agrees to the eula by replacing the eula=false line in the file to eula=true.
+        /// This should just be used as a failsafe to the eula generation
         /// </summary>
         /// <param name="eulaPath">The path to the eula.txt file</param>
-        private void AgreeToEula(string eulaPath)
+        private int AgreeToEula(string eulaPath)
         {
             List<string> lines = FileUtils.ReadFromFile(eulaPath);
 
             // Replaces the eula=false line with eula=true
             int eulaIndex = lines.IndexOf("eula=false");
-            if (eulaIndex == -1) return;
+            if (eulaIndex == -1) return 1;
 
             lines[eulaIndex] = "eula=true";
             FileUtils.DumpToFile(eulaPath, lines);
+            return 0;
         }
 
         /// <summary>
@@ -167,28 +175,28 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
+        /// <param name="editor">The ServerEditor to use with this run</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        protected virtual async Task<int> FirstSetupRun(string serverJarPath)
+        protected virtual async Task<int> FirstSetupRun(ServerEditor editor, string serverJarPath)
         {
             // Creates a new process to run the server silently, and waits for it to finish.
-            this.StartupArguments = this.StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
-            this.OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
+            StartupArguments = StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
+            OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
-            Section serverSection = this.GetSectionFromFile(serverJarPath);
-            ServerInformation info = ServerEditor.GetServerInformation(serverSection);
-            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", this.StartupArguments, Path.GetDirectoryName(serverJarPath));
+            ServerInformation info = editor.GetServerInformation();
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments, Path.GetDirectoryName(serverJarPath));
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (new ServerEditor(serverSection).HandlePortForServer() == 1)
+            if (editor.HandlePortForServer() == 1)
             {
-                this.ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
+                ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;
             }
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
-            proc.OutputDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => this.ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
             // Waits for the termination of the process by the OutputDataReceived event or ErrorDataReceived event.
             proc.Start();
@@ -198,15 +206,15 @@ namespace MCSMLauncher.common.server.builders.abstraction
 
             // Disposes of the process and checks if the termination code is 1. If so, return 1.
             proc.Dispose();
-            serverSection.RemoveSection("world"); // Finds the world folder and deletes it if it exists
+            editor.ServerSection.RemoveSection("world"); // Finds the world folder and deletes it if it exists
             
             // The math here is because if nothing happened, it errored with no changes, so the code is -1
             // and we can simply return 1.
-            if (this.TerminationCode * this.TerminationCode == 1) return 1;
+            if (TerminationCode * TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            this.OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
-            this.TerminationCode = -1;
+            OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
+            TerminationCode = -1;
             return 0;
         }
 
@@ -233,8 +241,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
         protected override void ProcessErrorMessages(string message, Process proc)
         {
             base.ProcessErrorMessages(message, proc);
-            if (this.SpecialErrors.StringMatches(message)) return;
-            this.TerminationCode = !message.Contains("server.properties") ? 1 : this.TerminationCode;
+            if (SpecialErrors.StringMatches(message)) return;
+            TerminationCode = !message.Contains("server.properties") ? 1 : TerminationCode;
         }
 
         /// <summary>

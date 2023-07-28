@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
@@ -44,6 +45,11 @@ namespace MCSMLauncher.common.models
         /// The base port to try to use for the server.
         /// </summary>
         public int BasePort { get; set; } = 25565;
+        
+        /// <summary>
+        /// The port that the server will actually use, after evaluation.
+        /// </summary>
+        public int Port { get; set; }
 
         /// <summary>
         /// The IP Address used to connect to the server.
@@ -56,7 +62,7 @@ namespace MCSMLauncher.common.models
         /// <summary>
         /// Whether or not to use UPnP to try to open the port on the router.
         /// </summary>
-        public bool UPnPOn { get; set; } = false;
+        public bool UPnPOn { get; set; }
 
         /// <summary>
         /// The path to the directory where the backups should be stored at.
@@ -71,12 +77,12 @@ namespace MCSMLauncher.common.models
         /// <summary>
         /// Whether or not to create server backups whilst running the server
         /// </summary>
-        public bool ServerBackupsOn { get; set; } = true;
+        public bool ServerBackupsOn { get; set; } = false;
 
         /// <summary>
         /// Whether or not to create playerdata backups whilst running the server
         /// </summary>
-        public bool PlayerdataBackupsOn { get; set; } = true;
+        public bool PlayerdataBackupsOn { get; set; } = false;
 
         /// <summary>
         /// The path to the java runtime to use for the server.
@@ -111,40 +117,36 @@ namespace MCSMLauncher.common.models
         /// Updates the ServerInformation object with the information from the specified dictionary.
         /// </summary>
         /// <param name="updateDict">The dictionary to </param>
-        public void Update(Dictionary<string, string> updateDict)
+        public ServerInformation Update(Dictionary<string, string> updateDict)
         {
-            this.BasePort = int.Parse(updateDict["baseport"]);
-            this.IPAddress = updateDict.TryGetValue("ipaddress", out string ipaddr) ? ipaddr : this.IPAddress;
-            this.Ram = int.Parse(updateDict["ram"]);
-            this.PlayerdataBackupsPath = updateDict["playerdatabackupspath"];
-            this.ServerBackupsPath = updateDict["serverbackupspath"];
-            this.PlayerdataBackupsOn = bool.Parse(updateDict["playerdatabackupson"]);
-            this.ServerBackupsOn = bool.Parse(updateDict["serverbackupson"]);
-            this.CurrentServerProcessID = int.Parse(updateDict["currentserverprocessid"]);
-            this.JavaRuntimePath = updateDict["javaruntimepath"];
-            this.UPnPOn = updateDict.TryGetValue("upnpon", out string upnp) ? bool.Parse(upnp) : this.UPnPOn;
+            // Act as a de-serializer for the ServerInformation object, matching all the dictionary keys to the fields
+            foreach (PropertyInfo field in this.GetType().GetProperties())
+            {
+                // Get the value from the dictionary, or null if it doesn't exist
+                string value = updateDict.TryGetValue(field.Name.ToLower(), out string val) ? val : null;
+                
+                if (value != null)
+                    field.SetValue(this, Convert.ChangeType(value, field.PropertyType));
+            }
+
+            // Return the updated ServerInformation object for chaining
+            return this;
         }
 
         /// <summary>
-        /// Serializes the ServerInformation object to XML and writes it to the specified path.
+        /// Converts the ServerInformation object to a dictionary.
         /// </summary>
-        /// <param name="path">The path to write the information into</param>
-        public void ToFile(string path)
+        /// <returns>A dictionary with the ServerInformation data</returns>
+        public Dictionary<string, string> ToDictionary()
         {
-            Logging.LOGGER.Info($"Dumping server information to {path}");
-            if (File.Exists(path)) File.Delete(path);
-            XMLUtils.SerializeToFile<ServerInformation>(path, this);
-        }
+            // The dictionary to use as the serialization dictionary
+            Dictionary<string, string> dict = new Dictionary<string, string>();
 
-        /// <summary>
-        /// Deserializes the ServerInformation object from XML and returns it.
-        /// </summary>
-        /// <param name="path">The path to get the information for the ServerInformation object</param>
-        /// <returns>The ServerInformation instance with the information present in the xml file</returns>
-        public static ServerInformation FromFile(string path)
-        {
-            Logging.LOGGER.Info($"Obtaining server information from {path}");
-            return XMLUtils.DeserializeFromFile<ServerInformation>(path);
+            // Act as a serializer for the ServerInformation object, matching all the fields to the dictionary keys
+            foreach (PropertyInfo field in typeof(ServerInformation).GetProperties())
+                dict.Add(field.Name.ToLower(), field.GetValue(this).ToString());
+
+            return dict;
         }
     }
 }

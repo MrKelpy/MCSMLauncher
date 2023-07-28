@@ -24,7 +24,7 @@ namespace MCSMLauncher.utils
         /// Returns the External IPv4 Address.
         /// </summary>
         /// <returns>A string containing the ip addr</returns>
-        public static string GetExternalIPAddress() => new WebClient().DownloadString("https://checkip.amazonaws.com/");
+        public static string GetExternalIPAddress() => new WebClient().DownloadString("https://checkip.amazonaws.com/").Trim();
 
         /// <summary>
         /// Returns the Local IPv4 Address.
@@ -33,7 +33,7 @@ namespace MCSMLauncher.utils
         public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
-            return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString();
+            return host.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork)?.ToString().Trim();
         }
 
         /// <summary>

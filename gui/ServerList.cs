@@ -190,14 +190,16 @@ namespace MCSMLauncher.gui
             
             // Handles the server if it is running; In which case there will be a process
             // with a set PID, specified in the server settings file, running as an mc server.
-            if (Math.Pow(info.CurrentServerProcessID, 2) != 1 && (procName == "java" || procName == "cmd"))
+            if (info.CurrentServerProcessID != -1 && (procName == "java" || procName == "cmd"))
             {
                 ForceUpdateServerState(serverName, "Running");
                 UpdateServerIP(editor);
                 return; 
             }
+            
+            // To save resources, only update the server button state if it isn't running.
+            if (info.CurrentServerProcessID == -1) return;
 
-            // Changes the button state to "Start" if the server is not running, and resets the process ID.
             row.Cells[5].Value = "Start";
             row.Cells[3].Value = "";
             info.CurrentServerProcessID = -1;

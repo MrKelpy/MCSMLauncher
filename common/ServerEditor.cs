@@ -92,8 +92,8 @@ namespace MCSMLauncher.common
         /// <returns>The value for the requested key</returns>
         public string? GetFromBuffers(string key)
         {
-            if (SettingsBuffer.ContainsKey(key)) return SettingsBuffer[key];
-            if (PropertiesBuffer.ContainsKey(key)) return PropertiesBuffer[key];
+            if (SettingsBuffer.TryGetValue(key, out string? settings)) return settings;
+            if (PropertiesBuffer.TryGetValue(key, out string? properties)) return properties;
             return null;
         }
         
@@ -106,8 +106,8 @@ namespace MCSMLauncher.common
         /// <returns>The value for the requested key</returns>
         public T? GetFromBuffers<T>(string key)
         {
-            if (SettingsBuffer.ContainsKey(key)) return (T) Convert.ChangeType(SettingsBuffer[key], typeof(T));
-            if (PropertiesBuffer.ContainsKey(key)) return (T) Convert.ChangeType(PropertiesBuffer[key], typeof(T));
+            if (SettingsBuffer.TryGetValue(key, out string? settings)) return (T) Convert.ChangeType(settings, typeof(T));
+            if (PropertiesBuffer.TryGetValue(key, out string? properties)) return (T) Convert.ChangeType(properties, typeof(T));
             return default;
         }
         

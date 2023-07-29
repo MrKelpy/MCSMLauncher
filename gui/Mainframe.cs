@@ -36,12 +36,12 @@ namespace MCSMLauncher.gui
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
-        private void Mainframe_Load(object sender, EventArgs e)
+        private async void Mainframe_Load(object sender, EventArgs e)
         {
             Text += @" v" + ConfigurationManager.AppSettings.Get("Version.App");
 
             // Updates the server list.
-            BeginInvoke(new MethodInvoker(delegate { Task.Run(ServerList.INSTANCE.RefreshGridAsync); }));
+            await Task.WhenAll(ServerList.INSTANCE.RefreshGridAsync());
 
             // Starts any background tasks.
             new Thread(new ServerProcessStateHandler().RunTask) { IsBackground = true }.Start();

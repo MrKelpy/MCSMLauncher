@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MCSMLauncher.common.background;
@@ -35,13 +36,14 @@ namespace MCSMLauncher.common.server.starters
         public override async Task Run(Section serverSection, ServerEditor editor)
         {
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
-
-            // Makes sure the run.bat file exists and removes the "nogui" argument from it.
+            ServerInformation info = editor.GetServerInformation();
+            
+            // Makes sure the run.bat file exists, and gets the command from it.
             if (runBatFilepath == null) throw new FileNotFoundException("run.bat file not found");
-            FixRunFile(runBatFilepath);
-
-            // Creates the process and starts it.
-            Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runBatFilepath}", serverSection.SectionFullPath);
+            string startupArguments = GetRunCommandArguments(runBatFilepath, editor);
+            
+            // Creates the process through the extracted arguments
+            Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", startupArguments, serverSection.SectionFullPath);
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
@@ -50,19 +52,26 @@ namespace MCSMLauncher.common.server.starters
         }
 
         /// <summary>
-        /// Removes the "nogui" argument from the run.bat file, as it causes the server to be hidden.
+        /// Gets the run command template from the run.bat file and creates the run command string
+        /// from it. 
         /// </summary>
         /// <param name="path">The path to the run.bat filepath</param>
-        private void FixRunFile(string path)
+        /// <param name="editor">The editor to use alongside the </param>
+        private string GetRunCommandArguments(string path, ServerEditor editor)
         {
-            // Reads the run.bat file.
+            // Reads the run.bat file and gets the server info
             List<string> lines = FileUtils.ReadFromFile(path);
+            ServerInformation info = editor.GetServerInformation();
             
-            // Goes through each line, and removes the "nogui" argument from it.
-            for (int i = 0; i < lines.Count; i++)
-                lines[i] = lines[i].Replace("nogui", "").TrimEnd();
+            // Gets the template line from the run.bat file.
+            string templateLine = lines.Find(line => line.StartsWith("%JAVA%"));
+            if (templateLine == null) throw new InvalidDataException("run.bat file is invalid");
             
-            FileUtils.DumpToFile(path, lines);
+            // returns the template line key arguments with the actual arguments.
+            return templateLine.Replace("%JAVA%", "")
+                .Replace("%RAM%", info.Ram.ToString())
+                .Replace("nogui", "")
+                .Trim();
         }
     }
 }

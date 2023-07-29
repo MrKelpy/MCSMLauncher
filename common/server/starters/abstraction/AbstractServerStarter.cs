@@ -111,7 +111,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Updates the visual elements of the server and logs the start.
             ServerList.INSTANCE.UpdateServerIP(editor);
             ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
-            Logging.LOGGER.Info($"Started the {serverSection.SimpleName} server on {info.IPAddress}:{info.Port}.");
+            Logging.LOGGER.Info($"Running {serverSection.SimpleName} on {info.IPAddress}:{info.Port}.");
         }
     }
 }

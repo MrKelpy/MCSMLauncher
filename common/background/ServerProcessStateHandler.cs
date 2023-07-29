@@ -16,6 +16,15 @@ namespace MCSMLauncher.common.background
     /// </summary>
     public class ServerProcessStateHandler : IBackgroundRunner
     {
+        /// <summary>
+        /// A quick-access cache of the server editors, used to avoid having to re-fetch them every time.
+        /// </summary>
+        private QuickAccessEditorsCache QuickAccessCache { get; } = new ();
+        
+        /// <summary>
+        /// A counter used to determine when to clean up the quick-access cache.
+        /// </summary>
+        private int CleanupCounter { get; set; } = 0;
 
         /// <summary>
         /// Runs the background task.
@@ -30,19 +39,47 @@ namespace MCSMLauncher.common.background
 
                 foreach (DataGridViewRow row in ServerList.INSTANCE.GridServerList.Rows)
                 {
-                    // Targets only the servers that are running.
-                    if (row.Cells[5].Value?.ToString() != "Running") continue;
-
                     // Gets the server name from the row.
                     string? serverName = row.Cells[2]?.Value.ToString();
                     if (serverName == null) continue;
+
+                    // Firstly, tries to get the server editor from the quick-access cache.
+                    ServerEditor quickEditor = QuickAccessCache.Get(serverName);
+                    if (quickEditor != null)
+                    {
+                        // Updates the button state.
+                        await ServerList.INSTANCE.UpdateServerButtonStateAsync(quickEditor);
+                        continue;
+                    }
                     
-                    // Gets the server editor from the cache, or adds it to the cache if it's not there, and updates the button state.
+                    // If the server editor is not in the quick-access cache, get it from the global cache.
                     Section serverSection = Constants.FileSystem.GetFirstSectionNamed("servers/" + serverName);
                     ServerEditor editor = editorsCache.GetOrCreate(serverSection);
+                    
+                    // Adds the server editor to the quick-access cache for future use and updates the button state.
+                    QuickAccessCache.Add(editor);
                     await ServerList.INSTANCE.UpdateServerButtonStateAsync(editor);
                 }
+                
+                // Allows for the quick-access cache to be cleaned up every 10 seconds.
+                if (CleanupCounter++ < 10) continue;
+                CleanupQuickAccessCache();
+                CleanupCounter = 0;
             }
+        }
+
+        /// <summary>
+        /// Removes any servers that are not in the server list anymore from the quick-access cache.
+        /// </summary>
+        private void CleanupQuickAccessCache()
+        {
+            // Removes any servers that are not in the server list anymore.
+            List<string?> serverNames = ServerList.INSTANCE.GridServerList.Rows.Cast<DataGridViewRow>()
+                .Select(row => row.Cells[2]?.Value.ToString()).ToList();
+
+            foreach (string serverName in QuickAccessCache.Cache.Keys)
+                if (!serverNames.Contains(serverName))
+                    QuickAccessCache.Remove(serverName);
         }
     }
 }

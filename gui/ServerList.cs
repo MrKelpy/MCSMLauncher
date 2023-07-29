@@ -235,17 +235,13 @@ namespace MCSMLauncher.gui
         /// </summary>
         public async Task UpdateAllButtonStatesAsync()
         {
-            List<Task> tasks = new ();
-
             // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
             {
                 Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + row.Cells[2].Value);
                 ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-                tasks.Add(UpdateServerButtonStateAsync(editor));
+                await UpdateServerButtonStateAsync(editor);
             }
-
-            await Task.WhenAll(tasks);
         }
 
         /// <summary>

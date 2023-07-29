@@ -32,6 +32,7 @@ namespace MCSMLauncher.common.background
         public async void RunTask()
         {
             GlobalEditorsCache editorsCache = GlobalEditorsCache.INSTANCE;
+            bool firstRun = true;
             
             while (true) // This specific background task should run forever.
             {
@@ -42,7 +43,10 @@ namespace MCSMLauncher.common.background
                     // Gets the server name from the row.
                     string? serverName = row.Cells[2]?.Value.ToString();
                     if (serverName == null) continue;
-
+                    
+                    // Only update the server button state if the server is running.
+                    if (row.Cells[5]?.Value.ToString() != "Running" && !firstRun) continue;
+                    
                     // Firstly, tries to get the server editor from the quick-access cache.
                     ServerEditor quickEditor = QuickAccessCache.Get(serverName);
                     if (quickEditor != null)
@@ -61,6 +65,9 @@ namespace MCSMLauncher.common.background
                     await ServerList.INSTANCE.UpdateServerButtonStateAsync(editor);
                 }
                 
+                // Signals that the first run is over.
+                firstRun = false;
+
                 // Allows for the quick-access cache to be cleaned up every 10 seconds.
                 if (CleanupCounter++ < 10) continue;
                 CleanupQuickAccessCache();
@@ -77,9 +84,8 @@ namespace MCSMLauncher.common.background
             List<string?> serverNames = ServerList.INSTANCE.GridServerList.Rows.Cast<DataGridViewRow>()
                 .Select(row => row.Cells[2]?.Value.ToString()).ToList();
 
-            foreach (string serverName in QuickAccessCache.Cache.Keys)
-                if (!serverNames.Contains(serverName))
-                    QuickAccessCache.Remove(serverName);
+            List<string> removedNames = QuickAccessCache.Cache.Keys.Where(serverName => !serverNames.Contains(serverName)).ToList();
+            foreach (string serverName in removedNames) QuickAccessCache.Remove(serverName);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace MCSMLauncher.common.background
         public void RunTask()
         {
             // Logs and starts the backup thread.
-            Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection}'");
+            Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection.SimpleName}'");
             ServerInformation info = Editor.GetServerInformation();
             
             // Loads the settings from the server section.
@@ -102,11 +102,11 @@ namespace MCSMLauncher.common.background
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
-                Logging.LOGGER.Info($"Backed up {serverSection.Name} Server to {backupsPath}");
+                Logging.LOGGER.Info($"Backed up {serverSection.SimpleName} Server to {backupsPath}");
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Info("Failed to create server backup for server: " + serverSection.Name);
+                Logging.LOGGER.Info("Failed to create server backup for server: " + serverSection.SimpleName);
                 Logging.LOGGER.Error(e);
             }
         }
@@ -138,7 +138,7 @@ namespace MCSMLauncher.common.background
                     string backupFilePath = Path.Combine(backupsPath, backupFileName);
 
                     ZipDirectory(section.SectionFullPath, backupFilePath);
-                    Logging.LOGGER.Info($"Backed up {serverSection.Name}.{section.Name} Playerdata to {backupsPath}");
+                    Logging.LOGGER.Info($"Backed up {serverSection.SimpleName}.{section.SimpleName} Playerdata to {backupsPath}");
                 }
 
             }

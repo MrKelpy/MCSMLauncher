@@ -57,7 +57,7 @@ namespace MCSMLauncher.common.caches
         /// </summary>
         /// <param name="serverSection">The server section to match the editor to</param>
         /// <returns>The ServerEditor matching the server name provided</returns>
-        private ServerEditor? Get(Section serverSection) =>
+        public ServerEditor? Get(Section serverSection) =>
             ServerEditorsCache.FirstOrDefault(x => x.ServerSection.SectionFullPath.Equals(serverSection.SectionFullPath));
         
         /// <summary>
@@ -65,7 +65,7 @@ namespace MCSMLauncher.common.caches
         /// </summary>
         /// <param name="serverSection">The server section to match the editor to</param>
         /// <returns>The ServerEditor instance</returns>
-        private ServerEditor Add(Section serverSection)
+        public ServerEditor Add(Section serverSection)
         {
             // Checks if the server editor already exists in the cache. If so, returns it.
             ServerEditor? editorCheck = Get(serverSection);

@@ -88,6 +88,7 @@
         <Compile Include="common\background\ServerBackupHandler.cs" />
         <Compile Include="common\background\ServerProcessStateHandler.cs" />
         <Compile Include="common\caches\GlobalEditorsCache.cs" />
+        <Compile Include="common\caches\QuickAccessEditorsCache.cs" />
         <Compile Include="common\Constants.cs" />
         <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />

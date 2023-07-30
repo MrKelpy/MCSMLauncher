@@ -184,7 +184,8 @@ namespace MCSMLauncher.common.server.builders
             
             // Sneakily re-formats the -Xmx and -Xms arguments to be in a template format
             lines[commandIndex] = lines[commandIndex].Replace($"\"{info.JavaRuntimePath}\\bin\\java\"", "%JAVA%");
-            lines[commandIndex] = lines[commandIndex].Replace("-Xms1024M -Xmx1024M", "-Xms%RAM%M -Xmx%RAM%M");
+            lines[commandIndex] = lines[commandIndex].Replace("-Xms1024M", "-Xms%RAM%M");
+            lines[commandIndex] = lines[commandIndex].Replace("-Xmx1024M", "-Xmx%RAM%M");
             FileUtils.DumpToFile(runFilepath, lines);
             return 0;
         }

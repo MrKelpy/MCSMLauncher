@@ -237,7 +237,9 @@ namespace MCSMLauncher.gui
             // 
             this.ComboBoxGamemode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ComboBoxGamemode.FormattingEnabled = true;
-            this.ComboBoxGamemode.Items.AddRange(new object[] { "Creative", "Survival" });
+            this.ComboBoxGamemode.Items.AddRange(new object[] {
+            "Creative",
+            "Survival"});
             this.ComboBoxGamemode.Location = new System.Drawing.Point(344, 337);
             this.ComboBoxGamemode.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ComboBoxGamemode.Name = "ComboBoxGamemode";
@@ -249,7 +251,10 @@ namespace MCSMLauncher.gui
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] { "Hard", "Normal", "Easy" });
+            this.comboBox1.Items.AddRange(new object[] {
+            "Hard",
+            "Normal",
+            "Easy"});
             this.comboBox1.Location = new System.Drawing.Point(502, 337);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comboBox1.Name = "comboBox1";
@@ -358,7 +363,11 @@ namespace MCSMLauncher.gui
             // numericUpDown3
             // 
             this.numericUpDown3.Location = new System.Drawing.Point(177, 238);
-            this.numericUpDown3.Maximum = new decimal(new int[] { 29999984, 0, 0, 0 });
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            29999984,
+            0,
+            0,
+            0});
             this.numericUpDown3.Name = "numericUpDown3";
             this.numericUpDown3.Size = new System.Drawing.Size(138, 26);
             this.numericUpDown3.TabIndex = 34;
@@ -556,6 +565,7 @@ namespace MCSMLauncher.gui
             this.Controls.Add(this.label1);
             this.Controls.Add(this.TextBoxServerName);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Location = new System.Drawing.Point(15, 15);
             this.Name = "ServerEditPrompt";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ServerEditPrompt_FormClosed);
@@ -565,6 +575,7 @@ namespace MCSMLauncher.gui
             ((System.ComponentModel.ISupportInitialize)(this.NumericSpawnProtection)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         private System.Windows.Forms.CheckBox checkBox8;

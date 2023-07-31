@@ -281,6 +281,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private async void GridServerList_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1) return; // Ignore the header row.
+            
             // Initialises the selected row for clarity.
             DataGridViewRow selectedRow = GridServerList.Rows[e.RowIndex];
 

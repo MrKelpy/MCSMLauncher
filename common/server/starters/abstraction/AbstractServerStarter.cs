@@ -2,9 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using MCSMLauncher.common.background;
-using MCSMLauncher.common.caches;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.gui;
@@ -36,7 +34,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <summary>
         /// The startup arguments for the server.
         /// </summary>
-        protected string StartupArguments { get; set; }
+        private string StartupArguments { get; set; }
 
         /// <summary>
         /// Runs the server with the given startup arguments.
@@ -103,8 +101,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Sets up the process to be hidden and not create a window.
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.CreateNoWindow = true;
-            proc.StartInfo.RedirectStandardInput = true;
-            
+
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();
             new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) {IsBackground = false}.Start();

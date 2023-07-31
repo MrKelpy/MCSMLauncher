@@ -95,6 +95,11 @@ namespace MCSMLauncher.common.models
         /// interacted with programatically.
         /// </summary>
         public int CurrentServerProcessID { get; set; } = -1;
+        
+        /// <summary>
+        /// Whether or not to use the GUI when running the server.
+        /// </summary>
+        public bool UseGUI { get; set; } = true;
 
         /// <summary>
         /// Creates a new ServerInformation object with the bare minimum information required to run a server.

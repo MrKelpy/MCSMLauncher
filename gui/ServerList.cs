@@ -190,7 +190,7 @@ namespace MCSMLauncher.gui
             
             // Handles the server if it is running; In which case there will be a process
             // with a set PID, specified in the server settings file, running as an mc server.
-            if (info.CurrentServerProcessID != -1 && (procName == "java" || procName == "cmd"))
+            if (info.CurrentServerProcessID != -1 && procName is "java" or "cmd")
             {
                 ForceUpdateServerState(serverName, "Running");
                 UpdateServerIP(editor);
@@ -283,7 +283,7 @@ namespace MCSMLauncher.gui
         {
             // Initialises the selected row for clarity.
             DataGridViewRow selectedRow = GridServerList.Rows[e.RowIndex];
-            
+
             switch (e.ColumnIndex)
             {
                 
@@ -300,7 +300,7 @@ namespace MCSMLauncher.gui
                     OptionsButtonClick(selectedRow);
                     break;
                 }
-
+                
                 // In case the user clicks on... Any "Start" button.
                 case 5 when e.RowIndex >= 0 && selectedRow.Cells[5].Value.ToString() == "Start":
                 {
@@ -342,7 +342,7 @@ namespace MCSMLauncher.gui
             ServerEditPrompt editPrompt = new (editor);
             editPrompt.ShowDialog();
         }
-
+        
         /// <summary>
         /// When the user clicks on the "Start" button, run the appropriate server starter.
         /// </summary>

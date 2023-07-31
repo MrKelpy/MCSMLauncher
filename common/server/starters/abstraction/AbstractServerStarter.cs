@@ -57,10 +57,11 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             string javaPath = info.JavaRuntimePath != "java" ? $"\"{info.JavaRuntimePath}/bin/java\"" : info.JavaRuntimePath;
+            if (!info.UseGUI) StartupArguments += " nogui";
             
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess(javaPath, StartupArguments, serverSection.SectionFullPath);
-            
+
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
@@ -98,6 +99,11 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
+            
+            // Sets up the process to be hidden and not create a window.
+            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.RedirectStandardInput = true;
             
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();

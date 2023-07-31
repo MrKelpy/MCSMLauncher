@@ -2,9 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using MCSMLauncher.common.background;
-using MCSMLauncher.common.caches;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.gui;
@@ -36,7 +34,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <summary>
         /// The startup arguments for the server.
         /// </summary>
-        protected string StartupArguments { get; set; }
+        private string StartupArguments { get; set; }
 
         /// <summary>
         /// Runs the server with the given startup arguments.
@@ -57,10 +55,11 @@ namespace MCSMLauncher.common.server.starters.abstraction
                 .Replace("%RAM_ARGUMENTS%", "-Xmx" + info.Ram + "M -Xms" + info.Ram + "M");
 
             string javaPath = info.JavaRuntimePath != "java" ? $"\"{info.JavaRuntimePath}/bin/java\"" : info.JavaRuntimePath;
+            if (!info.UseGUI) StartupArguments += " nogui";
             
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess(javaPath, StartupArguments, serverSection.SectionFullPath);
-            
+
             proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
             proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
 
@@ -99,6 +98,10 @@ namespace MCSMLauncher.common.server.starters.abstraction
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
             
+            // Sets up the process to be hidden and not create a window.
+            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            proc.StartInfo.CreateNoWindow = true;
+
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();
             new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) {IsBackground = false}.Start();

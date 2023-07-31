@@ -66,12 +66,16 @@ namespace MCSMLauncher.common.server.starters
             // Gets the template line from the run.bat file.
             string templateLine = lines.Find(line => line.StartsWith("%JAVA%"));
             if (templateLine == null) throw new InvalidDataException("run.bat file is invalid");
+
+            // Decides whether to use the GUI or not based on the server information.
+            // and if so, moves the nogui argument to the end of the line.
+            string noguiValue = info.UseGUI ? "" : "nogui";
             
             // returns the template line key arguments with the actual arguments.
             return templateLine.Replace("%JAVA%", "")
                 .Replace("%RAM%", info.Ram.ToString())
                 .Replace("nogui", "")
-                .Trim();
+                .Trim() + " " + noguiValue;
         }
     }
 }

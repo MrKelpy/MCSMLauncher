@@ -32,20 +32,13 @@ namespace MCSMLauncher.gui
             InitializeComponent();
 
             // Loads the images for the form
-            PictureBoxLoading.Image =
-                Image.FromFile(
-                    FileSystem.GetFirstDocumentNamed(
-                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Loader"))));
-            ButtonFolderBrowser.Image =
-                Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                    Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Loader"))));
+            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
 
             foreach (Label label in NewServerLayout.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage =
-                    Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
+                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
 
@@ -179,7 +172,7 @@ namespace MCSMLauncher.gui
             }
 
             // Prevent two servers from having the same name
-            if (serversSection.GetAllSections().Any(x => x.SimpleName == TextBoxServerName.Text))
+            if (serversSection.GetAllSections().Any(x => x.SimpleName.ToLower().Equals(TextBoxServerName.Text.ToLower())))
             {
                 LabelServerNameError.Text = @"A server with that name already exists.";
                 LabelServerNameError.Visible = true;

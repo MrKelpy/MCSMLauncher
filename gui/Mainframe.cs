@@ -88,5 +88,15 @@ namespace MCSMLauncher.gui
         {
             Process.Start("https://www.radmin-vpn.com");
         }
+
+        /// <summary>
+        /// Opens the GitHub repository wiki in the default browser.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        private void WikiToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/MrKelpy/MCSMLauncher/wiki");
+        }
     }
 }

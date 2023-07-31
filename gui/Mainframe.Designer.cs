@@ -29,77 +29,90 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Mainframe));
-            MenuBar = new System.Windows.Forms.MenuStrip();
-            NewServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            RadminVPNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            MainLayout = new System.Windows.Forms.Panel();
-            MenuBar.SuspendLayout();
-            SuspendLayout();
+            this.MenuBar = new System.Windows.Forms.MenuStrip();
+            this.NewServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ServersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RadminVPNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.WikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MainLayout = new System.Windows.Forms.Panel();
+            this.MenuBar.SuspendLayout();
+            this.SuspendLayout();
             // 
             // MenuBar
             // 
-            MenuBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(74)))), ((int)(((byte)(93)))), ((int)(((byte)(140)))));
-            MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { NewServerToolStripMenuItem, ServersToolStripMenuItem, RadminVPNToolStripMenuItem });
-            MenuBar.Location = new System.Drawing.Point(0, 0);
-            MenuBar.Name = "MenuBar";
-            MenuBar.Size = new System.Drawing.Size(800, 24);
-            MenuBar.TabIndex = 0;
-            MenuBar.Text = "menuStrip1";
+            this.MenuBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(74)))), ((int)(((byte)(93)))), ((int)(((byte)(140)))));
+            this.MenuBar.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.MenuBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.NewServerToolStripMenuItem, this.ServersToolStripMenuItem, this.RadminVPNToolStripMenuItem, this.WikiToolStripMenuItem });
+            this.MenuBar.Location = new System.Drawing.Point(0, 0);
+            this.MenuBar.Name = "MenuBar";
+            this.MenuBar.Size = new System.Drawing.Size(1200, 33);
+            this.MenuBar.TabIndex = 0;
+            this.MenuBar.Text = "menuStrip1";
             // 
             // NewServerToolStripMenuItem
             // 
-            NewServerToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            NewServerToolStripMenuItem.Name = "NewServerToolStripMenuItem";
-            NewServerToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
-            NewServerToolStripMenuItem.Text = "New";
-            NewServerToolStripMenuItem.Click += new System.EventHandler(NewServerToolStripMenuItem_Click);
+            this.NewServerToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.NewServerToolStripMenuItem.Name = "NewServerToolStripMenuItem";
+            this.NewServerToolStripMenuItem.Size = new System.Drawing.Size(59, 29);
+            this.NewServerToolStripMenuItem.Text = "New";
+            this.NewServerToolStripMenuItem.Click += new System.EventHandler(this.NewServerToolStripMenuItem_Click);
             // 
             // ServersToolStripMenuItem
             // 
-            ServersToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            ServersToolStripMenuItem.Name = "ServersToolStripMenuItem";
-            ServersToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            ServersToolStripMenuItem.Text = "Servers";
-            ServersToolStripMenuItem.Click += new System.EventHandler(ServersToolStripMenuItem_Click);
+            this.ServersToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.ServersToolStripMenuItem.Name = "ServersToolStripMenuItem";
+            this.ServersToolStripMenuItem.Size = new System.Drawing.Size(81, 29);
+            this.ServersToolStripMenuItem.Text = "Servers";
+            this.ServersToolStripMenuItem.Click += new System.EventHandler(this.ServersToolStripMenuItem_Click);
             // 
             // RadminVPNToolStripMenuItem
             // 
-            RadminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            RadminVPNToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            RadminVPNToolStripMenuItem.Name = "RadminVPNToolStripMenuItem";
-            RadminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            RadminVPNToolStripMenuItem.Size = new System.Drawing.Size(86, 20);
-            RadminVPNToolStripMenuItem.Text = "Radmin VPN";
-            RadminVPNToolStripMenuItem.Click += new System.EventHandler(RadminVPNToolStripMenuItem_Click);
+            this.RadminVPNToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.RadminVPNToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.RadminVPNToolStripMenuItem.Name = "RadminVPNToolStripMenuItem";
+            this.RadminVPNToolStripMenuItem.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.RadminVPNToolStripMenuItem.Size = new System.Drawing.Size(124, 29);
+            this.RadminVPNToolStripMenuItem.Text = "Radmin VPN";
+            this.RadminVPNToolStripMenuItem.Click += new System.EventHandler(this.RadminVPNToolStripMenuItem_Click);
+            // 
+            // WikiToolStripMenuItem
+            // 
+            this.WikiToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.WikiToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.WikiToolStripMenuItem.Name = "WikiToolStripMenuItem";
+            this.WikiToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
+            this.WikiToolStripMenuItem.Text = "Wiki";
+            this.WikiToolStripMenuItem.Click += new System.EventHandler(this.WikiToolStripMenuItem_Click);
             // 
             // MainLayout
             // 
-            MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            MainLayout.Location = new System.Drawing.Point(0, 24);
-            MainLayout.Name = "MainLayout";
-            MainLayout.Size = new System.Drawing.Size(800, 426);
-            MainLayout.TabIndex = 1;
+            this.MainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainLayout.Location = new System.Drawing.Point(0, 33);
+            this.MainLayout.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.MainLayout.Name = "MainLayout";
+            this.MainLayout.Size = new System.Drawing.Size(1200, 659);
+            this.MainLayout.TabIndex = 1;
             // 
             // Mainframe
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(800, 450);
-            Controls.Add(MainLayout);
-            Controls.Add(MenuBar);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            Icon = ((System.Drawing.Icon)(resources.GetObject("$Icon")));
-            MainMenuStrip = MenuBar;
-            Name = "Mainframe";
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            Text = "MCSM Launcher";
-            Load += new System.EventHandler(Mainframe_Load);
-            SizeChanged += new System.EventHandler(Mainframe_SizeChanged);
-            MenuBar.ResumeLayout(false);
-            MenuBar.PerformLayout();
-            ResumeLayout(false);
-            PerformLayout();
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1200, 692);
+            this.Controls.Add(this.MainLayout);
+            this.Controls.Add(this.MenuBar);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.MenuBar;
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Name = "Mainframe";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "MCSM Launcher";
+            this.Load += new System.EventHandler(this.Mainframe_Load);
+            this.SizeChanged += new System.EventHandler(this.Mainframe_SizeChanged);
+            this.MenuBar.ResumeLayout(false);
+            this.MenuBar.PerformLayout();
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         private System.Windows.Forms.ToolStripMenuItem RadminVPNToolStripMenuItem;
@@ -110,5 +123,6 @@
         private System.Windows.Forms.ToolStripMenuItem NewServerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ServersToolStripMenuItem;
         private System.Windows.Forms.Panel MainLayout;
+        private System.Windows.Forms.ToolStripMenuItem WikiToolStripMenuItem;
     }
 }

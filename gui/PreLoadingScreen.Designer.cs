@@ -31,41 +31,44 @@ namespace MCSMLauncher.gui
         /// </summary>
         private void InitializeComponent()
         {
-            LabelDownloadingAsset = new System.Windows.Forms.Label();
-            ProgressBarDownload = new System.Windows.Forms.ProgressBar();
-            SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PreLoadingScreen));
+            this.LabelDownloadingAsset = new System.Windows.Forms.Label();
+            this.ProgressBarDownload = new System.Windows.Forms.ProgressBar();
+            this.SuspendLayout();
             // 
             // LabelDownloadingAsset
             // 
-            LabelDownloadingAsset.Location = new System.Drawing.Point(0, 0);
-            LabelDownloadingAsset.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            LabelDownloadingAsset.Name = "LabelDownloadingAsset";
-            LabelDownloadingAsset.Size = new System.Drawing.Size(726, 96);
-            LabelDownloadingAsset.TabIndex = 0;
-            LabelDownloadingAsset.Text = "Downloading Assets...";
-            LabelDownloadingAsset.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.LabelDownloadingAsset.Location = new System.Drawing.Point(0, 0);
+            this.LabelDownloadingAsset.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.LabelDownloadingAsset.Name = "LabelDownloadingAsset";
+            this.LabelDownloadingAsset.Size = new System.Drawing.Size(726, 96);
+            this.LabelDownloadingAsset.TabIndex = 0;
+            this.LabelDownloadingAsset.Text = "Downloading Assets...";
+            this.LabelDownloadingAsset.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ProgressBarDownload
             // 
-            ProgressBarDownload.Location = new System.Drawing.Point(39, 110);
-            ProgressBarDownload.MarqueeAnimationSpeed = 400;
-            ProgressBarDownload.Name = "ProgressBarDownload";
-            ProgressBarDownload.Size = new System.Drawing.Size(654, 47);
-            ProgressBarDownload.TabIndex = 1;
+            this.ProgressBarDownload.Location = new System.Drawing.Point(39, 110);
+            this.ProgressBarDownload.MarqueeAnimationSpeed = 400;
+            this.ProgressBarDownload.Name = "ProgressBarDownload";
+            this.ProgressBarDownload.Size = new System.Drawing.Size(654, 47);
+            this.ProgressBarDownload.TabIndex = 1;
             // 
             // PreLoadingScreen
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(726, 169);
-            Controls.Add(ProgressBarDownload);
-            Controls.Add(LabelDownloadingAsset);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            Name = "PreLoadingScreen";
-            FormClosing += new System.Windows.Forms.FormClosingEventHandler(PreLoadingScreen_FormClosing);
-            Load += new System.EventHandler(PreLoadingScreen_Load);
-            ResumeLayout(false);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(726, 169);
+            this.Controls.Add(this.ProgressBarDownload);
+            this.Controls.Add(this.LabelDownloadingAsset);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.Name = "PreLoadingScreen";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PreLoadingScreen_FormClosing);
+            this.Load += new System.EventHandler(this.PreLoadingScreen_Load);
+            this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.ProgressBar ProgressBarDownload;

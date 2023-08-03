@@ -75,7 +75,7 @@ namespace MCSMLauncher.utils
             try
             {
                 PingReply reply = new Ping().Send("google.com", 1000, new byte[32], new PingOptions());
-                return reply != null && reply.Status == IPStatus.Success;
+                return reply is { Status: IPStatus.Success };
             }
             // There are many, many exceptions that can be thrown from a ping, so just catch them all.
             catch  { return false; }
@@ -110,7 +110,7 @@ namespace MCSMLauncher.utils
             try
             {
                 // Discover the router, on a 10 second timeout.
-                NatDiscoverer discoverer = new NatDiscoverer();
+                NatDiscoverer discoverer = new ();
                 var device = await discoverer.DiscoverDeviceAsync(PortMapper.Upnp, new CancellationTokenSource(10000));
 
                 // Create a new TCP port mapping in the router identified by the external port.
@@ -122,17 +122,7 @@ namespace MCSMLauncher.utils
                 }
                 // If the port mapping already exists, ignore it.
                 catch (MappingException) { Logging.LOGGER.Warn(@$"The I{internalPort}@E{externalPort} TCP port mapping already exists. Ignoring..."); }
-
-                // Create a new UDP port mapping in the router identified by the external port.
-                try
-                {
-                    Logging.LOGGER.Info(@$"Creating a new UDP port mapping for I{internalPort}@E{externalPort}...");
-                    await device.CreatePortMapAsync(new Mapping(Protocol.Udp, internalPort, externalPort,
-                        $"UDP-MCSMLauncher@{internalPort}"));
-                }
-                // If the port mapping already exists, ignore it.
-                catch (MappingException) { Logging.LOGGER.Warn(@$"The I{internalPort}@E{externalPort} UDP port mapping already exists. Ignoring..."); }
-
+                
                 return true;
             }
 

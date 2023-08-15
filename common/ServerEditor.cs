@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using MCSMLauncher.common.models;
+using MCSMLauncher.gui;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
 using PgpsUtilsAEFC.utils;
@@ -174,14 +175,20 @@ namespace MCSMLauncher.common
             // Creates a new dictionary to store the properties.
             Dictionary<string, string> propertiesDictionary = new () { { "server-port", "25565" } };
             string propertiesPath = ServerSection.GetFirstDocumentNamed("server.properties");
-
+            
+            // Gets the keys eligible to be edited by the user through the mcsm.
+            List<string> propertiesMask = ServerEditPrompt.GetTags();
+            
             if (propertiesPath == null) return propertiesDictionary;
 
             // Reads the file line by line, and adds the key and value to the dictionary.
             foreach (string line in FileUtils.ReadFromFile(propertiesPath))
             {
                 if (line.StartsWith("#")) continue;
-                string[] splitLine = line.Split('=');
+                string[] splitLine = line.Split(new [] {"="}, 2, StringSplitOptions.None);
+                
+                // Filters out the keys that are not eligible to be edited by the user.
+                if (!propertiesMask.Contains(splitLine[0])) continue;
                 propertiesDictionary[splitLine[0]] = splitLine[1];
             }
 

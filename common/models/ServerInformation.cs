@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using MCSMLauncher.utils;
 using PgpsUtilsAEFC.common;
@@ -145,7 +146,7 @@ namespace MCSMLauncher.common.models
         public Dictionary<string, string> ToDictionary()
         {
             // The dictionary to use as the serialization dictionary
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            Dictionary<string, string> dict = new ();
 
             // Act as a serializer for the ServerInformation object, matching all the fields to the dictionary keys
             foreach (PropertyInfo field in typeof(ServerInformation).GetProperties())
@@ -153,5 +154,6 @@ namespace MCSMLauncher.common.models
 
             return dict;
         }
+        
     }
 }

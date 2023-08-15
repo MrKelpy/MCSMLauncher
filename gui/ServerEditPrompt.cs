@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using MCSMLauncher.common;
 using PgpsUtilsAEFC.common;
@@ -61,6 +62,35 @@ namespace MCSMLauncher.gui
             }
         }
 
+        /// <summary>
+        /// Constructor for the ServerEditPrompt form. Used to build the fields of the form.
+        /// </summary>
+        private ServerEditPrompt()
+        {
+            InitializeComponent();
+        }
+
+        /// <summary>
+        /// Returns a list of all the tags that are used in the editor.
+        /// These correspond to the names of the keys in the server.properties file.
+        /// </summary>
+        /// <returns>List(String) of all the tags in lowercase</returns>
+        public static List<string> GetTags()
+        {
+            List<string> tags = new();
+
+            // Gets all the tags from the fields in the ServerEditPrompt class filtering out empty ones
+            foreach (FieldInfo field in typeof(ServerEditPrompt).GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+            {
+                Control control = field.GetValue(new ServerEditPrompt()) as Control;
+                if (control?.Tag == null || control.Tag.ToString() == string.Empty) continue;
+
+                tags.Add(control.Tag.ToString());
+            }
+            
+            return tags;
+        }
+        
         /// <summary>
         /// Switches the focus to the first label in the form when the form is loaded, so that nothing
         /// is selected.

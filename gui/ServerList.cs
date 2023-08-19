@@ -259,7 +259,7 @@ namespace MCSMLauncher.gui
             if (row == null || row.Cells[3].Value?.ToString() == "Copied to Clipboard") return;
             
             // Updates the server's IP address in the server list.
-            row.Cells[3].Value = editor.GetFromBuffers("server-ip") != ""
+            row.Cells[3].Value = editor.GetFromBuffers("server-ip") != null
                 ? editor.GetFromBuffers("server-ip")
                 : settings.IPAddress + ":" + editor.GetFromBuffers("server-port");
         }
@@ -351,18 +351,20 @@ namespace MCSMLauncher.gui
         /// <param name="buttonRow">The row in which the button was clicked on</param>
         private static async Task StartButtonClick(DataGridViewRow buttonRow)
         {
+            // Get the server's section from its name
+            string serverName = buttonRow.Cells[2].Value.ToString();
+            Section serverSection = FileSystem.AddSection($"servers/{serverName}");
+            
             try
             {
-                // Get the server's section from its name
-                string serverName = buttonRow.Cells[2].Value.ToString();
-                Section serverSection = FileSystem.AddSection($"servers/{serverName}");
-                
                 // Get the server's type and starter
                 ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
                 string serverType = editor.GetServerInformation().Type;
                 AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
 
                 // Start the server
+                INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Starting");
+                INSTANCE.GetRowFromName(serverSection.SimpleName).Cells[3].Value = "Resolving...";
                 await serverStarter.Run(serverSection, editor);
             }
             
@@ -372,6 +374,8 @@ namespace MCSMLauncher.gui
                 Logging.LOGGER.Error(ex);
                 MessageBox.Show($@"An error occurred whilst starting the server. {Environment.NewLine}Please check the integrity of the server files.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Start");
             }
         }
 

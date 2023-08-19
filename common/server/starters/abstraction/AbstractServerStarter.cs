@@ -83,6 +83,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             {
                 string errorMessage = Logging.LOGGER.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
                 ProcessErrorMessages(errorMessage, proc);
+                ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Start");
                 return;
             }
             
@@ -104,7 +105,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
 
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();
-            new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) {IsBackground = false}.Start();
+            new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) { IsBackground = false }.Start();
             info.CurrentServerProcessID = proc.Id;
             
             // Updates and flushes the buffers, writing the changes to the files.

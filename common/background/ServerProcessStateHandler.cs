@@ -45,7 +45,7 @@ namespace MCSMLauncher.common.background
                     if (serverName == null) continue;
                     
                     // Only update the server button state if the server is running.
-                    if (row.Cells[5]?.Value.ToString() != "Running" && !firstRun) continue;
+                    if (row.Cells[5]?.Value.ToString() is not ("Running" or "Starting") && !firstRun) continue;
                     
                     // Firstly, tries to get the server editor from the quick-access cache.
                     ServerEditor quickEditor = QuickAccessCache.Get(serverName);

@@ -35,7 +35,7 @@ namespace MCSMLauncher.common.background
         /// The server Editor to use for the backups.
         /// </summary>
         private ServerEditor Editor { get; }
-        
+
         /// <summary>
         /// The server section to use for the backups. (This is a property purely for convenience and clarity)
         /// </summary>
@@ -54,14 +54,14 @@ namespace MCSMLauncher.common.background
             // Logs and starts the backup thread.
             Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection.SimpleName}'");
             ServerInformation info = Editor.GetServerInformation();
-            
+
             // Loads the settings from the server section.
             bool serverBackupsEnabled = Editor.BuffersContain("serverbackupson") && Editor.GetFromBuffers<bool>("serverbackupson");
             bool playerdataBackupsEnabled = Editor.BuffersContain("playerdatabackupson") && Editor.GetFromBuffers<bool>("playerdatabackupson");
 
             // If neither of the backups are activated, stop the thread to save resources.
             if (!playerdataBackupsEnabled && !serverBackupsEnabled) return;
-            
+
             // Get the server and playerdata backups paths, and create them if they don't exist.
             string serverBackupsPath = PathUtils.NormalizePath(info.ServerBackupsPath);
             string playerdataBackupsPath = PathUtils.NormalizePath(info.PlayerdataBackupsPath);
@@ -82,7 +82,7 @@ namespace MCSMLauncher.common.background
                 // Creates a playerdata backup if the current min is divisible by 5 (every 5 minutes)
                 if (playerdataBackupsEnabled && now.Minute % 5 == 0)
                     CreatePlayerdataBackup(playerdataBackupsPath, ServerSection);
-
+                
                 Thread.Sleep(1 * 1000 * 60); // Sleeps for a minute
             }
         }
@@ -98,11 +98,15 @@ namespace MCSMLauncher.common.background
         {
             try
             {
+                // Creates the backup name and the backups folder if they don't exist.
                 string backupName = DateTime.Now.ToString("yyyy-MM-dd.HH.mm.ss") + ".zip";
                 if (!Directory.Exists(backupsPath)) Directory.CreateDirectory(backupsPath);
 
+                // Zips the server section into the backups folder.
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
                 Logging.LOGGER.Info($"Backed up {serverSection.SimpleName} Server to {backupsPath}");
+                
+                CleanBackups(backupsPath);
             }
             catch (Exception e)
             {
@@ -140,7 +144,8 @@ namespace MCSMLauncher.common.background
                     ZipDirectory(section.SectionFullPath, backupFilePath);
                     Logging.LOGGER.Info($"Backed up {serverSection.SimpleName}.{section.SimpleName} Playerdata to {backupsPath}");
                 }
-
+                
+                CleanBackups(backupsPath);
             }
             catch (Exception e)
             {
@@ -157,8 +162,8 @@ namespace MCSMLauncher.common.background
         private static void ZipDirectory(string directory, string destination)
         {
             // Creates and opens the zipping file, using a resource manager
-            using ZipFile zipper = new (destination);
-            zipper.ZipErrorAction = ZipErrorAction.Skip;  // Skips any errors that may occur during the zipping process.
+            using ZipFile zipper = new(destination);
+            zipper.ZipErrorAction = ZipErrorAction.Skip; // Skips any errors that may occur during the zipping process.
 
             // Adds every file into the zip file, parsing their path to exclude the root directory path.
             foreach (string file in Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories))
@@ -169,6 +174,30 @@ namespace MCSMLauncher.common.background
             }
 
             zipper.Save();
+        }
+
+        /// <summary>
+        /// Cleans every file that isn't .zip in the backups folder.
+        /// </summary>
+        /// <param name="backupsPath">The backups file path to use</param>
+        private static void CleanBackups(string backupsPath)
+        {
+            try
+            {
+                // Gets every file in the backups folder, excluding .zip files.
+                string[] files = Directory.GetFiles(backupsPath, "*.*", SearchOption.AllDirectories)
+                    .Where(file => file.EndsWith(".tmp")).ToArray();
+
+                // Deletes every file in the array.
+                foreach (string file in files) File.Delete(file);
+            }
+            
+            // If the cleanup fails, log the error.
+            catch (Exception e)
+            {
+                Logging.LOGGER.Error("Failed to clean the backups folder.");
+                Logging.LOGGER.Error(e);
+            }
         }
     }
 }

@@ -24,7 +24,7 @@
  
 !define company "MrKelpy"
  
-!define prodversion "1.3.4"
+!define prodversion "1.3.5"
 !define prodname "MCSM Launcher v${prodversion}"
 !define exec "MCSMLauncher.exe"
 

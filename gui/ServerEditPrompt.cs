@@ -7,9 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using LaminariaCore_General.utils;
+using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
-using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui

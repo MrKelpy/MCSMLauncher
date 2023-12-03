@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using LaminariaCore_General.utils;
+using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.models;
 using MCSMLauncher.gui;
-using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
+using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
 
 namespace MCSMLauncher.common
 {
@@ -212,7 +212,7 @@ namespace MCSMLauncher.common
                 return new ServerInformation().GetMinimalInformation(ServerSection).ToDictionary();
 
             // If the server_settings.xml file exists, deserialize it and return it as a dictionary.
-            ServerInformation info = XMLUtils.DeserializeFromFile<ServerInformation>(settingsPath);
+            ServerInformation info = XmlUtils.DeserializeFromFile<ServerInformation>(settingsPath);
             return info.ToDictionary();
         }
 
@@ -257,7 +257,7 @@ namespace MCSMLauncher.common
             
             // Writes the ServerInformation into the file
             if (File.Exists(settingsFilepath)) File.Delete(settingsFilepath);
-            XMLUtils.SerializeToFile<ServerInformation>(settingsFilepath, GetServerInformation());
+            XmlUtils.SerializeToFile<ServerInformation>(settingsFilepath, GetServerInformation());
             
             // Sets the settings file to hidden if it isn't already.
             File.SetAttributes(settingsFilepath, File.GetAttributes(settingsFilepath) | FileAttributes.Hidden);

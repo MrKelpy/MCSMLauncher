@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Ionic.Zip;
+using LaminariaCore_General.utils;
+using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.interfaces;
 using MCSMLauncher.common.models;
-using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
+using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 
 namespace MCSMLauncher.common.background
 {

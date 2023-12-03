@@ -4,8 +4,9 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LaminariaCore_Winforms.forms.extensions;
 using MCSMLauncher.common.background;
-using PgpsUtilsAEFC.forms.extensions;
+
 // ReSharper disable InconsistentNaming
 
 namespace MCSMLauncher.gui

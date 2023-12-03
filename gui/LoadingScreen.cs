@@ -7,11 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LaminariaCore_General.utils;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
-using MCSMLauncher.utils;
-using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
+using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
 
 namespace MCSMLauncher.gui
 {

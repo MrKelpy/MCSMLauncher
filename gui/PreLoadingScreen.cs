@@ -7,10 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.content;
 using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.gui

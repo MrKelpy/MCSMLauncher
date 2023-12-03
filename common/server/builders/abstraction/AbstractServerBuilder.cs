@@ -6,17 +6,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using MCSMLauncher.common.caches;
+using LaminariaCore_General.utils;
+using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
 using MCSMLauncher.requests.content;
-using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
+using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 
 namespace MCSMLauncher.common.server.builders.abstraction
 {
@@ -197,7 +196,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         protected override void ProcessInfoMessages(string message, Process proc)
         {
             base.ProcessInfoMessages(message, proc);
-            if (message.ToLower().Contains("preparing level")) proc.KillProcessAndChildren();
+            if (message.ToLower().Contains("preparing level")) ProcessUtils.KillProcessAndChildren(proc);
         }
 
         /// <summary>
@@ -226,7 +225,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         protected override void ProcessWarningMessages(string message, Process proc)
         {
             base.ProcessWarningMessages(message, proc);
-            if (message.Contains("already running on that port")) proc.KillProcessAndChildren();
+            if (message.Contains("already running on that port")) ProcessUtils.KillProcessAndChildren(proc);
         }
 
         /// <summary>

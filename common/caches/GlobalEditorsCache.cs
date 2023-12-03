@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using PgpsUtilsAEFC.common;
+using LaminariaCore_Winforms.common;
 
 // ReSharper disable InconsistentNaming
 

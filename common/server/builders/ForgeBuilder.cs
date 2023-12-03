@@ -4,14 +4,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using LaminariaCore_General.utils;
+using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.extensions;
 using MCSMLauncher.gui;
-using MCSMLauncher.utils;
-using PgpsUtilsAEFC.common;
-using PgpsUtilsAEFC.utils;
 using static MCSMLauncher.common.Constants;
+using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
+
 // ReSharper disable AccessToDisposedClosure
 
 namespace MCSMLauncher.common.server.builders
@@ -99,7 +100,7 @@ namespace MCSMLauncher.common.server.builders
             TerminationCode = TerminationCode != 1 ? 0 : 1;
 
             if (message.ToLower().Contains("preparing level") || message.ToLower().Contains("agree to the eula"))
-                proc.KillProcessAndChildren();
+                ProcessUtils.KillProcessAndChildren(proc);
 
             Logging.LOGGER.Info(message);
         }

@@ -9,7 +9,7 @@ using MCSMLauncher.common.background;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This is the main class of the program, a form containing the main layout, where all of the

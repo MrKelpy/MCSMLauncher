@@ -13,7 +13,7 @@ using MCSMLauncher.requests.content;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This form is meant to be displayed before the loading screen, to let the user know that some assets

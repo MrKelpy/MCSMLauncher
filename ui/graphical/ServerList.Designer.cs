@@ -1,4 +1,4 @@
-﻿namespace MCSMLauncher.gui
+﻿namespace MCSMLauncher.ui.graphical
 {
     partial class ServerList
     {

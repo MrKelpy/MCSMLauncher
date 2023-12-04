@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.server.builders.abstraction;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 
 namespace MCSMLauncher.common.server.builders
 {

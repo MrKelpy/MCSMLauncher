@@ -1,11 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Configuration;
-using System.Drawing;
-using System.IO;
-using PgpsUtilsAEFC.common;
-using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     sealed partial class LoadingScreen
     {

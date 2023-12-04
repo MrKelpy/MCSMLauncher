@@ -9,7 +9,7 @@ using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.extensions;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 using static MCSMLauncher.common.Constants;
 using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 

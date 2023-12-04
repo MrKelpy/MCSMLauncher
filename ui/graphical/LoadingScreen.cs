@@ -13,7 +13,7 @@ using MCSMLauncher.common.factories;
 using static MCSMLauncher.common.Constants;
 using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This form serves as a loading screen for the launcher, which gets displayed as the launcher prepares

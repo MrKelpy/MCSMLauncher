@@ -7,7 +7,7 @@ using System.Linq;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.models;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
 
 namespace MCSMLauncher.common

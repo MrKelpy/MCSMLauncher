@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.interfaces;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 
 namespace MCSMLauncher.common.background
 {

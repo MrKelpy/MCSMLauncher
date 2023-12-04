@@ -25,7 +25,7 @@ namespace MCSMLauncher.requests.mcversions
         {
             try
             {
-                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 10));
+                using CancellationTokenSource ct = new(new TimeSpan(0, 0, 0, 10));
                 HtmlNode node = (await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token)
                     .ConfigureAwait(false)).DocumentNode;
 
@@ -49,7 +49,7 @@ namespace MCSMLauncher.requests.mcversions
         /// <returns>A Dictionary(string,string) containing the mappings</returns>
         public override Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
         {
-            Dictionary<string, string> mappings = new Dictionary<string, string>();
+            Dictionary<string, string> mappings = new ();
 
             // Gets all the "item" elements in the html, which contain the name and link.
             IEnumerable<HtmlNode> items = from item in doc.Descendants("div")

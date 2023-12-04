@@ -67,13 +67,13 @@ namespace MCSMLauncher.ui.graphical
         /// <summary>
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
-        public static NewServer INSTANCE { get; } = new NewServer();
+        public static NewServer INSTANCE { get; } = new ();
 
         /// <summary>
         /// The list of invalid server names, used to check if the server name is valid.
         /// These names are reserved by Windows for special folders.
         /// </summary>
-        private List<string> InvalidServerNames { get; } = new List<string>
+        private List<string> InvalidServerNames { get; } = new ()
         {
             "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6",
             "COM7", "COM8", "COM9", "COM0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",

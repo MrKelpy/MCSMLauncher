@@ -28,7 +28,7 @@ namespace MCSMLauncher.requests.abstraction
         /// <summary>
         /// The HTML Handler to perform the requests with.
         /// </summary>
-        public static HtmlWeb Handler { get; } = new HtmlWeb();
+        public static HtmlWeb Handler { get; } = new ();
 
         /// <summary>
         /// Accesses the website and parses out all the existent version names mapped

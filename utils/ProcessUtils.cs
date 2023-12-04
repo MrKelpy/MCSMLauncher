@@ -34,8 +34,7 @@ namespace MCSMLauncher.utils
             }
 
             // Get all the process management objects for the PID specified.
-            ManagementObjectSearcher searcher =
-                new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
+            ManagementObjectSearcher searcher = new("Select * From Win32_Process Where ParentProcessID=" + pid);
 
             // Run this method recursively on every children of the proc
             foreach (ManagementObject managementObject in searcher.Get())
@@ -66,8 +65,8 @@ namespace MCSMLauncher.utils
         {
             // Creates a new process with the command line arguments to run the command, in a hidden
             // window.
-            Process proc = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            Process proc = new ();
+            ProcessStartInfo startInfo = new ()
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 RedirectStandardError = true,

@@ -165,6 +165,7 @@
       <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.0" />
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="ui\common\" />
       <Folder Include="ui\console\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

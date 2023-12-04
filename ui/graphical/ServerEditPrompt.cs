@@ -77,7 +77,7 @@ namespace MCSMLauncher.ui.graphical
         /// <returns>List(String) of all the tags in lowercase</returns>
         public static List<string> GetTags()
         {
-            List<string> tags = new();
+            List<string> tags = new ();
 
             // Gets all the tags from the fields in the ServerEditPrompt class filtering out empty ones
             foreach (FieldInfo field in typeof(ServerEditPrompt).GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
@@ -108,7 +108,7 @@ namespace MCSMLauncher.ui.graphical
         /// <returns>A dictionary containing all of the settings in the form as a dictionary</returns>
         private Dictionary<string, string> FormToDictionary()
         {
-            Dictionary<string, string> formInformation = new();
+            Dictionary<string, string> formInformation = new ();
 
             // Gets the information from the valid controls, excluding the buttons and the checkboxes,
             // and adds it them to the dictionary

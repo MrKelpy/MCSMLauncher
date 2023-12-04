@@ -106,7 +106,7 @@ namespace MCSMLauncher.common.factories
         /// <returns>The VersionName:DownloadLink mapping</returns>
         private static Dictionary<string, string> FileToDictionary(string path)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            Dictionary<string, string> result = new ();
 
             // Iterates over each line, and breaks it by the > character, logically defines as the separator,
             // and adds the result to a dictionary.

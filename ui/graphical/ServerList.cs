@@ -17,7 +17,7 @@ using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This form handles all operations related to launching and playing on created servers.

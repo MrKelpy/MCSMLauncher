@@ -12,7 +12,7 @@ using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This form aims to provide an interface to edit the settings of a server.

@@ -7,7 +7,7 @@ using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
 using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 

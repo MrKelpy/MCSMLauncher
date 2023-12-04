@@ -16,7 +16,7 @@ using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This singleton form handles any operations related to the creation of a new server.

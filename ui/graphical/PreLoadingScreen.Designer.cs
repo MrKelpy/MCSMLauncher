@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     partial class PreLoadingScreen 
     {

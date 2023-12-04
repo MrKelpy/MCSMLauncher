@@ -70,42 +70,6 @@
         <Compile Include="common\server\starters\SpigotServerStarter.cs" />
         <Compile Include="extensions\HttpClientExtensions.cs" />
         <Compile Include="extensions\ProcessExtensions.cs" />
-        <Compile Include="gui\PreLoadingScreen.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="gui\PreLoadingScreen.Designer.cs">
-            <DependentUpon>PreLoadingScreen.cs</DependentUpon>
-        </Compile>
-        <Compile Include="gui\LoadingScreen.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="gui\LoadingScreen.Designer.cs">
-            <DependentUpon>LoadingScreen.cs</DependentUpon>
-        </Compile>
-        <Compile Include="gui\ServerEditPrompt.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="gui\ServerEditPrompt.Designer.cs">
-            <DependentUpon>ServerEditPrompt.cs</DependentUpon>
-        </Compile>
-        <Compile Include="gui\ServerList.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="gui\ServerList.Designer.cs">
-            <DependentUpon>ServerList.cs</DependentUpon>
-        </Compile>
-        <Compile Include="gui\NewServer.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="gui\NewServer.Designer.cs">
-            <DependentUpon>NewServer.cs</DependentUpon>
-        </Compile>
-        <Compile Include="gui\Mainframe.cs">
-            <SubType>Form</SubType>
-        </Compile>
-        <Compile Include="gui\Mainframe.Designer.cs">
-            <DependentUpon>Mainframe.cs</DependentUpon>
-        </Compile>
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="requests\abstraction\AbstractBaseRequestHandler.cs" />
@@ -118,26 +82,32 @@
         <Compile Include="requests\mcversions\snapshots\MCVSnapshotsRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
+        <Compile Include="ui\graphical\LoadingScreen.cs" />
+        <Compile Include="ui\graphical\LoadingScreen.Designer.cs">
+          <DependentUpon>LoadingScreen.cs</DependentUpon>
+        </Compile>
+        <Compile Include="ui\graphical\Mainframe.cs" />
+        <Compile Include="ui\graphical\Mainframe.Designer.cs">
+          <DependentUpon>Mainframe.cs</DependentUpon>
+        </Compile>
+        <Compile Include="ui\graphical\NewServer.cs" />
+        <Compile Include="ui\graphical\NewServer.Designer.cs">
+          <DependentUpon>NewServer.cs</DependentUpon>
+        </Compile>
+        <Compile Include="ui\graphical\PreLoadingScreen.cs" />
+        <Compile Include="ui\graphical\PreLoadingScreen.Designer.cs">
+          <DependentUpon>PreLoadingScreen.cs</DependentUpon>
+        </Compile>
+        <Compile Include="ui\graphical\ServerEditPrompt.cs" />
+        <Compile Include="ui\graphical\ServerEditPrompt.Designer.cs">
+          <DependentUpon>ServerEditPrompt.cs</DependentUpon>
+        </Compile>
+        <Compile Include="ui\graphical\ServerList.cs" />
+        <Compile Include="ui\graphical\ServerList.Designer.cs">
+          <DependentUpon>ServerList.cs</DependentUpon>
+        </Compile>
         <Compile Include="utils\NetworkUtils.cs" />
         <Compile Include="utils\ProcessUtils.cs" />
-        <EmbeddedResource Include="gui\PreLoadingScreen.resx">
-            <DependentUpon>PreLoadingScreen.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="gui\LoadingScreen.resx">
-            <DependentUpon>LoadingScreen.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="gui\Mainframe.resx">
-            <DependentUpon>Mainframe.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="gui\NewServer.resx">
-            <DependentUpon>NewServer.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="gui\ServerEditPrompt.resx">
-            <DependentUpon>ServerEditPrompt.cs</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Include="gui\ServerList.resx">
-            <DependentUpon>ServerList.cs</DependentUpon>
-        </EmbeddedResource>
         <EmbeddedResource Include="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -147,6 +117,24 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Resources.resx</DependentUpon>
         </Compile>
+        <EmbeddedResource Include="ui\graphical\LoadingScreen.resx">
+          <DependentUpon>LoadingScreen.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ui\graphical\Mainframe.resx">
+          <DependentUpon>Mainframe.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ui\graphical\NewServer.resx">
+          <DependentUpon>NewServer.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ui\graphical\PreLoadingScreen.resx">
+          <DependentUpon>PreLoadingScreen.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ui\graphical\ServerEditPrompt.resx">
+          <DependentUpon>ServerEditPrompt.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ui\graphical\ServerList.resx">
+          <DependentUpon>ServerList.cs</DependentUpon>
+        </EmbeddedResource>
         <None Include="App.config" />
         <None Include="icon.ico" />
         <None Include="Properties\Settings.settings">
@@ -175,6 +163,9 @@
       <PackageReference Include="System.Security.Cryptography.Encoding" Version="4.3.0" />
       <PackageReference Include="System.Security.Cryptography.Primitives" Version="4.3.0" />
       <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="ui\console\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

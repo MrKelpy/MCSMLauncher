@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using MCSMLauncher.common;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 
 namespace MCSMLauncher
 {

@@ -12,8 +12,8 @@ using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.extensions;
-using MCSMLauncher.gui;
 using MCSMLauncher.requests.content;
+using MCSMLauncher.ui.graphical;
 using static MCSMLauncher.common.Constants;
 using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 

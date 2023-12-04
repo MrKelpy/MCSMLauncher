@@ -74,7 +74,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             if (!downloadsLookup)
             {
                 // Gets the direct download link for the server jar based on the version and type
-                ServerTypeMappingsFactory multiFactory = new();
+                ServerTypeMappingsFactory multiFactory = new ();
                 string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
                 string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(serverVersion, downloadLink);
                 OutputConsole.AppendText(Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);

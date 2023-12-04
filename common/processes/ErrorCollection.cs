@@ -13,7 +13,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// The core of the class, an internal list containing all of the error message patterns.
         /// </summary>
-        private List<string> InternalErrorCollection { get; } = new List<string>();
+        private List<string> InternalErrorCollection { get; } = new ();
 
         /// <summary>
         /// The amount of items inside the Error Collection

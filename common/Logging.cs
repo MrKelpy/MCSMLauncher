@@ -31,7 +31,7 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The logging instance to use in the program.
         /// </summary>
-        public static Logging LOGGER { get; set; } = new Logging();
+        public static Logging LOGGER { get; set; } = new ();
 
         /// <summary>
         /// The filepath for the logging file.

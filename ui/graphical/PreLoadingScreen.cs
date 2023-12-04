@@ -80,7 +80,7 @@ namespace MCSMLauncher.ui.graphical
                 if (assets?.GetAllDocuments().Length != config.Count) throw new ArgumentException();
                 foreach (string filepath in assets.GetAllDocuments())
                 {
-                    using (Bitmap _ = new Bitmap(filepath)) { }
+                    using (Bitmap _ = new(filepath)) { }
                 }
 
                 Close();

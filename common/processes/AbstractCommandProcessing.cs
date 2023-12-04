@@ -23,7 +23,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// A collection of errors to handle differently in the processing methods
         /// </summary>
-        protected ErrorCollection SpecialErrors { get; } = new ErrorCollection();
+        protected ErrorCollection SpecialErrors { get; } = new ();
 
         /// <summary>
         /// The console object to update with the logs.

@@ -63,7 +63,7 @@ namespace MCSMLauncher.ui.graphical
         /// </summary>
         private async Task UpdateVersionCache()
         {
-            ServerTypeMappingsFactory mappingsFactory = new ServerTypeMappingsFactory();
+            ServerTypeMappingsFactory mappingsFactory = new ();
 
             // Iterates through every server type, and updates the cache for each one.
             foreach (string serverType in mappingsFactory.GetSupportedServerTypes())

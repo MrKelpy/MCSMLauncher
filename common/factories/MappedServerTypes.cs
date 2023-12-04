@@ -20,7 +20,7 @@ namespace MCSMLauncher.common.factories
         /// The dictionary containing the values for every server type supported.
         /// </summary>
         private Dictionary<string, Dictionary<string, object>> Mappings { get; } =
-            new Dictionary<string, Dictionary<string, object>>
+            new ()
             {
                 {
                     "vanilla", new Dictionary<string, object>

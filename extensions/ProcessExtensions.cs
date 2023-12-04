@@ -22,7 +22,7 @@ namespace MCSMLauncher.extensions
         {
             if (process.HasExited) return Task.CompletedTask;
 
-            TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
+            TaskCompletionSource<object> tcs = new ();
             process.EnableRaisingEvents = true;
             process.Exited += (sender, args) => tcs.TrySetResult(null);
             if (cancellationToken != default) cancellationToken.Register(() => tcs.SetCanceled());

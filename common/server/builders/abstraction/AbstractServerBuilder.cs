@@ -15,7 +15,6 @@ using MCSMLauncher.extensions;
 using MCSMLauncher.requests.content;
 using MCSMLauncher.ui.graphical;
 using static MCSMLauncher.common.Constants;
-using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 
 namespace MCSMLauncher.common.server.builders.abstraction
 {

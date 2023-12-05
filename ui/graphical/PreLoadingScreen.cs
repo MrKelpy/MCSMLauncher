@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
-using MCSMLauncher.requests.content;
 using MCSMLauncher.ui.common;
-using MCSMLauncher.utils;
-using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.ui.graphical
 {

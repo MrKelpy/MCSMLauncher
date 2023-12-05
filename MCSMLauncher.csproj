@@ -107,8 +107,7 @@
         <Compile Include="ui\graphical\ServerList.Designer.cs">
           <DependentUpon>ServerList.cs</DependentUpon>
         </Compile>
-        <Compile Include="utils\NetworkUtils.cs" />
-        <Compile Include="utils\ProcessUtils.cs" />
+        <Compile Include="utils\NetworkUtilExtensions.cs" />
         <EmbeddedResource Include="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resources.Designer.cs</LastGenOutput>

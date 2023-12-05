@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
 using MCSMLauncher.requests.content;
+using MCSMLauncher.ui.common;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
@@ -38,80 +39,16 @@ namespace MCSMLauncher.ui.graphical
         /// <param name="e">The event arguments</param>
         private async void PreLoadingScreen_Load(object sender, EventArgs e)
         {
-            // Downloads the initial assets
             try
             {
-                await DownloadInitialAssets();
+                await ResourceLoader.DownloadRegisteredAssets(LabelDownloadingAsset, ProgressBarDownload);
+                Close();
             }
             catch (Exception err)
             {
                 Logging.Logger.Fatal(@"An unexpected error occured and the program was forced to exit.");
                 Logging.Logger.Fatal(err.Message + "\n" + err.StackTrace, LoggingType.File);
             }
-        }
-
-        /// <summary>
-        /// Changes the text in the Downloading Assets label to display the currently downloading asset.
-        /// </summary>
-        /// <param name="assetName">The currently downloading asset name</param>
-        public void SetDownloadingAssetName(string assetName)
-        {
-            LabelDownloadingAsset.Text = $@"Downloading Assets... ({assetName})";
-        }
-
-        /// <summary>
-        /// Downloads the initial assets to allow the program to start up correctly without
-        /// taking too much space.
-        /// Whilst this initial download is taking place, show a small form with a loading bar indicating
-        /// progress.
-        /// </summary>
-        private async Task DownloadInitialAssets()
-        {
-            // Logs the initial assets and gets the essential resources to use
-            Logging.Logger.Info("Downloading initial assets...");
-            Section assets = FileSystem.GetFirstSectionNamed("assets");
-            List<string> config = ConfigurationManager.AppSettings.AllKeys.Where(x => x.StartsWith("Asset")).ToList();
-
-            // Checks if the assets folder contains all the files. If it does, then try to check if they aren't corrupted
-            // by trying to convert them to a bitmap. If none are corrupted, then return.
-            // If one of them is, or assets has no files, then continue. 
-            try
-            {
-                if (assets?.GetAllDocuments().Length != config.Count) throw new ArgumentException();
-                foreach (string filepath in assets.GetAllDocuments())
-                {
-                    using (Bitmap _ = new(filepath)) { }
-                }
-
-                Close();
-                return;
-            }
-            catch (ArgumentException)
-            {
-            } // ignored
-
-            // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkUtils.RecurrentTestAsync(LabelDownloadingAsset);
-
-            // Resets the assets folder just in case
-            FileSystem.RemoveSection(assets?.Name);
-            FileSystem.AddSection("assets");
-
-            // Iterates over every configuration key and downloads the file corresponding to it.
-            // While that is happening, updates the loading bar.
-            for (int index = 0; index < config.Count; index++)
-            {
-                string settingKey = config[index];
-
-                string filename = Path.GetFileName(ConfigurationManager.AppSettings.Get(settingKey));
-                string filepath = Path.Combine(FileSystem.GetFirstSectionNamed("assets").SectionFullPath, filename);
-
-                SetDownloadingAssetName(filename);
-                await FileDownloader.DownloadFileAsync(filepath, ConfigurationManager.AppSettings.Get(settingKey));
-                ProgressBarDownload.Value = (int)(((double)index + 1) / config.Count * 100);
-            }
-
-            Close();
         }
 
         /// <summary>

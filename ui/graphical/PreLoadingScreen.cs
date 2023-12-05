@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
+using MCSMLauncher.api;
 using MCSMLauncher.common;
-using MCSMLauncher.ui.common;
 
 namespace MCSMLauncher.ui.graphical
 {

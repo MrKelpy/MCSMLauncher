@@ -31,14 +31,20 @@ namespace MCSMLauncher.ui.graphical
         {
             InitializeComponent();
 
-            // Loads the images for the form
-            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Loader"))));
-            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
+            // Loads the images for the form from the assets folder
+            string loadingGif = ConfigurationManager.AppSettings.Get("Asset.Gif.Loader");
+            string folderBrowser = ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser");
+            string tooltipImage = ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip");
+            
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(loadingGif)));
+            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(folderBrowser)));
+            Image tooltip = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(tooltipImage)));
 
+            // Iterates through all the labels in the form and sets the tooltip image if they're marked as such
             foreach (Label label in NewServerLayout.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
+                label.BackgroundImage = tooltip;
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
 
@@ -47,10 +53,8 @@ namespace MCSMLauncher.ui.graphical
                 .Select(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x)).ToArray<object>());
 
             // Checks all the java versions available in Program Files and sets them in the java version box
-            string programFilesJavaPath =
-                Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
-            string programFilesX86JavaPath =
-                Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
+            string programFilesJavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
+            string programFilesX86JavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
 
             if (Directory.Exists(programFilesJavaPath))
                 ComboBoxJavaVersion.Items.AddRange(
@@ -84,21 +88,18 @@ namespace MCSMLauncher.ui.graphical
         /// Returns the layout of the current form, so that it can be added to another form.
         /// </summary>
         /// <returns>A Panel representing this form's layout.</returns>
-        public Panel GetLayout()
-        {
-            return NewServerLayout;
-        }
+        public Panel GetLayout() =>  NewServerLayout;
 
         /// <summary>
         /// Toggles the state of the controls on the form, switching between the loading state, where
         /// the user can't interact with the form, and the normal state, where the user can.
         /// </summary>
         /// <param name="enabled">Whether or not the user can interact with the controls.</param>
-        public void ToggleControlsState(bool enabled)
+        private void ToggleControlsState(bool enabled)
         {
             TextBoxServerName.Enabled = ComboServerVersion.Enabled = ComboBoxServerType.Enabled
-                = ComboBoxJavaVersion.Enabled =
-                    ButtonFolderBrowser.Enabled = ButtonBuild.Visible = enabled;
+                = ComboBoxJavaVersion.Enabled = ButtonFolderBrowser.Enabled = ButtonBuild.Visible = enabled;
+            
             PictureBoxLoading.Visible = !enabled;
         }
 
@@ -134,6 +135,7 @@ namespace MCSMLauncher.ui.graphical
             {
                 Logging.Logger.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.",
                     LoggingType.File);
+                
                 ComboServerVersion.Items.Add(@"Couldn't load any versions for this server type.");
                 ComboServerVersion.ForeColor = Color.Firebrick;
                 ComboServerVersion.SelectedIndex = 0;

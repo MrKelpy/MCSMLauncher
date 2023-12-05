@@ -5,9 +5,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using MCSMLauncher.api;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
-using MCSMLauncher.ui.common;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 

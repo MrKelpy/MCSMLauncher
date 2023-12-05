@@ -24,7 +24,7 @@ namespace MCSMLauncher.ui.graphical
         private Mainframe()
         {
             InitializeComponent();
-            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            MainLayout.SetAllFrom(NewServer.Instance.GetLayout());
         }
 
         /// <summary>
@@ -55,8 +55,8 @@ namespace MCSMLauncher.ui.graphical
         /// <param name="e">The event arguments</param>
         private void NewServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
-            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            if (MainLayout.Contains(NewServer.Instance.RichTextBoxConsoleOutput)) return;
+            MainLayout.SetAllFrom(NewServer.Instance.GetLayout());
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace MCSMLauncher.ui.graphical
         /// <param name="e">The event arguments</param>
         private void Mainframe_SizeChanged(object sender, EventArgs e)
         {
-            NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = Size;
+            NewServer.Instance.Size = ServerList.INSTANCE.Size = Size;
         }
 
         /// <summary>

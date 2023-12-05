@@ -9,9 +9,9 @@ namespace MCSMLauncher.common
     /// </summary>
     public enum LoggingType
     {
-        CONSOLE,
-        FILE,
-        ALL
+        Console,
+        File,
+        All
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The logging instance to use in the program.
         /// </summary>
-        public static Logging LOGGER { get; set; } = new ();
+        public static Logging Logger { get; } = new ();
 
         /// <summary>
         /// The filepath for the logging file.
@@ -41,24 +41,24 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The logging format for the console logs.
         /// </summary>
-        public string ConsoleLoggingFormat { get; set; } = "[%DATE%] [%LEVEL%]: %MESSAGE%";
+        private string ConsoleLoggingFormat => "[%DATE%] [%LEVEL%]: %MESSAGE%";
 
         /// <summary>
         /// The logging format for the console logs.
         /// </summary>
-        public string FileLoggingFormat { get; set; } = "[%DATE%] [%LEVEL%]: %MESSAGE%";
+        private string FileLoggingFormat => "[%DATE%] [%LEVEL%]: %MESSAGE%";
 
         /// <summary>
         /// The current logging session, based on the current date.
         /// </summary>
-        public string LoggingSession { get; set; } = DateTime.Now.ToString("yyyy.MM.dd.HH.mm.ss");
+        public string LoggingSession { get; } = DateTime.Now.ToString("yyyy.MM.dd.HH.mm.ss");
 
         /// <summary>
         /// Logs a message in a specified way, according to the set format, at the DEBUG level.
         /// </summary>
         /// <param name="message">The message to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Debug(string message, LoggingType loggingType = LoggingType.ALL)
+        public string Debug(string message, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(message, "DEBUG", loggingType);
         }
@@ -68,7 +68,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="message">The message to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Info(string message, LoggingType loggingType = LoggingType.ALL)
+        public string Info(string message, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(message, "INFO", loggingType);
         }
@@ -78,7 +78,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="message">The message to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Warn(string message, LoggingType loggingType = LoggingType.ALL)
+        public string Warn(string message, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(message, "WARN", loggingType);
         }
@@ -88,7 +88,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="message">The message to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Error(string message, LoggingType loggingType = LoggingType.ALL)
+        public string Error(string message, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(message, "ERROR", loggingType);
         }
@@ -98,7 +98,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="err">The error to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Error(Exception err, LoggingType loggingType = LoggingType.ALL)
+        public string Error(Exception err, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(err.Message + '\n' + err.StackTrace, "ERROR", loggingType);
         }
@@ -108,7 +108,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="message">The message to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Fatal(string message, LoggingType loggingType = LoggingType.ALL)
+        public string Fatal(string message, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(message, "FATAL", loggingType);
         }
@@ -118,7 +118,7 @@ namespace MCSMLauncher.common
         /// </summary>
         /// <param name="err">The error to be logged</param>
         /// <param name="loggingType">The type of logging to be performed</param>
-        public string Fatal(Exception err, LoggingType loggingType = LoggingType.ALL)
+        public string Fatal(Exception err, LoggingType loggingType = LoggingType.All)
         {
             return _internalLog(err.Message + '\n' + err.StackTrace, "FATAL", loggingType);
         }
@@ -136,13 +136,13 @@ namespace MCSMLauncher.common
                 string[] preparedStrings = _buildFormats(message, level);
                 FileUtils.EnsurePath(LoggingFilePath);
 
-                if (loggingType == LoggingType.FILE || loggingType == LoggingType.ALL)
+                if (loggingType == LoggingType.File || loggingType == LoggingType.All)
                     FileUtils.AppendToFile(LoggingFilePath, preparedStrings[1]);
 
-                if (loggingType == LoggingType.CONSOLE || loggingType == LoggingType.ALL)
+                if (loggingType == LoggingType.Console || loggingType == LoggingType.All)
                     Console.WriteLine(preparedStrings[0]);
             }
-            catch (IOException err)
+            catch (IOException)
             {
                 // ignored
             }

@@ -44,7 +44,7 @@ namespace MCSMLauncher.utils
         /// <returns>Either the starting port or the next available port after it</returns>
         public static int GetNextAvailablePort(int startingPort)
         {
-            Logging.LOGGER.Info($"Checking for an available port, starting from {startingPort}...");
+            Logging.Logger.Info($"Checking for an available port, starting from {startingPort}...");
             
             // Iterates through the ports until it finds one that's available, starting from the given port.
             for (int currentPort = startingPort; currentPort < IPEndPoint.MaxPort; currentPort++)
@@ -88,7 +88,7 @@ namespace MCSMLauncher.utils
         {
             while (true)
             {
-                Logging.LOGGER.Info(@"Checking for an internet connection...");
+                Logging.Logger.Info(@"Checking for an internet connection...");
                 if (IsWifiConnected()) break;
                 
                 label.Text = @"Could not connect to the internet. Retrying...";
@@ -115,12 +115,12 @@ namespace MCSMLauncher.utils
                 // Create a new TCP port mapping in the router identified by the external port.
                 try
                 {
-                    Logging.LOGGER.Info(@$"Creating a new TCP port mapping for I{internalPort}@E{externalPort}...");
+                    Logging.Logger.Info(@$"Creating a new TCP port mapping for I{internalPort}@E{externalPort}...");
                     await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort,
                         $"TCP-MCSMLauncher@{internalPort}"));
                 }
                 // If the port mapping already exists, ignore it.
-                catch (MappingException) { Logging.LOGGER.Warn(@$"The I{internalPort}@E{externalPort} TCP port mapping already exists. Ignoring..."); }
+                catch (MappingException) { Logging.Logger.Warn(@$"The I{internalPort}@E{externalPort} TCP port mapping already exists. Ignoring..."); }
                 
                 return true;
             }
@@ -128,13 +128,13 @@ namespace MCSMLauncher.utils
             // If the network does not support UPnP, ignore it.
             catch (NatDeviceNotFoundException)
             {
-                Logging.LOGGER.Warn(@"The current network does not support UPnP. Ignoring...");
+                Logging.Logger.Warn(@"The current network does not support UPnP. Ignoring...");
             }
             
             // If any other exception occurs, log it and return false.
             catch (Exception e)
             {
-                Logging.LOGGER.Error(@$"An error occured while trying to create the port mapping.\n{e.StackTrace}");
+                Logging.Logger.Error(@$"An error occured while trying to create the port mapping.\n{e.StackTrace}");
             }
 
             return false;

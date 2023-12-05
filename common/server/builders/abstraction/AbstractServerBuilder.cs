@@ -59,14 +59,14 @@ namespace MCSMLauncher.common.server.builders.abstraction
         public async Task Build(string serverName, string serverType, string serverVersion)
         {
             OutputConsole.Clear();
-            OutputConsole.AppendText(Logging.LOGGER.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.Logger.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
 
             // Creates the server section (if it already exists, it's deleted and recreated)
             Section allServersSection = FileSystem.GetFirstSectionNamed("servers");
             allServersSection.RemoveSection(serverName);
             Section serverSection = allServersSection.AddSection(serverName);
 
-            OutputConsole.AppendText(Logging.LOGGER.Info($"Created a new {serverName} section.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.Logger.Info($"Created a new {serverName} section.") + Environment.NewLine);
 
             // Checks if the server is already downloaded, and if it is, copy it and skip the download
             bool downloadsLookup = TryAddFromDownloads(serverName, serverVersion, serverType);
@@ -77,10 +77,10 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 ServerTypeMappingsFactory multiFactory = new ();
                 string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
                 string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(serverVersion, downloadLink);
-                OutputConsole.AppendText(Logging.LOGGER.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
 
                 // Downloads the server jar into the server folder
-                OutputConsole.AppendText(Logging.LOGGER.Info("Downloading the server.jar...") + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Info("Downloading the server.jar...") + Environment.NewLine);
                 string downloadPath = Path.Combine(serverSection.SectionFullPath, "server.jar");
                 await FileDownloader.DownloadFileAsync(downloadPath, directDownloadLink);
                 CopyToDownloads(downloadPath, serverVersion, serverType);
@@ -99,7 +99,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             info.Version = serverVersion;
             info.ServerBackupsPath = serverSection.AddSection("backups/server").SectionFullPath;
             info.PlayerdataBackupsPath = serverSection.AddSection("backups/playerdata").SectionFullPath;
-            info.JavaRuntimePath = NewServer.INSTANCE.ComboBoxJavaVersion.Text;
+            info.JavaRuntimePath = NewServer.Instance.ComboBoxJavaVersion.Text;
             
             // Updates and flushes the buffers
             editor.UpdateBuffers(info.ToDictionary());
@@ -108,7 +108,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             // Generates the EULA file (or agrees to it if it already exists, as a failsafe)
             if (GenerateEula(serverSection) == 1)
             {
-                OutputConsole.AppendText(Logging.LOGGER.Error("Failed to generate or agree to the EULA file. You should *never* have reached this point, but here we are.") + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Error("Failed to generate or agree to the EULA file. You should *never* have reached this point, but here we are.") + Environment.NewLine);
                 FileSystem.RemoveSection("servers/" + serverName);
                 return; 
             }
@@ -122,7 +122,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
 
             await ServerList.INSTANCE.AddServerToListAsync(editor);
             OutputConsole.SelectionColor = Color.LimeGreen;
-            OutputConsole.AppendText(Logging.LOGGER.Info("Finished building the server.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.Logger.Info("Finished building the server.") + Environment.NewLine);
             OutputConsole.SelectionColor = Color.Black;
         }
 
@@ -138,7 +138,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         {
             // Creates a new process to run the server silently, and waits for it to finish.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
-            OutputConsole.AppendText(Logging.LOGGER.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.Logger.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
             ServerInformation info = editor.GetServerInformation();
@@ -170,7 +170,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             if (TerminationCode * TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
             TerminationCode = -1;
             return 0;
         }
@@ -260,7 +260,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             
             catch (IOException e)
             {
-                Logging.LOGGER.Error(e);
+                Logging.Logger.Error(e);
                 return false;
             }
         }
@@ -271,8 +271,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <param name="filepath">The filepath to copy</param>
         /// <param name="serverVersion">The server version to register it under</param>
         /// <param name="serverType">The server type to register it under</param>
-        /// <returns>Whether the copying was successful or not</returns>
-        private bool CopyToDownloads(string filepath, string serverVersion, string serverType)
+        private void CopyToDownloads(string filepath, string serverVersion, string serverType)
         {
             try
             {
@@ -282,14 +281,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 
                 // Copy the file to the downloads section
                 File.Copy(filepath, serverJarPath, true);
-                return true;
             }
-            
-            catch (IOException e)
-            {
-                Logging.LOGGER.Error(e);
-                return false;
-            }
+            catch (IOException e) { Logging.Logger.Error(e); }
         }
         
         /// <summary>

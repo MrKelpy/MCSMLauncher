@@ -24,7 +24,7 @@ namespace MCSMLauncher.common.background
         /// <summary>
         /// A counter used to determine when to clean up the quick-access cache.
         /// </summary>
-        private int CleanupCounter { get; set; } = 0;
+        private int CleanupCounter { get; set; }
 
         /// <summary>
         /// Runs the background task.

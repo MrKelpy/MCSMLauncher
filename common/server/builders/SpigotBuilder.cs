@@ -66,7 +66,7 @@ namespace MCSMLauncher.common.server.builders
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Warn(message) + Environment.NewLine);
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = TerminationCode != 1

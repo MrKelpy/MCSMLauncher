@@ -77,12 +77,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="editor">The editor instance to use to interact with the files</param>
         protected async Task StartServer(Section serverSection, Process proc, ServerEditor editor)
         {
-            Logging.LOGGER.Info($"Starting the {serverSection.SimpleName} server...");
+            Logging.Logger.Info($"Starting the {serverSection.SimpleName} server...");
 
             // Gets an available port starting on the one specified, automatically update and flush the buffers.
             if (editor.HandlePortForServer() == 1)
             {
-                string errorMessage = Logging.LOGGER.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
+                string errorMessage = Logging.Logger.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
                 ProcessErrorMessages(errorMessage, proc);
                 ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Start");
                 return;
@@ -116,7 +116,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Updates the visual elements of the server and logs the start.
             ServerList.INSTANCE.UpdateServerIP(editor);
             ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
-            Logging.LOGGER.Info($"Running {serverSection.SimpleName} on {info.IPAddress}:{info.Port}.");
+            Logging.Logger.Info($"Running {serverSection.SimpleName} on {info.IPAddress}:{info.Port}.");
         }
     }
 }

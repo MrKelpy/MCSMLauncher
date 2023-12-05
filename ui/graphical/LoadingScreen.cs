@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using LaminariaCore_General.utils;
 using MCSMLauncher.common;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.ui.common;
+using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
-using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
 
 namespace MCSMLauncher.ui.graphical
 {
@@ -30,20 +28,22 @@ namespace MCSMLauncher.ui.graphical
             InitializeComponent();
             CenterToScreen();
 
-            PictureBoxLoading.Image =
-                Image.FromFile(
-                    FileSystem.GetFirstDocumentNamed(
-                        Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Clock"))));
-            BackgroundImage =
-                Image.FromFile(FileSystem.GetFirstDocumentNamed(
-                    Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Image.LoadingScreen"))));
+            // Gets the path to the clock asset and the loading screen asset from the config file.
+            string clockAssetPath = ConfigurationManager.AppSettings.Get("Asset.Gif.Clock");
+            string loadingScreenAsset = ConfigurationManager.AppSettings.Get("Asset.Image.LoadingScreen");
+            
+            // Loads the assets into the form.
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(clockAssetPath)));
+            BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(loadingScreenAsset)));
+            
             FileSystem.AddSection("versioncache");
         }
 
         /// <summary>
-        /// Runs the actual loading logic, once the form has been loaded.
-        /// First checks for an internet connection, and waits until one is estabilished, then updates the version cache
+        /// First checks for an internet connection, and waits until one is established, then updates the version cache
         /// and closes the form.
+        /// Sends a request to every server type handler and writes the results into the version cache.
+        /// These results will be used to display the versions in the server creation screen.
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
@@ -53,41 +53,15 @@ namespace MCSMLauncher.ui.graphical
             await NetworkUtils.RecurrentTestAsync(LabelStatus);
 
             // Updates the cache and stops the loading phase.
-            await UpdateVersionCache();
-            Close();
-        }
-
-        /// <summary>
-        /// Sends a request to every server type handler and writes the results into the version cache.
-        /// These results will be used to display the versions in the server creation screen.
-        /// </summary>
-        private async Task UpdateVersionCache()
-        {
             ServerTypeMappingsFactory mappingsFactory = new ();
 
-            // Iterates through every server type, and updates the cache for each one.
             foreach (string serverType in mappingsFactory.GetSupportedServerTypes())
             {
-                LabelStatus.Text = Logging.LOGGER.Info(@$"Updating the {serverType} cache...");
-
-                Dictionary<string, string> versions = await mappingsFactory.GetHandlerFor(serverType).GetVersions();
-                string cachePath = mappingsFactory.GetCacheFileFor(serverType);
-
-                if (versions == null) Logging.LOGGER.Warn($"Failed to retrieve versions for {serverType}.");
-
-                // If we couldn't retrieve any versions for the server type, and the cache has content in it, keep it. 
-                if (mappingsFactory.GetCacheContentsForType(serverType)?.Count > 0 && versions == null)
-                {
-                    Logging.LOGGER.Info($"Using previously cached versions for {serverType}.");
-                    continue;
-                }
-
-                // Writes the cache into its correct cache filepath, in the format "version>url".
-                FileUtils.DumpToFile(cachePath,
-                    versions == null
-                        ? new List<string>()
-                        : versions.ToList().Select(x => $"{x.Key}>{x.Value}").ToList());
+                LabelStatus.Text = Logging.Logger.Info(@$"Updating the {serverType} cache...");
+                await ResourceLoader.UpdateCacheFileForServerType(serverType, mappingsFactory);
             }
+            
+            Close();
         }
 
         /// <summary>

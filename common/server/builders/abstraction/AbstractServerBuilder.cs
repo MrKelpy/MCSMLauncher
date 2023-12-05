@@ -25,7 +25,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
     /// </summary>
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "AccessToDisposedClosure")]
-    public abstract class AbstractServerBuilder : AbstractCommandProcessing
+    public abstract class AbstractServerBuilder : AbstractLoggingMessageProcessing
     {
         /// <summary>
         /// Main constructor for the AbstractServerBuilder class, sets the startup arguments

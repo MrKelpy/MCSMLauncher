@@ -17,7 +17,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
     /// This abstract class implement the common methods and properties for starting a server across
     /// all the server types.
     /// </summary>
-    public abstract class AbstractServerStarter : AbstractCommandProcessing
+    public abstract class AbstractServerStarter : AbstractLoggingMessageProcessing
     {
         /// <summary>
         /// The main constructor for the AbstractServerStarter class. Sets the startup arguments for the server.

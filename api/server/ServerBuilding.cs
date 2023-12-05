@@ -98,6 +98,5 @@ namespace MCSMLauncher.api.server
             // TODO: Adapt Build() to the API System. (It's too closely tied to the GUI)
         }
         
-        
     }
 }

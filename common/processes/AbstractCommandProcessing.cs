@@ -28,7 +28,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// The console object to update with the logs.
         /// </summary>
-        protected RichTextBox OutputConsole => NewServer.INSTANCE.RichTextBoxConsoleOutput;
+        protected RichTextBox OutputConsole => NewServer.Instance.RichTextBoxConsoleOutput;
 
         /// <summary>
         /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,
@@ -85,7 +85,7 @@ namespace MCSMLauncher.common.processes
 
             // In some versions the EULA message is sent as INFO, so handle it here too
             if (message.ToLower().Contains("agree to the eula")) proc.KillProcessAndChildren();
-            Logging.LOGGER.Info(message);
+            Logging.Logger.Info(message);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace MCSMLauncher.common.processes
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                OutputConsole.AppendText(Logging.LOGGER.Error("[ERROR] " + message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Error("[ERROR] " + message) + Environment.NewLine);
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
         }
@@ -125,7 +125,7 @@ namespace MCSMLauncher.common.processes
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                OutputConsole.AppendText(Logging.LOGGER.Warn("[WARN] " + message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Warn("[WARN] " + message) + Environment.NewLine);
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = TerminationCode != 1 ? 2 : 1;
@@ -154,7 +154,7 @@ namespace MCSMLauncher.common.processes
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
             {
-                OutputConsole.AppendText(Logging.LOGGER.Warn(message) + Environment.NewLine);
+                OutputConsole.AppendText(Logging.Logger.Warn(message) + Environment.NewLine);
             }));
             Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
             TerminationCode = TerminationCode != 1 ? 3 : 1;

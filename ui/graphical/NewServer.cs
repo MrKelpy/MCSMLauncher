@@ -67,7 +67,7 @@ namespace MCSMLauncher.ui.graphical
         /// <summary>
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
-        public static NewServer INSTANCE { get; } = new ();
+        public static NewServer Instance { get; } = new ();
 
         /// <summary>
         /// The list of invalid server names, used to check if the server name is valid.
@@ -132,8 +132,8 @@ namespace MCSMLauncher.ui.graphical
             // In that case, block the version selection with a message.
             catch (NullReferenceException)
             {
-                Logging.LOGGER.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.",
-                    LoggingType.FILE);
+                Logging.Logger.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.",
+                    LoggingType.File);
                 ComboServerVersion.Items.Add(@"Couldn't load any versions for this server type.");
                 ComboServerVersion.ForeColor = Color.Firebrick;
                 ComboServerVersion.SelectedIndex = 0;
@@ -192,7 +192,7 @@ namespace MCSMLauncher.ui.graphical
             // If a timeout exception happened, log it and tell the user that a timeout happened
             catch (TimeoutException err)
             {
-                Logging.LOGGER.Error(err.StackTrace);
+                Logging.Logger.Error(err.StackTrace);
                 MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
                 GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
@@ -202,7 +202,7 @@ namespace MCSMLauncher.ui.graphical
             // If a network error happened, log it and tell the user that a network error happened
             catch (HttpRequestException err)
             {
-                Logging.LOGGER.Error(err);
+                Logging.Logger.Error(err);
                 string errorMessage = !NetworkUtils.IsWifiConnected()
                     ? $"A network error happened while building the server. {Environment.NewLine}Please check your internet connection and try again."
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
@@ -216,7 +216,7 @@ namespace MCSMLauncher.ui.graphical
             // If an unknown exception was raised, log it as such and tell the user that an error occured
             catch (Exception err)
             {
-                Logging.LOGGER.Error(err);
+                Logging.Logger.Error(err);
                 MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 

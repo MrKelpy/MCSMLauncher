@@ -22,14 +22,14 @@ namespace MCSMLauncher.requests.content
         {
             try
             {
-                HttpClient Client = new ();
+                HttpClient client = new ();
 
-                Logging.LOGGER.Info($"Preparing to download {url} into {path}");
-                using Stream downloadStream = await Client.GetStreamAsync(url);
+                Logging.Logger.Info($"Preparing to download {url} into {path}");
+                using Stream downloadStream = await client.GetStreamAsync(url);
                 using FileStream fileStream = new(path, FileMode.CreateNew);
 
                 await downloadStream.CopyToAsync(fileStream);
-                Logging.LOGGER.Info($"Finished downloading the content from {url}");
+                Logging.Logger.Info($"Finished downloading the content from {url}");
             }
             // If the task ended up being cancelled due to a time out, throw an exception.
             catch (TaskCanceledException)

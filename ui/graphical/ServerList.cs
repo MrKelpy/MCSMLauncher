@@ -66,7 +66,7 @@ namespace MCSMLauncher.ui.graphical
 
             // Waits for all of the tasks to complete
             await Task.WhenAll(taskList);
-            Logging.LOGGER.Info("Refreshed the server list.");
+            Logging.Logger.Info("Refreshed the server list.");
 
             // Sort the servers by version
             SortGrid();
@@ -371,7 +371,7 @@ namespace MCSMLauncher.ui.graphical
             // If an error occurs, let the user know.
             catch (Exception ex)
             {
-                Logging.LOGGER.Error(ex);
+                Logging.Logger.Error(ex);
                 MessageBox.Show($@"An error occurred whilst starting the server. {Environment.NewLine}Please check the integrity of the server files.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 

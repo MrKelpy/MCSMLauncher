@@ -45,8 +45,8 @@ namespace MCSMLauncher.ui.graphical
             }
             catch (Exception err)
             {
-                Logging.LOGGER.Fatal(@"An unexpected error occured and the program was forced to exit.");
-                Logging.LOGGER.Fatal(err.Message + "\n" + err.StackTrace, LoggingType.FILE);
+                Logging.Logger.Fatal(@"An unexpected error occured and the program was forced to exit.");
+                Logging.Logger.Fatal(err.Message + "\n" + err.StackTrace, LoggingType.File);
             }
         }
 
@@ -68,7 +68,7 @@ namespace MCSMLauncher.ui.graphical
         private async Task DownloadInitialAssets()
         {
             // Logs the initial assets and gets the essential resources to use
-            Logging.LOGGER.Info("Downloading initial assets...");
+            Logging.Logger.Info("Downloading initial assets...");
             Section assets = FileSystem.GetFirstSectionNamed("assets");
             List<string> config = ConfigurationManager.AppSettings.AllKeys.Where(x => x.StartsWith("Asset")).ToList();
 

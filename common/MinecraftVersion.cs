@@ -17,7 +17,7 @@ namespace MCSMLauncher.common
         public MinecraftVersion(string rawVersion)
         {
             Version = rawVersion.Replace("?", "0");
-            Version = rawVersion.Split('.').Length is var str && str < 3 && str != 1
+            Version = rawVersion.Split('.').Length is var str and < 3 && str != 1
                 ? $"{Version}.0"
                 : Version;
         }
@@ -25,7 +25,7 @@ namespace MCSMLauncher.common
         /// <summary>
         /// The version to use within the class operations
         /// </summary>
-        public string Version { get; set; }
+        public string Version { get; }
 
         /// <summary>
         /// Compares the current instance with another object of the same type and returns an integer

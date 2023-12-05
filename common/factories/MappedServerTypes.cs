@@ -8,11 +8,13 @@ using MCSMLauncher.requests.mcversions.snapshots;
 using MCSMLauncher.requests.spigot;
 using static MCSMLauncher.common.Constants;
 
+
 namespace MCSMLauncher.common.factories
 {
     /// <summary>
     /// This is a partial class of ServerTypeMappingsFactory, containing the actual mappings to be
     /// interacted with.
+    /// TODO: Turn this into an XML file-based mapping system... somehow.
     /// </summary>
     public partial class ServerTypeMappingsFactory
     {
@@ -26,9 +28,9 @@ namespace MCSMLauncher.common.factories
                     "vanilla", new Dictionary<string, object>
                     {
                         { "handler", new MCVRequestHandler() },
-                        { "parser", new MCVRequestParser() },
-                        { "builder", new MCVBuilder() },
-                        { "starter", new MCVServerStarter() },
+                        { "parser", new McvRequestParser() },
+                        { "builder", new McvBuilder() },
+                        { "starter", new McvServerStarter() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") }
                     }
                 },
@@ -36,9 +38,9 @@ namespace MCSMLauncher.common.factories
                     "vanilla snapshots", new Dictionary<string, object>
                     {
                         { "handler", new MCVSnapshotsRequestHandler() },
-                        { "parser", new MCVRequestParser() },
-                        { "builder", new MCVBuilder() },
-                        { "starter", new MCVServerStarter() },
+                        { "parser", new McvRequestParser() },
+                        { "builder", new McvBuilder() },
+                        { "starter", new McvServerStarter() },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }
                     }
                 },
@@ -68,7 +70,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", null },
                         { "parser", null },
                         { "builder", null },
-                        { "starter", new MCVServerStarter() },
+                        { "starter", new McvServerStarter() },
                         { "cache_file", null }
                     }
                 }

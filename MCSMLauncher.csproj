@@ -82,6 +82,7 @@
         <Compile Include="requests\mcversions\snapshots\MCVSnapshotsRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
+        <Compile Include="ui\common\ResourceLoader.cs" />
         <Compile Include="ui\graphical\LoadingScreen.cs" />
         <Compile Include="ui\graphical\LoadingScreen.Designer.cs">
           <DependentUpon>LoadingScreen.cs</DependentUpon>
@@ -165,7 +166,6 @@
       <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.0" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="ui\common\" />
       <Folder Include="ui\console\" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

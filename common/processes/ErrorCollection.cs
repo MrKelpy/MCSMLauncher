@@ -23,7 +23,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// Whether the Error Collection is ReadOnly or not
         /// </summary>
-        public bool IsReadOnly { get; } = false;
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// These two methods return the InternalErrorCollection's enumerator for iteration

@@ -43,7 +43,7 @@ namespace MCSMLauncher.common.server.builders
             Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
 
             // Creates the process that will build the server
-            Process forgeBuildingProcess = ProcessUtils.CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"",
+            Process forgeBuildingProcess = ProcessUtils.CreateProcess($"\"{NewServer.Instance.ComboBoxJavaVersion.Text}\\bin\\java\"",
                     $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
 
             // Set the output and error data handlers
@@ -102,7 +102,7 @@ namespace MCSMLauncher.common.server.builders
             if (message.ToLower().Contains("preparing level") || message.ToLower().Contains("agree to the eula"))
                 ProcessUtils.KillProcessAndChildren(proc);
 
-            Logging.LOGGER.Info(message);
+            Logging.Logger.Info(message);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace MCSMLauncher.common.server.builders
             if (TerminationCode * TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
+            OutputConsole.AppendText(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
             TerminationCode = -1;
             
             // Sneakily re-formats the -Xmx and -Xms arguments to be in a template format

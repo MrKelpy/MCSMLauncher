@@ -36,12 +36,12 @@ namespace MCSMLauncher.requests.mcversions.snapshots
                     where div.HasClass("items")
                     select div;
 
-                return new MCVRequestParser().GetVersionUrlMap(BaseUrl, itemDivs.ElementAt(1));
+                return new McvRequestParser().GetVersionUrlMap(BaseUrl, itemDivs.ElementAt(1));
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla snapshot versions.");
-                Logging.LOGGER.Error(e, LoggingType.FILE);
+                Logging.Logger.Info("An error happened whilst trying to retrieve the vanilla snapshot versions.");
+                Logging.Logger.Error(e, LoggingType.File);
                 return null;
             }
         }

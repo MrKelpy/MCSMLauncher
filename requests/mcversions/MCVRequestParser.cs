@@ -13,7 +13,7 @@ namespace MCSMLauncher.requests.mcversions
     /// This class takes in a certain scope of Html Nodes and parses them down
     /// in different ways in order to extract useful information from them.
     /// </summary>
-    public class MCVRequestParser : AbstractBaseRequestParser
+    public class McvRequestParser : AbstractBaseRequestParser
     {
         /// <summary>
         /// Returns the direct download link for a server given its mcversions page

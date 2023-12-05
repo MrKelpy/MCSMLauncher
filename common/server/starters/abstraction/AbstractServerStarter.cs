@@ -8,8 +8,7 @@ using MCSMLauncher.common.background;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.processes;
 using MCSMLauncher.ui.graphical;
-using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
-using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
+using MCSMLauncher.utils;
 
 namespace MCSMLauncher.common.server.starters.abstraction
 {
@@ -95,7 +94,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             */
             ServerInformation info = editor.GetServerInformation();
 
-            if (info.UPnPOn && await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
+            if (info.UPnPOn && await NetworkUtilExtensions.TryCreatePortMapping(info.Port, info.Port))
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();

@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using LaminariaCore_General.utils;
 using MCSMLauncher.ui.graphical;
-using MCSMLauncher.utils;
 
 namespace MCSMLauncher.common.processes
 {

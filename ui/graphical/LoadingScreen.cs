@@ -50,7 +50,7 @@ namespace MCSMLauncher.ui.graphical
         private async void LoadingScreen_Load(object sender, EventArgs e)
         {
             // Keeps checking if an internet connection exists, and only continues if so.
-            await NetworkUtils.RecurrentTestAsync(LabelStatus);
+            await NetworkUtilExtensions.RecurrentTestAsync(LabelStatus);
 
             // Updates the cache and stops the loading phase.
             ServerTypeMappingsFactory mappingsFactory = new ();

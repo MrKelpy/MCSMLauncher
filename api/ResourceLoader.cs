@@ -14,10 +14,10 @@ using MCSMLauncher.requests.content;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.ui.common
+namespace MCSMLauncher.api
 {
     /// <summary>
-    /// This class is responsible for providing endpoints for all the program loading operations. <br></br>
+    /// This class is responsible for providing methods for all the program loading operations. <br></br>
     /// Acts as a middleman between the UI and the backend.
     /// </summary>
     public static class ResourceLoader

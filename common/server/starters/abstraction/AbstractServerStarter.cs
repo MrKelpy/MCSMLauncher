@@ -39,11 +39,11 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <summary>
         /// Runs the server with the given startup arguments.
         /// </summary>
-        /// <param name="serverSection">The section to get the resources from</param>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public virtual async Task Run(Section serverSection, ServerEditor editor)
+        public virtual async Task Run(ServerEditor editor)
         {
             // Get the server.jar and server.properties paths.
+            Section serverSection = editor.ServerSection;
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             ServerInformation info = editor.GetServerInformation();
             

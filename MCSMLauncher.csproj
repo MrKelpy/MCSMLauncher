@@ -46,6 +46,11 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="api\ResourceLoader.cs" />
+        <Compile Include="api\server\ServerAPI.cs" />
+        <Compile Include="api\server\ServerBuilding.cs" />
+        <Compile Include="api\server\ServerEditing.cs" />
+        <Compile Include="api\server\ServerStarting.cs" />
         <Compile Include="common\background\ServerBackupHandler.cs" />
         <Compile Include="common\background\ServerProcessStateHandler.cs" />
         <Compile Include="common\caches\GlobalEditorsCache.cs" />
@@ -82,7 +87,6 @@
         <Compile Include="requests\mcversions\snapshots\MCVSnapshotsRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
-        <Compile Include="ui\common\ResourceLoader.cs" />
         <Compile Include="ui\graphical\LoadingScreen.cs" />
         <Compile Include="ui\graphical\LoadingScreen.Designer.cs">
           <DependentUpon>LoadingScreen.cs</DependentUpon>

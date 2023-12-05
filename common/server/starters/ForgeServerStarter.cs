@@ -26,10 +26,10 @@ namespace MCSMLauncher.common.server.starters
         /// Overriden method from the AbstractServerStarter class. Runs the server with the given startup arguments, under
         /// the "run.bat" file.
         /// </summary>
-        /// <param name="serverSection">The section of the server to be run</param>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public override async Task Run(Section serverSection, ServerEditor editor)
+        public override async Task Run(ServerEditor editor)
         {
+            Section serverSection = editor.ServerSection;
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
             ServerInformation info = editor.GetServerInformation();
             

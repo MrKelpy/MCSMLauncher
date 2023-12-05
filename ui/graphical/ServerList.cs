@@ -365,7 +365,7 @@ namespace MCSMLauncher.ui.graphical
                 // Start the server
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Starting");
                 INSTANCE.GetRowFromName(serverSection.SimpleName).Cells[3].Value = "Resolving...";
-                await serverStarter.Run(serverSection, editor);
+                await serverStarter.Run(editor);
             }
             
             // If an error occurs, let the user know.

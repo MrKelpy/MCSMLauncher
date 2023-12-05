@@ -13,7 +13,7 @@ namespace MCSMLauncher.common.processes
     /// This class implements all the base methods for command processing events
     /// to be implemented by the derived classes.
     /// </summary>
-    public abstract class AbstractCommandProcessing
+    public abstract class AbstractLoggingMessageProcessing
     {
         /// <summary>
         /// The termination code for a server execution, to be used by the processing events

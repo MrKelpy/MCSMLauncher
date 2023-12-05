@@ -57,7 +57,7 @@
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\MinecraftVersion.cs" />
         <Compile Include="common\models\ServerInformation.cs" />
-        <Compile Include="common\processes\AbstractCommandProcessing.cs" />
+        <Compile Include="common\processes\AbstractLoggingMessageProcessing.cs" />
         <Compile Include="common\processes\ErrorCollection.cs" />
         <Compile Include="common\ServerEditor.cs" />
         <Compile Include="common\server\builders\abstraction\AbstractServerBuilder.cs" />

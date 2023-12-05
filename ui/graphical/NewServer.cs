@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
@@ -23,6 +24,11 @@ namespace MCSMLauncher.ui.graphical
     /// </summary>
     public partial class NewServer : Form
     {
+        /// <summary>
+        /// The API instance to interact with the servers.
+        /// </summary>
+        private ServerAPI ServerAPI { get; } = new ();
+        
         /// <summary>
         /// Main constructor for the NewServer form. Private in order to enforce the usage
         /// of the instance declared above.
@@ -153,42 +159,20 @@ namespace MCSMLauncher.ui.graphical
         {
             Section serversSection = FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
-            RichTextBoxConsoleOutput.Clear();
-            RichTextBoxConsoleOutput.ForeColor = Color.Black;
-
-            // Prevents invalid characters in the server name
-            if (TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains) ||
-                TextBoxServerName.Text.Contains(' '))
-            {
-                LabelServerNameError.Text = @"Invalid characters in server name.";
-                LabelServerNameError.Visible = true;
-                return;
-            }
-
-            // Prevents invalid server names
-            if (InvalidServerNames.Any(x => x.ToUpper().Equals(TextBoxServerName.Text.ToUpper())))
-            {
-                LabelServerNameError.Text = @"Invalid server name.";
-                LabelServerNameError.Visible = true;
-                return;
-            }
-
-            // Prevent two servers from having the same name
-            if (serversSection.GetAllSections().Any(x => x.SimpleName.ToLower().Equals(TextBoxServerName.Text.ToLower())))
-            {
-                LabelServerNameError.Text = @"A server with that name already exists.";
-                LabelServerNameError.Visible = true;
-                return;
-            }
-
-            // Starts to build the server, first disabling the controls so the user can't interact with them,
-            // then building the server, and finally re-enabling the controls.
-            ToggleControlsState(false);
+            RichTextBoxConsoleOutput.Clear(); RichTextBoxConsoleOutput.ForeColor = Color.Black;
 
             try
             {
-                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
-                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+                ServerBuilder builder = ServerAPI.Builder(TextBoxServerName.Text, ComboBoxServerType.Text,
+                    ComboServerVersion.Text);
+                
+                builder.VerifyInformation();
+                
+                // Starts to build the server, first disabling the controls so the user can't interact with them,
+                // then building the server, and finally re-enabling the controls.
+                ToggleControlsState(false);
+                
+                
             }
 
             // If a timeout exception happened, log it and tell the user that a timeout happened

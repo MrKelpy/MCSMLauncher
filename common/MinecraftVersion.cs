@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 // ReSharper disable InvalidXmlDocComment
 
@@ -26,6 +28,13 @@ namespace MCSMLauncher.common
         /// The version to use within the class operations
         /// </summary>
         public string Version { get; }
+        
+        /// <summary>
+        /// Checks if the version is a semantic version. This is a version that is in the format of "XX.XX.XX".
+        /// </summary>
+        /// <param name="version">The version to check</param>
+        /// <returns>Whether or not the version is semantic</returns>
+        public static bool isSemanticVersion(string version) => Regex.IsMatch(version, @"\d{2}\.\d{2}(\.\d{2})?");
 
         /// <summary>
         /// Compares the current instance with another object of the same type and returns an integer

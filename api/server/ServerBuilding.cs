@@ -95,7 +95,6 @@ namespace MCSMLauncher.api.server
         {
             AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(this.ServerType);
             await builder.Build(this.ServerName, this.ServerType, this.ServerVersion);
-            // TODO: Adapt Build() to the API System. (It's too closely tied to the GUI)
         }
         
     }

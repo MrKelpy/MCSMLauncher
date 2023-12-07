@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.factories;
@@ -30,8 +31,9 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// Main constructor for the AbstractServerBuilder class, sets the startup arguments
         /// to be used in the server startups, through the child classes.
         /// </summary>
-        /// <param name="startupArguments">The start</param>
-        protected AbstractServerBuilder(string startupArguments)
+        /// <param name="startupArguments">The startup arguments to use when running the server</param>
+        /// <param name="system">The message output system to use in order to log the messages</param>
+        protected AbstractServerBuilder(string startupArguments, MessageProcessingOutputHandler system) : base(system)
         {
             StartupArguments = startupArguments;
             SpecialErrors.Add("Exception handling console input");
@@ -51,24 +53,20 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// <summary>
         /// Main method for the server building process. Starts off all the operations.
         /// </summary>
-        /// <param name="serverName">The name of the server to build</param>
+        /// <param name="serverSection">The section associated with the server being created</param>
         /// <param name="serverType">The type of server to build</param>
         /// <param name="serverVersion">The version of the server to build</param>
         /// <returns>A Task to allow the method to be awaited</returns>
-        public async Task Build(string serverName, string serverType, string serverVersion)
+        public async Task Build(Section serverSection, string serverType, string serverVersion)
         {
-            OutputConsole.Clear();
-            OutputConsole.AppendText(Logging.Logger.Info($"Starting the build for a new {serverType} {serverVersion} server named {serverName}.") + Environment.NewLine);
-
-            // Creates the server section (if it already exists, it's deleted and recreated)
-            Section allServersSection = FileSystem.GetFirstSectionNamed("servers");
-            allServersSection.RemoveSection(serverName);
-            Section serverSection = allServersSection.AddSection(serverName);
-
-            OutputConsole.AppendText(Logging.Logger.Info($"Created a new {serverName} section.") + Environment.NewLine);
+            // Clears the output system in case it's a TextBox
+            if (OutputSystem.TargetSystem.GetType() == typeof(TextBox))
+                ((TextBox)OutputSystem.TargetSystem).Clear();
+                    
+            OutputSystem.Write(Logging.Logger.Info($"Started building a new {serverType} {serverVersion} server named {serverSection.SimpleName}.") + Environment.NewLine);
 
             // Checks if the server is already downloaded, and if it is, copy it and skip the download
-            bool downloadsLookup = TryAddFromDownloads(serverName, serverVersion, serverType);
+            bool downloadsLookup = TryAddFromDownloads(serverSection.SimpleName, serverVersion, serverType);
 
             if (!downloadsLookup)
             {
@@ -76,10 +74,10 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 ServerTypeMappingsFactory multiFactory = new ();
                 string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
                 string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(serverVersion, downloadLink);
-                OutputConsole.AppendText(Logging.Logger.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
+                OutputSystem.Write(Logging.Logger.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
 
                 // Downloads the server jar into the server folder
-                OutputConsole.AppendText(Logging.Logger.Info("Downloading the server.jar...") + Environment.NewLine);
+                OutputSystem.Write(Logging.Logger.Info("Downloading the server.jar...") + Environment.NewLine);
                 string downloadPath = Path.Combine(serverSection.SectionFullPath, "server.jar");
                 await FileDownloader.DownloadFileAsync(downloadPath, directDownloadLink);
                 CopyToDownloads(downloadPath, serverVersion, serverType);
@@ -107,22 +105,20 @@ namespace MCSMLauncher.common.server.builders.abstraction
             // Generates the EULA file (or agrees to it if it already exists, as a failsafe)
             if (GenerateEula(serverSection) == 1)
             {
-                OutputConsole.AppendText(Logging.Logger.Error("Failed to generate or agree to the EULA file. You should *never* have reached this point, but here we are.") + Environment.NewLine);
-                FileSystem.RemoveSection("servers/" + serverName);
+                OutputSystem.Write(Logging.Logger.Error("Failed to generate or agree to the EULA file. You should *never* have reached this point, but here we are.") + Environment.NewLine);
+                FileSystem.RemoveSection(serverSection.Name);
                 return; 
             }
 
             // Runs the server once and closes it, in order to create the server files.
             if (await FirstSetupRun(editor, serverJarPath) == 1)
             {
-                FileSystem.RemoveSection("servers/" + serverName);
+                FileSystem.RemoveSection(serverSection.Name);
                 return;
             }
 
             await ServerList.INSTANCE.AddServerToListAsync(editor);
-            OutputConsole.SelectionColor = Color.LimeGreen;
-            OutputConsole.AppendText(Logging.Logger.Info("Finished building the server.") + Environment.NewLine);
-            OutputConsole.SelectionColor = Color.Black;
+            OutputSystem.Write(Logging.Logger.Info("Finished building the server.") + Environment.NewLine, Color.LimeGreen);
         }
 
         /// <summary>
@@ -137,7 +133,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
         {
             // Creates a new process to run the server silently, and waits for it to finish.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
-            OutputConsole.AppendText(Logging.Logger.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
+            OutputSystem.Write(Logging.Logger.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
             ServerInformation info = editor.GetServerInformation();
@@ -169,7 +165,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             if (TerminationCode * TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            OutputConsole.AppendText(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
+            OutputSystem.Write(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
             TerminationCode = -1;
             return 0;
         }

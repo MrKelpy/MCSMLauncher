@@ -24,8 +24,11 @@ namespace MCSMLauncher.common.server.builders
         /// <summary>
         /// Main constructor for the ForgeBuilder class. Defines the start-up arguments for the server.
         /// </summary>
-        public ForgeBuilder() : base("-jar -Xmx1024M -Xms1024M %SERVER_JAR% nogui")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public ForgeBuilder(MessageProcessingOutputHandler outputHandler) : base(
+            "-jar -Xmx1024M -Xms1024M %SERVER_JAR% nogui", outputHandler)
         {
+            
         }
 
         /// <summary>
@@ -179,7 +182,7 @@ namespace MCSMLauncher.common.server.builders
             if (TerminationCode * TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            OutputConsole.AppendText(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
+            OutputSystem.Write(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
             TerminationCode = -1;
             
             // Sneakily re-formats the -Xmx and -Xms arguments to be in a template format

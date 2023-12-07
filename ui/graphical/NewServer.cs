@@ -14,7 +14,6 @@ using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
-using MCSMLauncher.common.server.builders.abstraction;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.ui.graphical
@@ -78,17 +77,6 @@ namespace MCSMLauncher.ui.graphical
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
         public static NewServer Instance { get; } = new ();
-
-        /// <summary>
-        /// The list of invalid server names, used to check if the server name is valid.
-        /// These names are reserved by Windows for special folders.
-        /// </summary>
-        private List<string> InvalidServerNames { get; } = new ()
-        {
-            "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6",
-            "COM7", "COM8", "COM9", "COM0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",
-            "LPT6", "LPT7", "LPT8", "LPT9", "LPT0"
-        };
 
         /// <summary>
         /// Returns the layout of the current form, so that it can be added to another form.
@@ -171,8 +159,10 @@ namespace MCSMLauncher.ui.graphical
                 // Starts to build the server, first disabling the controls so the user can't interact with them,
                 // then building the server, and finally re-enabling the controls.
                 ToggleControlsState(false);
-                
-                
+
+                // Runs the server builder with the output handler set to the console text box
+                MessageProcessingOutputHandler outputSystem = new(RichTextBoxConsoleOutput);
+                builder.Run(outputSystem);
             }
 
             // If a timeout exception happened, log it and tell the user that a timeout happened

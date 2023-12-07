@@ -18,7 +18,8 @@ namespace MCSMLauncher.common.server.starters
         /// Main constructor for the ForgeServerStarter class. Defines the start-up arguments for the server, as well
         /// as the "other arguments" that are passed to the server.
         /// </summary>
-        public ForgeServerStarter() : base(" ", "-jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public ForgeServerStarter(MessageProcessingOutputHandler outputHandler) : base(" ", "-jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"", outputHandler)
         {
         }
 

@@ -11,7 +11,8 @@ namespace MCSMLauncher.common.server.builders
         /// <summary>
         /// Main constructor for the ForgeBuilder class. Defines the start-up arguments for the server.
         /// </summary>
-        public McvBuilder() : base("-jar %SERVER_JAR% nogui")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public McvBuilder(MessageProcessingOutputHandler outputHandler) : base("-jar %SERVER_JAR% nogui", outputHandler)
         {
         }
 

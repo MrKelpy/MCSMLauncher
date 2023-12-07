@@ -26,10 +26,17 @@ namespace MCSMLauncher.common.processes
         protected ErrorCollection SpecialErrors { get; } = new ();
 
         /// <summary>
-        /// The console object to update with the logs.
+        /// The output system to use for the message processing system.
         /// </summary>
-        protected RichTextBox OutputConsole => NewServer.Instance.RichTextBoxConsoleOutput;
-
+        protected MessageProcessingOutputHandler OutputSystem { get; }
+        
+        /// <summary>
+        /// Main constructor for the AbstractLoggingMessageProcessing class. Sets the output system to use. <br/>
+        /// This system can be STDOUT, a TextBox, or any other supported output system.
+        /// </summary>
+        /// <param name="system">The output system to use for the message processing.</param>
+        protected AbstractLoggingMessageProcessing(MessageProcessingOutputHandler system) => this.OutputSystem = system;
+        
         /// <summary>
         /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,
         /// and separate them by WARN, ERROR, and INFO messages, calling the appropriate methods.
@@ -53,8 +60,7 @@ namespace MCSMLauncher.common.processes
                 string message = matches.Groups[1].Captures[0].Value;
 
                 // If the message is an error and not registered as a special error, handle it as such.
-                if ((!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) ||
-                    typeSection.Contains("Exception"))
+                if ((!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) || typeSection.Contains("Exception"))
                     ProcessErrorMessages(message, proc);
 
                 // Handle the warning messages.
@@ -64,10 +70,7 @@ namespace MCSMLauncher.common.processes
                 // Handle the info messages.
                 else if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                // ignored
-            }
+            catch (ArgumentOutOfRangeException) {}
 
             // Handle any other messages that don't fit the above criteria.
             ProcessOtherMessages(e.Data, proc);
@@ -98,15 +101,10 @@ namespace MCSMLauncher.common.processes
         /// <terminationCode>1 - The server.jar fired an error. If fired last, stop the build.</terminationCode>
         protected virtual void ProcessErrorMessages(string message, Process proc)
         {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                OutputConsole.SelectionColor = Color.Firebrick;
-            }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                OutputConsole.AppendText(Logging.Logger.Error("[ERROR] " + message) + Environment.NewLine);
-            }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            // The processing method used to handle the incoming error message.
+            void Processor() => this.OutputSystem.Write("[ERROR] " + message + Environment.NewLine, Color.Firebrick);
+            
+            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
         }
 
         /// <summary>
@@ -119,15 +117,10 @@ namespace MCSMLauncher.common.processes
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected virtual void ProcessWarningMessages(string message, Process proc)
         {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                OutputConsole.SelectionColor = Color.OrangeRed;
-            }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                OutputConsole.AppendText(Logging.Logger.Warn("[WARN] " + message) + Environment.NewLine);
-            }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            // The processing method used to handle the incoming warning message.
+            void Processor() => this.OutputSystem.Write("[WARN] " + message + Environment.NewLine, Color.OrangeRed);
+
+            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
             TerminationCode = TerminationCode != 1 ? 2 : 1;
         }
 
@@ -151,12 +144,10 @@ namespace MCSMLauncher.common.processes
                 return;
             }
 
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                OutputConsole.AppendText(Logging.Logger.Warn(message) + Environment.NewLine);
-            }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
+            // The processing method used to handle the incoming warning.
+            void Processor() => this.OutputSystem.Write(Logging.Logger.Warn(message) + Environment.NewLine, Color.Gray);
+
+            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor); 
             TerminationCode = TerminationCode != 1 ? 3 : 1;
         }
     }

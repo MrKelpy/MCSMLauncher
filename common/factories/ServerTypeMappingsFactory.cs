@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LaminariaCore_General.utils;
 using MCSMLauncher.common.server.builders.abstraction;
@@ -44,12 +45,14 @@ namespace MCSMLauncher.common.factories
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the builder for</param>
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
         /// <returns>An instance of AbstractServerBuilder mapped to the server type</returns>
-        public AbstractServerBuilder GetBuilderFor(string serverType)
+        public AbstractServerBuilder GetBuilderFor(string serverType, MessageProcessingOutputHandler outputHandler)
         {
-            return Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractServerBuilder)Mappings[serverType.ToLower()]["builder"]
-                : null;
+            if (!Mappings.ContainsKey(serverType.ToLower())) return null;
+            
+            Type builderType = (Type) Mappings[serverType.ToLower()]["builder"];
+            return Activator.CreateInstance(builderType, outputHandler) as AbstractServerBuilder;
         }
 
         /// <summary>
@@ -60,9 +63,10 @@ namespace MCSMLauncher.common.factories
         /// <returns>An instance of AbstractServerStarter mapped to the server typ1</returns>
         public AbstractServerStarter GetStarterFor(string serverType)
         {
-            return Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractServerStarter)Mappings[serverType.ToLower()]["starter"]
-                : null;
+            if (!Mappings.ContainsKey(serverType.ToLower())) return null;
+            
+            Type starterType = (Type) Mappings[serverType.ToLower()]["starter"];
+            return Activator.CreateInstance(starterType) as AbstractServerStarter;
         }
 
         /// <summary>

@@ -26,7 +26,8 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// </summary>
         /// <param name="otherArguments">Extra arguments to be added into the run command</param>
         /// <param name="startupArguments">The startup arguments for the server</param>
-        protected AbstractServerStarter(string otherArguments, string startupArguments)
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        protected AbstractServerStarter(string otherArguments, string startupArguments, MessageProcessingOutputHandler outputHandler) : base(outputHandler)
         {
             StartupArguments = otherArguments + startupArguments;
         }

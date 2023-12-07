@@ -29,8 +29,8 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new MCVRequestHandler() },
                         { "parser", new McvRequestParser() },
-                        { "builder", new McvBuilder() },
-                        { "starter", new McvServerStarter() },
+                        { "builder", typeof(McvBuilder) },
+                        { "starter", typeof(McvServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") }
                     }
                 },
@@ -39,8 +39,8 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new MCVSnapshotsRequestHandler() },
                         { "parser", new McvRequestParser() },
-                        { "builder", new McvBuilder() },
-                        { "starter", new McvServerStarter() },
+                        { "builder", typeof(McvBuilder) },
+                        { "starter", typeof(McvServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }
                     }
                 },
@@ -49,8 +49,8 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new SpigotRequestHandler() },
                         { "parser", new SpigotRequestParser() },
-                        { "builder", new SpigotBuilder() },
-                        { "starter", new SpigotServerStarter() },
+                        { "builder",  typeof(SpigotBuilder) },
+                        { "starter", typeof(SpigotServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }
                     }
                 },
@@ -59,8 +59,8 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new ForgeRequestHandler() },
                         { "parser", new ForgeRequestParser() },
-                        { "builder", new ForgeBuilder() },
-                        { "starter", new ForgeServerStarter() },
+                        { "builder", typeof(ForgeBuilder) },
+                        { "starter", typeof(ForgeServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") }
                     }
                 },
@@ -70,7 +70,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", null },
                         { "parser", null },
                         { "builder", null },
-                        { "starter", new McvServerStarter() },
+                        { "starter", typeof(McvServerStarter) },
                         { "cache_file", null }
                     }
                 }

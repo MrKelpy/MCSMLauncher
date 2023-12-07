@@ -35,7 +35,7 @@ namespace MCSMLauncher.api.server
         /// <summary>
         /// The section of the filesystem that contains all of the servers.
         /// </summary>
-        private Section ServersSection = FileSystem.AddSection("servers");
+        private readonly Section ServersSection = FileSystem.AddSection("servers");
 
         /// <summary>
         /// The list of invalid server names, used to check if the server name is valid.
@@ -91,10 +91,27 @@ namespace MCSMLauncher.api.server
         /// <summary>
         /// Runs the server builder with the information provided.
         /// </summary>
-        public async void Run()
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public async void Run(MessageProcessingOutputHandler outputHandler)
         {
-            AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(this.ServerType);
-            await builder.Build(this.ServerName, this.ServerType, this.ServerVersion);
+            // Deletes the server if it already exists.
+            Section allServersSection = FileSystem.GetFirstSectionNamed("servers");
+            allServersSection.RemoveSection(this.ServerName);
+            
+            // Creates the server section again.
+            Section serverSection = allServersSection.AddSection(this.ServerName);
+            outputHandler.Write(Logging.Logger.Info($"Created a new {this.ServerName} section.") + Environment.NewLine);
+            
+            // Use a build.lock file inside the server section to mark it as being built, closing it afterwards.
+            string locker = serverSection.AddDocument("build.lock");
+            using (new StreamWriter(serverSection.AddDocument("build.lock")))
+            {
+                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(this.ServerType, outputHandler);
+                await builder.Build(serverSection, this.ServerType, this.ServerVersion);
+            }
+            
+            // Deletes the build.lock file to mark the building as finished.
+            File.Delete(locker);
         }
         
     }

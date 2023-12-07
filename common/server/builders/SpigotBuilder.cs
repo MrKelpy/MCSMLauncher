@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.ui.graphical;
+using Open.Nat;
 
 namespace MCSMLauncher.common.server.builders
 {
@@ -17,7 +18,8 @@ namespace MCSMLauncher.common.server.builders
         /// <summary>
         /// Main constructor for the SpigotBuilder class. Defines the start-up arguments for the server.
         /// </summary>
-        public SpigotBuilder() : base("-DIReallyKnowWhatIAmDoingISwear=true -jar %SERVER_JAR% nogui")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public SpigotBuilder(MessageProcessingOutputHandler outputHandler) : base("-DIReallyKnowWhatIAmDoingISwear=true -jar %SERVER_JAR% nogui", outputHandler)
         {
         }
 
@@ -63,17 +65,15 @@ namespace MCSMLauncher.common.server.builders
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected override void ProcessOtherMessages(string message, Process proc)
         {
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Gray; }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate
-            {
-                OutputConsole.AppendText(Logging.Logger.Warn(message) + Environment.NewLine);
-            }));
-            Mainframe.INSTANCE.Invoke(new MethodInvoker(delegate { OutputConsole.SelectionColor = Color.Black; }));
-            TerminationCode = TerminationCode != 1
-                                   && !message.ToLower().Split(' ').Contains("error")
-                                   && !message.ToLower().Split(' ').Contains("unsupported")
-                ? 3
-                : 1;
+            void Processor() => this.OutputSystem.Write(Logging.Logger.Warn(message) + Environment.NewLine, Color.Gray);
+            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
+
+            // Figures out whether the server has errored out or not.
+            bool isNotError = TerminationCode != 1
+                              && !message.ToLower().Split(' ').Contains("error")
+                              && !message.ToLower().Split(' ').Contains("unsupported");
+                              
+            TerminationCode = isNotError ? 3 : 1;
         }
     }
 }

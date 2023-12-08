@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using MCSMLauncher.ui.graphical;
 
-namespace MCSMLauncher.common.processes
+namespace MCSMLauncher.common.handlers
 {
     /// <summary>
     /// This class implements all the base methods for command processing events
@@ -32,7 +32,7 @@ namespace MCSMLauncher.common.processes
         
         /// <summary>
         /// Main constructor for the AbstractLoggingMessageProcessing class. Sets the output system to use. <br/>
-        /// This system can be STDOUT, a TextBox, or any other supported output system.
+        /// This system can be STDOUT, a RichTextBox, or any other supported output system.
         /// </summary>
         /// <param name="system">The output system to use for the message processing.</param>
         protected AbstractLoggingMessageProcessing(MessageProcessingOutputHandler system) => this.OutputSystem = system;
@@ -57,7 +57,7 @@ namespace MCSMLauncher.common.processes
             {
                 // Get the type section and the message from the regex groups.
                 string typeSection = matches.Groups[0].Captures[0].Value;
-                string message = matches.Groups[1].Captures[0].Value;
+                string message = matches.Groups[1].Captures[0].Value.Trim();
 
                 // If the message is an error and not registered as a special error, handle it as such.
                 if ((!SpecialErrors.StringMatches(typeSection) && typeSection.Contains("ERROR")) || typeSection.Contains("Exception"))
@@ -68,12 +68,13 @@ namespace MCSMLauncher.common.processes
                     ProcessWarningMessages(message, proc);
 
                 // Handle the info messages.
-                else if (typeSection.Contains("INFO")) ProcessInfoMessages(message, proc);
+                else if (typeSection.Contains("INFO")) 
+                    ProcessInfoMessages(message, proc);
             }
             catch (ArgumentOutOfRangeException) {}
 
             // Handle any other messages that don't fit the above criteria.
-            ProcessOtherMessages(e.Data, proc);
+            ProcessOtherMessages(e.Data.Trim(), proc);
         }
 
         /// <summary>

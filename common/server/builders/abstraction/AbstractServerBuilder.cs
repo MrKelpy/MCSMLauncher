@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
-using MCSMLauncher.common.processes;
 using MCSMLauncher.extensions;
 using MCSMLauncher.requests.content;
 using MCSMLauncher.ui.graphical;
@@ -51,17 +52,40 @@ namespace MCSMLauncher.common.server.builders.abstraction
         protected string StartupArguments { get; private set; }
 
         /// <summary>
-        /// Main method for the server building process. Starts off all the operations.
+        /// Wraps the AbstractServerBuilder#InternalBuild method so that any exceptions are caught, logged, and
+        /// return false. The design of the build method is like this cor clarity and readability.
+        /// </summary>
+        public async Task<bool> Build(Section serverSection, string serverType, string serverVersion)
+        {
+            // Try to build the server, returning true if it succeeds.
+            try { return await this.InternalBuild(serverSection, serverType, serverVersion); }
+            
+            // If any exception is thrown, log it and return false.
+            catch (Exception e)
+            {
+                OutputSystem.Write("A fatal error happened whilst building the server. Please try again." + Environment.NewLine);
+                Logging.Logger.Error(e);
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// Main method for the server building process. Starts off all the operations, trying to check if the
+        /// server is already downloaded, and downloading it if not, performing the installation, agreeing
+        /// to the EULA, running it once to generate the files and adding it to the server list.
         /// </summary>
         /// <param name="serverSection">The section associated with the server being created</param>
         /// <param name="serverType">The type of server to build</param>
         /// <param name="serverVersion">The version of the server to build</param>
-        /// <returns>A Task to allow the method to be awaited</returns>
-        public async Task Build(Section serverSection, string serverType, string serverVersion)
+        /// <returns>
+        /// A Task to allow the method to be awaited, with the value of a boolean, equivalent to whether
+        /// or not the server was successfully built.
+        /// </returns>
+        private async Task<bool> InternalBuild(Section serverSection, string serverType, string serverVersion)
         {
-            // Clears the output system in case it's a TextBox
-            if (OutputSystem.TargetSystem.GetType() == typeof(TextBox))
-                ((TextBox)OutputSystem.TargetSystem).Clear();
+            // Clears the output system in case it's a RichTextBox
+            if (OutputSystem.TargetSystem.GetType() == typeof(RichTextBox))
+                ((RichTextBox)OutputSystem.TargetSystem).Clear();
                     
             OutputSystem.Write(Logging.Logger.Info($"Started building a new {serverType} {serverVersion} server named {serverSection.SimpleName}.") + Environment.NewLine);
 
@@ -74,7 +98,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
                 ServerTypeMappingsFactory multiFactory = new ();
                 string downloadLink = multiFactory.GetCacheContentsForType(serverType)[serverVersion];
                 string directDownloadLink = await multiFactory.GetParserFor(serverType).GetServerDirectDownloadLink(serverVersion, downloadLink);
-                OutputSystem.Write(Logging.Logger.Info($"Retrieved the resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
+                OutputSystem.Write(Logging.Logger.Info($"Retrieved resources for a new \"{serverType}.{serverVersion}\"") + Environment.NewLine);
 
                 // Downloads the server jar into the server folder
                 OutputSystem.Write(Logging.Logger.Info("Downloading the server.jar...") + Environment.NewLine);
@@ -88,7 +112,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
             string serverJarPath = await InstallServer(serverInstallerJar);
 
             // Initialises the editor and updates the server settings file
-            ServerEditor editor = new (serverSection);
+            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
             ServerInformation info = editor.GetServerInformation();
 
             // Updates the server information with critical information about the server
@@ -106,19 +130,15 @@ namespace MCSMLauncher.common.server.builders.abstraction
             if (GenerateEula(serverSection) == 1)
             {
                 OutputSystem.Write(Logging.Logger.Error("Failed to generate or agree to the EULA file. You should *never* have reached this point, but here we are.") + Environment.NewLine);
-                FileSystem.RemoveSection(serverSection.Name);
-                return; 
+                return false; 
             }
 
             // Runs the server once and closes it, in order to create the server files.
-            if (await FirstSetupRun(editor, serverJarPath) == 1)
-            {
-                FileSystem.RemoveSection(serverSection.Name);
-                return;
-            }
+            if (await FirstSetupRun(editor, serverJarPath) == 1) return false;
 
             await ServerList.INSTANCE.AddServerToListAsync(editor);
             OutputSystem.Write(Logging.Logger.Info("Finished building the server.") + Environment.NewLine, Color.LimeGreen);
+            return true;
         }
 
         /// <summary>

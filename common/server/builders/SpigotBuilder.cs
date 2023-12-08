@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.ui.graphical;
 using Open.Nat;
@@ -37,6 +38,7 @@ namespace MCSMLauncher.common.server.builders
         /// <summary>
         /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,
         /// and separate them by WARN, ERROR, and INFO messages, calling the appropriate methods.
+        /// This method has been overridden because the Spigot server.jar has a different logging system. 
         /// </summary>
         /// <param name="sender">The event sender</param>
         /// <param name="e">The event arguments</param>
@@ -44,15 +46,16 @@ namespace MCSMLauncher.common.server.builders
         protected override void ProcessMergedData(object sender, DataReceivedEventArgs e, Process proc)
         {
             if (e.Data == null || e.Data.Trim().Equals(string.Empty)) return;
+            string message = e.Data.Trim();
 
-            if (e.Data.Contains("INFO"))
-                ProcessInfoMessages(e.Data, proc);
-            else if (e.Data.Contains("WARN"))
-                ProcessWarningMessages(e.Data, proc);
-            else if (e.Data.Contains("ERROR"))
-                ProcessErrorMessages(e.Data, proc);
-            else
-                ProcessOtherMessages(e.Data, proc);
+            if (message.Contains("INFO"))
+                ProcessInfoMessages(message, proc);
+            else if (message.Contains("WARN"))
+                ProcessWarningMessages(message, proc);
+            else if (message.Contains("ERROR"))
+                ProcessErrorMessages(message, proc);
+            
+            else ProcessOtherMessages(message, proc);
         }
 
         /// <summary>
@@ -65,13 +68,14 @@ namespace MCSMLauncher.common.server.builders
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected override void ProcessOtherMessages(string message, Process proc)
         {
-            void Processor() => this.OutputSystem.Write(Logging.Logger.Warn(message) + Environment.NewLine, Color.Gray);
-            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
-
             // Figures out whether the server has errored out or not.
             bool isNotError = TerminationCode != 1
                               && !message.ToLower().Split(' ').Contains("error")
-                              && !message.ToLower().Split(' ').Contains("unsupported");
+                              && !message.ToLower().Split(' ').Contains("unsupported")
+                              && !message.ToLower().Contains("java.lang.unsupportedclassversionerror: org/bukkit/");
+
+            void Processor() => this.OutputSystem.Write(Logging.Logger.Warn(message) + Environment.NewLine, isNotError ? Color.Gray : Color.Firebrick);
+            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
                               
             TerminationCode = isNotError ? 3 : 1;
         }

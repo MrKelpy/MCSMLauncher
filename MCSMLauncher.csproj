@@ -58,13 +58,13 @@
         <Compile Include="common\Constants.cs" />
         <Compile Include="common\factories\MappedServerTypes.cs" />
         <Compile Include="common\factories\ServerTypeMappingsFactory.cs" />
+        <Compile Include="common\handlers\MessageProcessingOutputHandler.cs" />
         <Compile Include="common\interfaces\IBackgroundRunner.cs" />
         <Compile Include="common\Logging.cs" />
-        <Compile Include="common\MessageProcessingOutputHandler.cs" />
         <Compile Include="common\MinecraftVersion.cs" />
         <Compile Include="common\models\ServerInformation.cs" />
-        <Compile Include="common\processes\AbstractLoggingMessageProcessing.cs" />
-        <Compile Include="common\processes\ErrorCollection.cs" />
+        <Compile Include="common\handlers\AbstractLoggingMessageProcessing.cs" />
+        <Compile Include="common\handlers\ErrorCollection.cs" />
         <Compile Include="common\ServerEditor.cs" />
         <Compile Include="common\server\builders\abstraction\AbstractServerBuilder.cs" />
         <Compile Include="common\server\builders\ForgeBuilder.cs" />

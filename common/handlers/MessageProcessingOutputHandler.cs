@@ -1,9 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using MCSMLauncher.utils;
 
-namespace MCSMLauncher.common
+namespace MCSMLauncher.common.handlers
 {
     /// <summary>
     /// This class is responsible for acting as a driver between any passed output systems
@@ -13,7 +12,7 @@ namespace MCSMLauncher.common
     {
         /// <summary>
         /// The target output system to use for the message processing system.<br/>
-        /// This may be STDOUT, a TextBox, or any other supported output system.
+        /// This may be STDOUT, a RichTextBox, or any other supported output system.
         /// </summary>
         public object TargetSystem { get; }
 
@@ -24,7 +23,7 @@ namespace MCSMLauncher.common
         public MessageProcessingOutputHandler(System.IO.TextWriter target) => this.TargetSystem = target;
         
         /// <summary>
-        /// Initialises the MessageProcessingOutputHandler class with the passed target output system being a TextBox.
+        /// Initialises the MessageProcessingOutputHandler class with the passed target output system being a RichTextBox.
         /// </summary>
         /// <param name="target">The output system to use</param>
         public MessageProcessingOutputHandler(RichTextBox target) => this.TargetSystem = target;
@@ -45,16 +44,16 @@ namespace MCSMLauncher.common
         {
             switch (this.TargetSystem)
             {
-                // Completely ignore the message if the target output system is null
-                case null: break;
-                
-                case Type when this.TargetSystem.GetType() == typeof(TextBox):
+                case var _ when this.TargetSystem.GetType() == typeof(RichTextBox):
                     this.InternalWriteToTextBox(message, color);
                     break;
                 
-                case Type when this.TargetSystem.GetType() == typeof(System.IO.TextWriter):
+                case var _ when this.TargetSystem.GetType() == typeof(System.IO.TextWriter):
                     this.InternalWriteToStdout(message, color);
                     break;
+                
+                // Explicitly ignore null cases (no target system) for clarity
+                case null: break;
             }
         }
         
@@ -70,16 +69,16 @@ namespace MCSMLauncher.common
         }
 
         /// <summary>
-        /// Writes the message to a TextBox respecting the color.
+        /// Writes the message to a RichTextBox respecting the color.
         /// </summary>
         /// <param name="message">The message to be written to the text box</param>
         /// <param name="color">The color to paint the message with</param>
         private void InternalWriteToTextBox(string message, Color color)
         {
-            TextBox output = (TextBox) TargetSystem;
-            output.ForeColor = color.IsEmpty ? Color.Black : color;
+            RichTextBox output = (RichTextBox) TargetSystem;
+            output.SelectionColor = color.IsEmpty ? Color.Black : color;
             output.AppendText(message);
-            output.ResetForeColor();
+            output.SelectionColor = Color.Black;
         }
     }
 }

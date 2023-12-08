@@ -14,6 +14,7 @@ using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.common.handlers;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.ui.graphical
@@ -145,7 +146,6 @@ namespace MCSMLauncher.ui.graphical
         [SuppressMessage("ReSharper", "LocalizableElement")]
         private async void ButtonBuild_Click(object sender, EventArgs e)
         {
-            Section serversSection = FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
             RichTextBoxConsoleOutput.Clear(); RichTextBoxConsoleOutput.ForeColor = Color.Black;
 
@@ -161,8 +161,15 @@ namespace MCSMLauncher.ui.graphical
                 ToggleControlsState(false);
 
                 // Runs the server builder with the output handler set to the console text box
-                MessageProcessingOutputHandler outputSystem = new(RichTextBoxConsoleOutput);
-                builder.Run(outputSystem);
+                MessageProcessingOutputHandler outputSystem = new (RichTextBoxConsoleOutput);
+                await builder.Run(outputSystem);
+            }
+            
+            // If the server name is invalid, log it and tell the user that the server name is invalid
+            catch (ArgumentException err)
+            {
+                Logging.Logger.Error(err.StackTrace);
+                MessageBox.Show(err.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             // If a timeout exception happened, log it and tell the user that a timeout happened
@@ -170,9 +177,6 @@ namespace MCSMLauncher.ui.graphical
             {
                 Logging.Logger.Error(err.StackTrace);
                 MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
-                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             // If a network error happened, log it and tell the user that a network error happened
@@ -184,9 +188,6 @@ namespace MCSMLauncher.ui.graphical
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
 
                 MessageBox.Show(errorMessage, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
-                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             // If an unknown exception was raised, log it as such and tell the user that an error occured
@@ -195,9 +196,6 @@ namespace MCSMLauncher.ui.graphical
                 Logging.Logger.Error(err);
                 MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
-                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             ToggleControlsState(true);

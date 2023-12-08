@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
+using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.server.builders.abstraction;
 using static MCSMLauncher.common.Constants;
 
@@ -92,7 +95,7 @@ namespace MCSMLauncher.api.server
         /// Runs the server builder with the information provided.
         /// </summary>
         /// <param name="outputHandler">The output system to use while logging the messages.</param>
-        public async void Run(MessageProcessingOutputHandler outputHandler)
+        public async Task Run(MessageProcessingOutputHandler outputHandler)
         {
             // Deletes the server if it already exists.
             Section allServersSection = FileSystem.GetFirstSectionNamed("servers");
@@ -102,16 +105,24 @@ namespace MCSMLauncher.api.server
             Section serverSection = allServersSection.AddSection(this.ServerName);
             outputHandler.Write(Logging.Logger.Info($"Created a new {this.ServerName} section.") + Environment.NewLine);
             
-            // Use a build.lock file inside the server section to mark it as being built, closing it afterwards.
-            string locker = serverSection.AddDocument("build.lock");
-            using (new StreamWriter(serverSection.AddDocument("build.lock")))
-            {
-                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(this.ServerType, outputHandler);
-                await builder.Build(serverSection, this.ServerType, this.ServerVersion);
-            }
+            // Create a build.lock file to mark the building as in progress.
+            string locker = Path.Combine(serverSection.SectionFullPath, "build.lock");
+            using FileStream fs = File.Create(locker);
             
-            // Deletes the build.lock file to mark the building as finished.
-            File.Delete(locker);
+            // Builds the server.
+            AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(this.ServerType, outputHandler);
+            bool success = await builder.Build(serverSection, this.ServerType, this.ServerVersion);
+            fs.Close();
+
+            // Deletes the build.lock file to mark the building as finished, or the entire server if it failed.
+            if (success && File.Exists(locker)) File.Delete(locker);
+
+            // If the server fails to build, delete the entire server section and remove its editor from the cache.
+            else
+            {
+                this.ServersSection.RemoveSection(this.ServerName);
+                GlobalEditorsCache.INSTANCE.Remove(this.ServerName);
+            }
         }
         
     }

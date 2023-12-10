@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using static MCSMLauncher.common.Constants;
 
@@ -20,14 +21,14 @@ namespace MCSMLauncher.ui.graphical
     public partial class ServerEditPrompt : Form
     {
         /// <summary>
-        /// The server directory to edit. This is purely here for clarity.
-        /// </summary>
-        private Section ServerSection { get; set; }
-        
-        /// <summary>
         /// The ServerEditor instance to use with this editing prompt.
         /// </summary>
         private ServerEditor Editor { get; }
+        
+        /// <summary>
+        /// The server API instance to use with this editing prompt.
+        /// </summary>
+        private ServerEditing EditingAPI { get; set; }
 
         /// <summary>
         /// Main constructor for the ServerEditPrompt form. Initialises the form and loads the
@@ -38,16 +39,16 @@ namespace MCSMLauncher.ui.graphical
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
-            ServerSection = editor.ServerSection;
             Editor = editor;
-
+            EditingAPI = new ServerAPI().Editor(editor.ServerSection.SimpleName);
+            
             // Loads the properties and settings into the form
             LoadToForm(editor.GetBuffersCopy());
 
             // Edits some values in the form that have to be manually placed
             CheckBoxCracked.Checked = !editor.GetFromBuffers<bool>("online-mode");
             CheckBoxSpawnProtection.Checked = editor.BuffersContain("spawn-protection") && editor.GetFromBuffers<int>("spawn-protection") > 0;
-            TextBoxServerName.Text = ServerSection.SimpleName;
+            TextBoxServerName.Text = editor.ServerSection.SimpleName;
 
             // Loads the icons for the folder browsing buttons
             ButtonFolderBrowsing.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
@@ -162,7 +163,7 @@ namespace MCSMLauncher.ui.graphical
         /// <param name="e">The event arguments</param>
         private void ButtonOpenServerFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(ServerSection.SectionFullPath);
+            Process.Start(Editor.ServerSection.SectionFullPath);
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace MCSMLauncher.ui.graphical
         private void ButtonSave_Click(object sender, EventArgs e)
         {
             // Gets the necessary resources to edit save the server's properties and settings
-            string newServerSectionPath = Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+            string newServerSectionPath = Path.GetDirectoryName(Editor.ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
 
             try
             {
@@ -188,13 +189,10 @@ namespace MCSMLauncher.ui.graphical
             }
 
             // Renames the server's folder to the new name if it changed.
-            if (!ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
+            if (!Editor.ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
             {
-                ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
-                Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
-
-                // Updates the ServerSection property to the new path.
-                ServerSection = FileSystem.AddSection("servers/" + TextBoxServerName.Text);
+                ServerList.INSTANCE.RemoveFromList(Editor.ServerSection.Name);
+                EditingAPI.ChangeServerName(TextBoxServerName.Text);
                 ServerList.INSTANCE.AddServerToList(Editor);
             }
 
@@ -226,8 +224,8 @@ namespace MCSMLauncher.ui.graphical
             try
             {
                 // Removes the server from the list, deletes the directory and closes the form.
-                Directory.Delete(ServerSection.SectionFullPath, true);
-                ServerList.INSTANCE.RemoveFromList(ServerSection.SimpleName);
+                Directory.Delete(Editor.ServerSection.SectionFullPath, true);
+                ServerList.INSTANCE.RemoveFromList(Editor.ServerSection.SimpleName);
                 Close();
             }
             catch (Exception exception)

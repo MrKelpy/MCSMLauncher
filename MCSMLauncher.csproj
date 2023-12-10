@@ -47,6 +47,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="api\ResourceLoader.cs" />
+        <Compile Include="api\server\enumeration\ServerLogicChecks.cs" />
         <Compile Include="api\server\ServerAPI.cs" />
         <Compile Include="api\server\ServerBuilding.cs" />
         <Compile Include="api\server\ServerEditing.cs" />

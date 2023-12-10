@@ -6,10 +6,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.api.server;
+using MCSMLauncher.api.server.enumeration;
 using MCSMLauncher.common;
 using static MCSMLauncher.common.Constants;
 
@@ -21,11 +23,6 @@ namespace MCSMLauncher.ui.graphical
     public partial class ServerEditPrompt : Form
     {
         /// <summary>
-        /// The ServerEditor instance to use with this editing prompt.
-        /// </summary>
-        private ServerEditor Editor { get; }
-        
-        /// <summary>
         /// The server API instance to use with this editing prompt.
         /// </summary>
         private ServerEditing EditingAPI { get; set; }
@@ -34,21 +31,20 @@ namespace MCSMLauncher.ui.graphical
         /// Main constructor for the ServerEditPrompt form. Initialises the form and loads the
         /// information from the server.properties file into the form.
         /// </summary>
-        /// <param name="editor">The ServerEditor instance to use with this editing prompt</param>
-        public ServerEditPrompt(ServerEditor editor)
+        /// <param name="serverSection">The Server Section to use to edit the data.</param>
+        public ServerEditPrompt(Section serverSection)
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
-            Editor = editor;
-            EditingAPI = new ServerAPI().Editor(editor.ServerSection.SimpleName);
+            EditingAPI = new ServerAPI().Editor(serverSection.SimpleName);
             
             // Loads the properties and settings into the form
-            LoadToForm(editor.GetBuffersCopy());
+            LoadToForm(EditingAPI.GetCurrentServerSettings());
 
             // Edits some values in the form that have to be manually placed
-            CheckBoxCracked.Checked = !editor.GetFromBuffers<bool>("online-mode");
-            CheckBoxSpawnProtection.Checked = editor.BuffersContain("spawn-protection") && editor.GetFromBuffers<int>("spawn-protection") > 0;
-            TextBoxServerName.Text = editor.ServerSection.SimpleName;
+            CheckBoxCracked.Checked = EditingAPI.Check(ServerLogicChecks.IsCracked);
+            CheckBoxSpawnProtection.Checked = EditingAPI.Check(ServerLogicChecks.IsSpawnProtectionEnabled);
+            TextBoxServerName.Text = EditingAPI.GetServerName();
 
             // Loads the icons for the folder browsing buttons
             ButtonFolderBrowsing.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
@@ -163,7 +159,7 @@ namespace MCSMLauncher.ui.graphical
         /// <param name="e">The event arguments</param>
         private void ButtonOpenServerFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(Editor.ServerSection.SectionFullPath);
+            Process.Start(EditingAPI.GetServerSection().SectionFullPath);
         }
 
         /// <summary>
@@ -174,14 +170,10 @@ namespace MCSMLauncher.ui.graphical
         private void ButtonSave_Click(object sender, EventArgs e)
         {
             // Gets the necessary resources to edit save the server's properties and settings
-            string newServerSectionPath = Path.GetDirectoryName(Editor.ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+            string newServerSectionPath = Path.GetDirectoryName(EditingAPI.GetServerSection().SectionFullPath) + "/" + TextBoxServerName.Text;
 
-            try
-            {
-                // Updates and flushes the buffers
-                Editor.UpdateBuffers(FormToDictionary());
-                Editor.FlushBuffers();
-            }
+            try { EditingAPI.UpdateServerSettings(FormToDictionary()); }
+            
             catch (SystemException)
             {
                 MessageBox.Show(@"One or more fields are incorrectly filled. Please correct them and try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -189,11 +181,11 @@ namespace MCSMLauncher.ui.graphical
             }
 
             // Renames the server's folder to the new name if it changed.
-            if (!Editor.ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
+            if (!EditingAPI.GetServerSection().SectionFullPath.EqualsPath(newServerSectionPath))
             {
-                ServerList.INSTANCE.RemoveFromList(Editor.ServerSection.Name);
+                ServerList.INSTANCE.RemoveFromList(EditingAPI.GetServerName());
                 EditingAPI.ChangeServerName(TextBoxServerName.Text);
-                ServerList.INSTANCE.AddServerToList(Editor);
+                ServerList.INSTANCE.AddServerToList(EditingAPI.Raw());
             }
 
             Close();
@@ -224,8 +216,8 @@ namespace MCSMLauncher.ui.graphical
             try
             {
                 // Removes the server from the list, deletes the directory and closes the form.
-                Directory.Delete(Editor.ServerSection.SectionFullPath, true);
-                ServerList.INSTANCE.RemoveFromList(Editor.ServerSection.SimpleName);
+                EditingAPI.DeleteServer();
+                ServerList.INSTANCE.RemoveFromList(EditingAPI.GetServerName());
                 Close();
             }
             catch (Exception exception)

@@ -17,23 +17,16 @@ namespace MCSMLauncher.common.background
     public class ServerProcessStateHandler : IBackgroundRunner
     {
         /// <summary>
-        /// A quick-access cache of the server editors, used to avoid having to re-fetch them every time.
+        /// A flag that marks whether this is the first run of the background task. This is used so that
+        /// every server is checked at least once when the program starts, updating its state to the correct one.
         /// </summary>
-        private QuickAccessEditorsCache QuickAccessCache { get; } = new ();
+        private bool FirstRunBypassFlag { get; set; } = true;
         
-        /// <summary>
-        /// A counter used to determine when to clean up the quick-access cache.
-        /// </summary>
-        private int CleanupCounter { get; set; }
-
         /// <summary>
         /// Runs the background task.
         /// </summary>
         public async void RunTask()
         {
-            GlobalEditorsCache editorsCache = GlobalEditorsCache.INSTANCE;
-            bool firstRun = true;
-            
             while (true) // This specific background task should run forever.
             {
                 Thread.Sleep(1 * 1000); // 1 second of cooldown between each check.
@@ -45,47 +38,12 @@ namespace MCSMLauncher.common.background
                     if (serverName == null) continue;
                     
                     // Only update the server button state if the server is running.
-                    if (row.Cells[5]?.Value.ToString() is not ("Running" or "Starting") && !firstRun) continue;
-                    
-                    // Firstly, tries to get the server editor from the quick-access cache.
-                    ServerEditor quickEditor = QuickAccessCache.Get(serverName);
-                    if (quickEditor != null)
-                    {
-                        // Updates the button state.
-                        await ServerList.INSTANCE.UpdateServerButtonStateAsync(quickEditor);
-                        continue;
-                    }
-                    
-                    // If the server editor is not in the quick-access cache, get it from the global cache.
-                    Section serverSection = Constants.FileSystem.GetFirstSectionNamed("servers/" + serverName);
-                    ServerEditor editor = editorsCache.GetOrCreate(serverSection);
-                    
-                    // Adds the server editor to the quick-access cache for future use and updates the button state.
-                    QuickAccessCache.Add(editor);
-                    await ServerList.INSTANCE.UpdateServerButtonStateAsync(editor);
+                    if (row.Cells[5]?.Value.ToString() is not ("Running" or "Starting") && !FirstRunBypassFlag) continue;
+                    await ServerList.INSTANCE.UpdateServerButtonStateAsync(serverName);
                 }
                 
-                // Signals that the first run is over.
-                firstRun = false;
-
-                // Allows for the quick-access cache to be cleaned up every 10 seconds.
-                if (CleanupCounter++ < 10) continue;
-                CleanupQuickAccessCache();
-                CleanupCounter = 0;
+                FirstRunBypassFlag = false;
             }
-        }
-
-        /// <summary>
-        /// Removes any servers that are not in the server list anymore from the quick-access cache.
-        /// </summary>
-        private void CleanupQuickAccessCache()
-        {
-            // Removes any servers that are not in the server list anymore.
-            List<string?> serverNames = ServerList.INSTANCE.GridServerList.Rows.Cast<DataGridViewRow>()
-                .Select(row => row.Cells[2]?.Value.ToString()).ToList();
-
-            List<string> removedNames = QuickAccessCache.Cache.Keys.Where(serverName => !serverNames.Contains(serverName)).ToList();
-            foreach (string serverName in removedNames) QuickAccessCache.Remove(serverName);
         }
     }
 }

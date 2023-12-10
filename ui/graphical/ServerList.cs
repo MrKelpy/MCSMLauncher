@@ -180,14 +180,14 @@ namespace MCSMLauncher.ui.graphical
         /// Updates a given server's play button state to either "Start" or "Running" depending on whether
         /// the server is running or not.
         /// </summary>
-        /// <param name="editor">The server editor to work with</param>
+        /// <param name="serverName">The server name to use towards the API</param>
         [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-        private void UpdateServerButtonState(ServerEditor editor)
+        private void UpdateServerButtonState(string serverName)
         {
             // Gets the necessary information to update the server button state.
-            ServerInformation info = editor.GetServerInformation();
+            ServerEditing editingApi = new ServerAPI().Editor(serverName);
+            ServerInformation info = editingApi.GetServerInformation();
             string procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
-            string serverName = editor.ServerSection.SimpleName;
 
             // Makes sure that the row exists before trying to update it.
             DataGridViewRow row = GetRowFromName(serverName);
@@ -198,7 +198,7 @@ namespace MCSMLauncher.ui.graphical
             if (info.CurrentServerProcessID != -1 && procName is "java" or "cmd")
             {
                 ForceUpdateServerState(serverName, "Running");
-                UpdateServerIP(editor);
+                UpdateServerIP(editingApi.Raw());
                 return; 
             }
             
@@ -210,8 +210,7 @@ namespace MCSMLauncher.ui.graphical
             info.CurrentServerProcessID = -1;
             
             // Updates and flushes the buffers with the new information.
-            editor.UpdateBuffers(info.ToDictionary());
-            editor.FlushBuffers();
+            editingApi.UpdateServerSettings(info.ToDictionary());
         }
 
         /// <summary>
@@ -229,10 +228,10 @@ namespace MCSMLauncher.ui.graphical
         /// <summary>
         /// Performs an update to the server's play button state asynchronously.
         /// </summary>
-        /// <param name="editor">The editor to work with</param>
-        public async Task UpdateServerButtonStateAsync(ServerEditor editor)
+        /// <param name="serverName">The server name to work with</param>
+        public async Task UpdateServerButtonStateAsync(string serverName)
         {
-            await Task.Run(() => UpdateServerButtonState(editor));
+            await Task.Run(() => UpdateServerButtonState(serverName));
         }
 
 
@@ -242,13 +241,8 @@ namespace MCSMLauncher.ui.graphical
         /// </summary>
         public async Task UpdateAllButtonStatesAsync()
         {
-            // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
-            {
-                Section serverSection = ServersSection.GetFirstSectionNamed(row.Cells[2].Value.ToString());
-                ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-                await UpdateServerButtonStateAsync(editor);
-            }
+                await UpdateServerButtonStateAsync(row.Cells[2].Value.ToString());
         }
 
         /// <summary>

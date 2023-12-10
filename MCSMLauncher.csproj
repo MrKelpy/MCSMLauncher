@@ -89,6 +89,8 @@
         <Compile Include="requests\mcversions\snapshots\MCVSnapshotsRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestHandler.cs" />
         <Compile Include="requests\spigot\SpigotRequestParser.cs" />
+        <Compile Include="ui\console\ConsoleCommandExecutor.cs" />
+        <Compile Include="ui\console\ConsoleCommandParser.cs" />
         <Compile Include="ui\graphical\LoadingScreen.cs" />
         <Compile Include="ui\graphical\LoadingScreen.Designer.cs">
           <DependentUpon>LoadingScreen.cs</DependentUpon>

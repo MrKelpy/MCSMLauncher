@@ -15,6 +15,7 @@ namespace MCSMLauncher.common.background
     /// <summary>
     /// Handles the backup creation for a given running server. This thread will bind itself to a running
     /// process, and frequently check for its status, stopping only when the process does.
+    /// TODO: Make it so the user can set the limit of backups, that will delete the oldest ones.
     /// </summary>
     public class ServerBackupHandler : IBackgroundRunner
     {

@@ -12,6 +12,8 @@ namespace MCSMLauncher.common.handlers
     /// <summary>
     /// This class implements all the base methods for command processing events
     /// to be implemented by the derived classes.
+    /// TODO: Create a "message-forwarding" method that sends the received messages (before processing)
+    /// TODO: into a buffer inside a new Interactor API, that can be used to send and read messages from the server.
     /// </summary>
     public abstract class AbstractLoggingMessageProcessing
     {

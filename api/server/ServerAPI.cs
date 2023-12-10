@@ -22,9 +22,9 @@ namespace MCSMLauncher.api.server
         /// <summary>
         /// Returns an instance of ServerStarting so that the user can start the selected server.
         /// </summary>
-        /// <param name="editor">The server editor to use in order to start the server</param>
+        /// <param name="name">The server name to use in order to locate the server to start</param>
         /// <returns>The ServerStarting instance</returns>
-        public ServerStarter Starter(ServerEditor editor) => new (editor);
+        public ServerStarter Starter(string name) => new (name);
         
         /// <summary>
         /// Returns an instance of ServerEditing so that the user can edit the selected server.

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
@@ -24,6 +25,11 @@ namespace MCSMLauncher.ui.graphical
     /// </summary>
     public partial class ServerList : Form
     {
+        
+        /// <summary>
+        /// The servers section, containing all of the servers.
+        /// </summary>
+        private Section ServersSection { get; }
 
         /// <summary>
         /// Main constructor for the ServerList form. Private to enforce the singleton model.
@@ -31,6 +37,7 @@ namespace MCSMLauncher.ui.graphical
         private ServerList()
         {
             InitializeComponent();
+            this.ServersSection = FileSystem.GetFirstSectionNamed("servers");
 
             // Sets the info layout pictures
             foreach (Label label in ServerListLayout.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
@@ -57,12 +64,8 @@ namespace MCSMLauncher.ui.graphical
             // Iterates over every server in the servers section and creates an addition task for them
             GridServerList.Rows.Clear();
             
-            // Gets the global editors cache
-            GlobalEditorsCache cache = GlobalEditorsCache.INSTANCE;
-
-            // Creates a list of sorted editors to work with, to then create a task list
-            List<ServerEditor> editors = FileSystem.AddSection("servers").GetAllTopLevelSections().Select(cache.GetOrCreate).ToList();
-            List<Task> taskList = editors.Select(AddServerToListAsync).ToList();
+            // Creates a list of tasks to run, adding each server to the grid
+            List<Task> taskList = ServersSection.GetAllTopLevelSections().Select(AddServerToListAsync).ToList();
 
             // Waits for all of the tasks to complete
             await Task.WhenAll(taskList);
@@ -111,14 +114,16 @@ namespace MCSMLauncher.ui.graphical
         /// <summary>
         /// Adds a server to the server list given the server section.
         /// </summary>
-        /// <param name="editor">The editor to work with</param>
-        public void AddServerToList(ServerEditor editor)
+        /// <param name="serverSection">The server's section in the file system</param>
+        public void AddServerToList(Section serverSection)
         {
+            ServerEditing editingApi = new ServerAPI().Editor(serverSection.SimpleName);
+            
             // Prevents server duplicates from being displayed
-            if (GetRowFromName(editor.ServerSection.SimpleName) != null) return;
+            if (GetRowFromName(editingApi.GetServerName()) != null) return;
 
             // Deserializes the server settings file to access the server information.
-            ServerInformation info = editor.GetServerInformation();
+            ServerInformation info = editingApi.GetServerInformation();
 
             // Gets the image path for the server type, and adds the server to the list.
             // We have to parse the type to get the first word, since there could be snapshots of the type,
@@ -129,20 +134,20 @@ namespace MCSMLauncher.ui.graphical
             Mainframe.INSTANCE.Invoke(new MethodInvoker(() =>
             {
                 Image typeImage = Image.FromFile(typeImagePath);
-                GridServerList.Rows.Add(typeImage, info.Version, editor.ServerSection.SimpleName); 
+                GridServerList.Rows.Add(typeImage, info.Version, editingApi.GetServerName()); 
             }));
 
             // Sets the server button's text to "Start" by default.
-            GetRowFromName(editor.ServerSection.SimpleName).Cells[5].Value = "Start";
+            GetRowFromName(editingApi.GetServerName()).Cells[5].Value = "Start";
         }
 
         /// <summary>
         /// Performs an addition to the server list asynchronously.
         /// </summary>
-        /// <param name="editor">The editor to work with</param>
-        public async Task AddServerToListAsync(ServerEditor editor)
+        /// <param name="serverSection">The server's section in the filesystem</param>
+        public async Task AddServerToListAsync(Section serverSection)
         {
-            await Task.Run(() => AddServerToList(editor));
+            await Task.Run(() => AddServerToList(serverSection));
         }
 
         /// <summary>
@@ -240,7 +245,7 @@ namespace MCSMLauncher.ui.graphical
             // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
             {
-                Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + row.Cells[2].Value);
+                Section serverSection = ServersSection.GetFirstSectionNamed(row.Cells[2].Value.ToString());
                 ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
                 await UpdateServerButtonStateAsync(editor);
             }
@@ -340,8 +345,7 @@ namespace MCSMLauncher.ui.graphical
             Section serverSection = FileSystem.AddSection($"servers/{serverName}");
             
             // Create and show the edit prompt.
-            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-            ServerEditPrompt editPrompt = new (editor);
+            ServerEditPrompt editPrompt = new (serverSection);
             editPrompt.ShowDialog();
         }
         
@@ -357,15 +361,9 @@ namespace MCSMLauncher.ui.graphical
             
             try
             {
-                // Get the server's type and starter
-                ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-                string serverType = editor.GetServerInformation().Type;
-                AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
-
-                // Start the server
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Starting");
                 INSTANCE.GetRowFromName(serverSection.SimpleName).Cells[3].Value = "Resolving...";
-                await serverStarter.Run(editor);
+                await new ServerAPI().Starter(serverSection.SimpleName).Run(null);
             }
             
             // If an error occurs, let the user know.

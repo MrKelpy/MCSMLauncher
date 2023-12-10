@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.builders.abstraction;
@@ -114,16 +115,16 @@ namespace MCSMLauncher.common.server.builders
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
-        /// <param name="editor">The ServerEditor instance to use with this run</param>
+        /// <param name="editingApi">The ServerEditingAPI instance bound to the server to use with this run</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        protected override async Task<int> FirstSetupRun(ServerEditor editor, string serverJarPath)
+        protected override async Task<int> FirstSetupRun(ServerEditing editingApi, string serverJarPath)
         {
             // Due to how forge works, we need to generate a run.bat file to run the forge.
             Section serverSection = GetSectionFromFile(serverJarPath);
             serverSection.AddDocument("server.properties"); // Adds the server properties just in case
 
             // Gets the java runtime and creates the run command from it
-            ServerInformation info = editor.GetServerInformation();
+            ServerInformation info = editingApi.GetServerInformation();
             string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
 
             // Creates the run.bat file if it doesn't already exist, with simple running params
@@ -158,7 +159,7 @@ namespace MCSMLauncher.common.server.builders
             Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (editor.HandlePortForServer() == 1)
+            if (editingApi.Raw().HandlePortForServer() == 1)
             {
                 ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;

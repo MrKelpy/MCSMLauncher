@@ -61,13 +61,14 @@ namespace MCSMLauncher.common.factories
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the starter for</param>
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
         /// <returns>An instance of AbstractServerStarter mapped to the server typ1</returns>
-        public AbstractServerStarter GetStarterFor(string serverType)
+        public AbstractServerStarter GetStarterFor(string serverType, MessageProcessingOutputHandler outputHandler)
         {
             if (!Mappings.ContainsKey(serverType.ToLower())) return null;
             
             Type starterType = (Type) Mappings[serverType.ToLower()]["starter"];
-            return Activator.CreateInstance(starterType) as AbstractServerStarter;
+            return Activator.CreateInstance(starterType, outputHandler) as AbstractServerStarter;
         }
 
         /// <summary>

@@ -1,4 +1,11 @@
-﻿using MCSMLauncher.common;
+﻿using System.Threading.Tasks;
+using LaminariaCore_Winforms.common;
+using MCSMLauncher.common;
+using MCSMLauncher.common.caches;
+using MCSMLauncher.common.factories;
+using MCSMLauncher.common.handlers;
+using MCSMLauncher.common.server.starters.abstraction;
+using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.api.server
 {
@@ -9,14 +16,31 @@ namespace MCSMLauncher.api.server
     {
         
         /// <summary>
+        /// The server editor used to manage the server.
+        /// </summary>
+        private ServerEditing EditingAPI { get; }
+        
+        /// <summary>
         /// Main constructor for the ServerStarter class. Takes in the server name and the server editor
         /// and sends the server starting instructions.
         /// </summary>
-        /// <param name="editor">The server editor to start the server with</param>
-        public ServerStarter(ServerEditor editor)
+        /// <param name="serverName">The name of the server to operate on</param>
+        public ServerStarter(string serverName)
         {
-            
+            Section serverSection = FileSystem.GetFirstSectionNamed(serverName);
+            this.EditingAPI = new ServerAPI().Editor(serverSection.SimpleName);
         }
-        
+
+        /// <summary>
+        /// Runs the server starter based on the server type and the settings defined in the server's section.
+        /// </summary>
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public async Task Run(MessageProcessingOutputHandler outputHandler)
+        {
+            string serverType = EditingAPI.GetServerInformation().Type;
+            AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType, outputHandler);
+            await serverStarter.Run(EditingAPI.Raw());
+        }
+
     }
 }

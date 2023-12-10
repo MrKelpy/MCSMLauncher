@@ -185,12 +185,12 @@ namespace MCSMLauncher.ui.graphical
             {
                 ServerList.INSTANCE.RemoveFromList(EditingAPI.GetServerName());
                 EditingAPI.ChangeServerName(TextBoxServerName.Text);
-                ServerList.INSTANCE.AddServerToList(EditingAPI.Raw());
+                ServerList.INSTANCE.AddServerToList(EditingAPI.GetServerSection());
             }
 
             Close();
         }
-
+ 
         /// <summary>
         /// Turns the spawn protection numeric box on and off depending on the state of the checkbox.
         /// </summary>
@@ -216,8 +216,8 @@ namespace MCSMLauncher.ui.graphical
             try
             {
                 // Removes the server from the list, deletes the directory and closes the form.
-                EditingAPI.DeleteServer();
                 ServerList.INSTANCE.RemoveFromList(EditingAPI.GetServerName());
+                EditingAPI.DeleteServer();
                 Close();
             }
             catch (Exception exception)

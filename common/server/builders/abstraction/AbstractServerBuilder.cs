@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.handlers;
@@ -112,8 +113,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
             string serverJarPath = await InstallServer(serverInstallerJar);
 
             // Initialises the editor and updates the server settings file
-            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-            ServerInformation info = editor.GetServerInformation();
+            ServerEditing editingApi = new ServerAPI().Editor(serverSection.SimpleName);
+            ServerInformation info = editingApi.GetServerInformation();
 
             // Updates the server information with critical information about the server
             info.Type = serverType;
@@ -123,8 +124,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
             info.JavaRuntimePath = NewServer.Instance.ComboBoxJavaVersion.Text;
             
             // Updates and flushes the buffers
-            editor.UpdateBuffers(info.ToDictionary());
-            editor.FlushBuffers();
+            editingApi.UpdateServerSettings(info.ToDictionary());
+
 
             // Generates the EULA file (or agrees to it if it already exists, as a failsafe)
             if (GenerateEula(serverSection) == 1)
@@ -134,9 +135,9 @@ namespace MCSMLauncher.common.server.builders.abstraction
             }
 
             // Runs the server once and closes it, in order to create the server files.
-            if (await FirstSetupRun(editor, serverJarPath) == 1) return false;
+            if (await FirstSetupRun(editingApi, serverJarPath) == 1) return false;
 
-            await ServerList.INSTANCE.AddServerToListAsync(editor);
+            await ServerList.INSTANCE.AddServerToListAsync(serverSection);
             OutputSystem.Write(Logging.Logger.Info("Finished building the server.") + Environment.NewLine, Color.LimeGreen);
             return true;
         }
@@ -147,20 +148,20 @@ namespace MCSMLauncher.common.server.builders.abstraction
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
-        /// <param name="editor">The ServerEditor to use with this run</param>
+        /// <param name="editingApi">The ServerEditingAPI instance to use, bound to the server</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        protected virtual async Task<int> FirstSetupRun(ServerEditor editor, string serverJarPath)
+        protected virtual async Task<int> FirstSetupRun(ServerEditing editingApi, string serverJarPath)
         {
             // Creates a new process to run the server silently, and waits for it to finish.
             StartupArguments = StartupArguments.Replace("%SERVER_JAR%", serverJarPath);
             OutputSystem.Write(Logging.Logger.Info("Running the server silently... (This may happen more than once!)") + Environment.NewLine);
 
             // Gets the server section from the path of the jar being run, the runtime and creates the process
-            ServerInformation info = editor.GetServerInformation();
+            ServerInformation info = editingApi.GetServerInformation();
             Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", StartupArguments, Path.GetDirectoryName(serverJarPath));
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (editor.HandlePortForServer() == 1)
+            if (editingApi.Raw().HandlePortForServer() == 1)
             {
                 ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;
@@ -178,7 +179,7 @@ namespace MCSMLauncher.common.server.builders.abstraction
 
             // Disposes of the process and checks if the termination code is 1. If so, return 1.
             proc.Dispose();
-            editor.ServerSection.RemoveSection("world"); // Finds the world folder and deletes it if it exists
+            editingApi.GetServerSection().RemoveSection("world"); // Finds the world folder and deletes it if it exists
             
             // The math here is because if nothing happened, it errored with no changes, so the code is -1
             // and we can simply return 1.

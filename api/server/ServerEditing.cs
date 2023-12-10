@@ -4,6 +4,7 @@ using LaminariaCore_Winforms.common;
 using MCSMLauncher.api.server.enumeration;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
+using MCSMLauncher.common.models;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.api.server
@@ -65,8 +66,8 @@ namespace MCSMLauncher.api.server
         /// </summary>
         public void DeleteServer()
         {
-            Directory.Delete(this.ServerSection.SectionFullPath, true);
             GlobalEditorsCache.INSTANCE.Remove(this.ServerSection.SimpleName);
+            Directory.Delete(this.ServerSection.SectionFullPath, true);
         }
 
         /// <summary>
@@ -96,6 +97,11 @@ namespace MCSMLauncher.api.server
         /// Returns the server name associated with the server.
         /// </returns>
         public string GetServerName() => this.GetServerSection().SimpleName;
+        
+        /// <returns>
+        /// Returns the ServerInformation object associated with the server.
+        /// </returns>
+        public ServerInformation GetServerInformation() => this.Raw().GetServerInformation();
 
         /// <summary>
         /// Checks the server's properties for a specific logical expression based on the provided ServerLogicChecks enum.

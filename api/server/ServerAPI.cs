@@ -9,29 +9,32 @@ namespace MCSMLauncher.api.server
     public class ServerAPI
     {
 
-        /// <summary>
+        /// <returns>
         /// Returns an instance of ServerBuilding so that the user can build the selected server.
-        /// </summary>
+        /// </returns>
         /// <param name="serverName">The name of the server to be built</param>
         /// <param name="serverType">The server type to create the server as</param>
         /// <param name="serverVersion">The server version to build the server on</param>
-        /// <returns>The ServerBuilding instance</returns>
         public ServerBuilder Builder(string serverName, string serverType, string serverVersion)
             => new (serverName, serverType, serverVersion);
         
-        /// <summary>
+        /// <returns>
         /// Returns an instance of ServerStarting so that the user can start the selected server.
-        /// </summary>
+        /// </returns>
         /// <param name="name">The server name to use in order to locate the server to start</param>
-        /// <returns>The ServerStarting instance</returns>
         public ServerStarter Starter(string name) => new (name);
         
-        /// <summary>
+        /// <returns>
         /// Returns an instance of ServerEditing so that the user can edit the selected server.
-        /// </summary>
+        /// </returns>
         /// <param name="serverName">The name of the server to edit</param>
-        /// <returns>The ServerEditing instance</returns>
         public ServerEditing Editor(string serverName) => new (serverName);
+        
+        /// <returns>
+        /// Returns an instance of ServerInteractions so that the user can interact with the selected server.
+        /// </returns>
+        /// <param name="serverName">The server name of the server to interact with</param>
+        public ServerInteractions Interactions(string serverName) => new (serverName);
 
     }
 }

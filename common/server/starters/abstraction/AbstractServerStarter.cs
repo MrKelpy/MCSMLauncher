@@ -61,8 +61,8 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess(javaPath, StartupArguments, serverSection.SectionFullPath);
 
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
 
             // Finds the port and IP to start the server with, and starts the server.
             await StartServer(serverSection, proc, editor);
@@ -103,6 +103,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Sets up the process to be hidden and not create a window.
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.RedirectStandardInput = true;
 
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();

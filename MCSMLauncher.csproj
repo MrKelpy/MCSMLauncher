@@ -51,6 +51,7 @@
         <Compile Include="api\server\ServerAPI.cs" />
         <Compile Include="api\server\ServerBuilding.cs" />
         <Compile Include="api\server\ServerEditing.cs" />
+        <Compile Include="api\server\ServerInteractions.cs" />
         <Compile Include="api\server\ServerStarting.cs" />
         <Compile Include="common\background\ServerBackupHandler.cs" />
         <Compile Include="common\background\ServerProcessStateHandler.cs" />

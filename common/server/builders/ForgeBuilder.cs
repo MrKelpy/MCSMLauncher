@@ -51,8 +51,8 @@ namespace MCSMLauncher.common.server.builders
                     $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
 
             // Set the output and error data handlers
-            forgeBuildingProcess.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
-            forgeBuildingProcess.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
+            forgeBuildingProcess.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, forgeBuildingProcess, serverName);
+            forgeBuildingProcess.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, forgeBuildingProcess, serverName);
             TerminationCode = 0;
 
             // Start the process
@@ -166,8 +166,8 @@ namespace MCSMLauncher.common.server.builders
             }
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, editingApi.GetServerName());
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, editingApi.GetServerName());
 
             // Waits for the termination of the process by the OutputDataReceived event or ErrorDataReceived event.
             proc.Start();

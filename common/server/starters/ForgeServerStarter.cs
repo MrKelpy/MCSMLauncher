@@ -41,8 +41,8 @@ namespace MCSMLauncher.common.server.starters
             
             // Creates the process through the extracted arguments
             Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", startupArguments, serverSection.SectionFullPath);
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
 
             // Finds the port and IP to start the server with, and starts the server.
             await StartServer(serverSection, proc, editor);

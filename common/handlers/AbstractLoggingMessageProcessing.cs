@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
+using MCSMLauncher.api.server;
 using MCSMLauncher.ui.graphical;
 
 namespace MCSMLauncher.common.handlers
@@ -12,8 +13,6 @@ namespace MCSMLauncher.common.handlers
     /// <summary>
     /// This class implements all the base methods for command processing events
     /// to be implemented by the derived classes.
-    /// TODO: Create a "message-forwarding" method that sends the received messages (before processing)
-    /// TODO: into a buffer inside a new Interactor API, that can be used to send and read messages from the server.
     /// </summary>
     public abstract class AbstractLoggingMessageProcessing
     {
@@ -33,11 +32,33 @@ namespace MCSMLauncher.common.handlers
         protected MessageProcessingOutputHandler OutputSystem { get; }
         
         /// <summary>
+        /// The server interactions API to use for the message processing system.
+        /// </summary>
+        protected ServerInteractions InteractionsAPI { get; set; }
+
+        /// <summary>
         /// Main constructor for the AbstractLoggingMessageProcessing class. Sets the output system to use. <br/>
         /// This system can be STDOUT, a RichTextBox, or any other supported output system.
         /// </summary>
         /// <param name="system">The output system to use for the message processing.</param>
-        protected AbstractLoggingMessageProcessing(MessageProcessingOutputHandler system) => this.OutputSystem = system;
+        protected AbstractLoggingMessageProcessing(MessageProcessingOutputHandler system) 
+            => this.OutputSystem = system;
+
+        /// <summary>
+        /// Receives the data from the server output and forwards it to all the necessary processing methods.
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event arguments</param>
+        /// <param name="proc">The running process of the server</param>
+        /// <param name="serverName">The name of the server to redirect the output from</param>
+        protected void RedirectMessageProcessing(object sender, DataReceivedEventArgs e, Process proc, string serverName)
+        {
+            // Adds the data to the output buffer of the server
+            this.InteractionsAPI = new ServerAPI().Interactions(serverName);
+            this.InteractionsAPI.AddToOutputBuffer(e.Data);
+
+            this.ProcessMergedData(sender, e, proc);  // Processes the data in the output system
+        }
         
         /// <summary>
         /// Due to the stupidity of early Minecraft logging, capture the STDERR and STDOUT in this method,

@@ -168,8 +168,8 @@ namespace MCSMLauncher.common.server.builders.abstraction
             }
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, editingApi.GetServerName());
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, editingApi.GetServerName());
 
             // Waits for the termination of the process by the OutputDataReceived event or ErrorDataReceived event.
             proc.Start();

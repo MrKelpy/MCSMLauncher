@@ -5,6 +5,7 @@ using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
 using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.server.starters.abstraction;
+using MCSMLauncher.common.server.starters.threads;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.api.server
@@ -35,12 +36,11 @@ namespace MCSMLauncher.api.server
         /// Runs the server starter based on the server type and the settings defined in the server's section.
         /// </summary>
         /// <param name="outputHandler">The output system to use while logging the messages.</param>
-        public async Task Run(MessageProcessingOutputHandler outputHandler)
+        public void Run(MessageProcessingOutputHandler outputHandler)
         {
-            string serverType = EditingAPI.GetServerInformation().Type;
-            AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType, outputHandler);
-            await serverStarter.Run(EditingAPI.Raw());
+            ServerStarterThreadRunner serverRunner = new ServerStarterThreadRunner(this.EditingAPI.Raw());
+            serverRunner.StartThread(outputHandler);
         }
-
+ 
     }
 }

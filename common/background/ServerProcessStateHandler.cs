@@ -38,7 +38,7 @@ namespace MCSMLauncher.common.background
                     if (serverName == null) continue;
                     
                     // Only update the server button state if the server is running.
-                    if (row.Cells[5]?.Value.ToString() is not ("Running" or "Starting") && !FirstRunBypassFlag) continue;
+                    if (row.Cells[5]?.Value.ToString() is not ("Running" or "Starting" or "Stopping") && !FirstRunBypassFlag) continue;
                     await ServerList.INSTANCE.UpdateServerButtonStateAsync(serverName);
                 }
                 

@@ -72,10 +72,11 @@
         <Compile Include="common\server\builders\ForgeBuilder.cs" />
         <Compile Include="common\server\builders\MCVBuilder.cs" />
         <Compile Include="common\server\builders\SpigotBuilder.cs" />
-        <Compile Include="common\server\starters\abstraction\AbstractServerStarter.cs" />
+        <Compile Include="common\server\starters\AbstractServerStarter.cs" />
         <Compile Include="common\server\starters\ForgeServerStarter.cs" />
         <Compile Include="common\server\starters\MCVServerStarter.cs" />
         <Compile Include="common\server\starters\SpigotServerStarter.cs" />
+        <Compile Include="common\server\starters\threads\ServerStarterThreadRunner.cs" />
         <Compile Include="extensions\HttpClientExtensions.cs" />
         <Compile Include="extensions\ProcessExtensions.cs" />
         <Compile Include="Program.cs" />
@@ -162,6 +163,7 @@
       <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
       <PackageReference Include="LaminariaCore-General" Version="1.0.0" />
       <PackageReference Include="LaminariaCore-Winforms" Version="1.0.0" />
+      <PackageReference Include="MedallionShell" Version="1.6.2" />
       <PackageReference Include="Open.NAT" Version="2.1.0" />
       <PackageReference Include="System.CodeDom" Version="8.0.0-preview.3.23174.8" />
       <PackageReference Include="System.IO" Version="4.3.0" />

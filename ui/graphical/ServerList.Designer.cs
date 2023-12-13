@@ -76,7 +76,7 @@
             this.ButtonRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ButtonRefresh.Location = new System.Drawing.Point(764, 4);
-            this.ButtonRefresh.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ButtonRefresh.Margin = new System.Windows.Forms.Padding(2);
             this.ButtonRefresh.Name = "ButtonRefresh";
             this.ButtonRefresh.Size = new System.Drawing.Size(25, 25);
             this.ButtonRefresh.TabIndex = 18;
@@ -191,7 +191,6 @@
             this.StopButton.Name = "StopButton";
             this.StopButton.ReadOnly = true;
             this.StopButton.Text = "Stop";
-            this.StopButton.UseColumnTextForButtonValue = true;
             this.StopButton.Width = 76;
             // 
             // ServerList

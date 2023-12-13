@@ -18,6 +18,11 @@ namespace MCSMLauncher.ui.graphical
     public partial class Mainframe : Form
     {
         /// <summary>
+        /// The singleton instance of the Mainframe.
+        /// </summary>
+        public static Mainframe INSTANCE { get; } = new ();
+        
+        /// <summary>
         /// Main constructor for the Mainframe. Loads up the server list. Private to enforce the
         /// singleton pattern.
         /// </summary>
@@ -26,11 +31,6 @@ namespace MCSMLauncher.ui.graphical
             InitializeComponent();
             MainLayout.SetAllFrom(NewServer.Instance.GetLayout());
         }
-
-        /// <summary>
-        /// The singleton instance of the Mainframe.
-        /// </summary>
-        public static Mainframe INSTANCE { get; } = new ();
 
         /// <summary>
         /// Loads up anything that needs to be loaded after the mainframe handle is created.

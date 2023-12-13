@@ -29,7 +29,7 @@ namespace MCSMLauncher.common.server.starters
         /// the "run.bat" file.
         /// </summary>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public override async Task Run(ServerEditor editor)
+        public override async Task<Process> Run(ServerEditor editor)
         {
             Section serverSection = editor.ServerSection;
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
@@ -46,6 +46,7 @@ namespace MCSMLauncher.common.server.starters
 
             // Finds the port and IP to start the server with, and starts the server.
             await StartServer(serverSection, proc, editor);
+            return proc;
         }
 
         /// <summary>

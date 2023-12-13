@@ -41,7 +41,8 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// Runs the server with the given startup arguments.
         /// </summary>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public virtual async Task Run(ServerEditor editor)
+        /// <returns>The process that was just created</returns>
+        public virtual async Task<Process> Run(ServerEditor editor)
         {
             // Get the server.jar and server.properties paths.
             Section serverSection = editor.ServerSection;
@@ -66,6 +67,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
 
             // Finds the port and IP to start the server with, and starts the server.
             await StartServer(serverSection, proc, editor);
+            return proc;
         }
 
         /// <summary>
@@ -104,6 +106,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.CreateNoWindow = true;
             proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.UseShellExecute = false;
 
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();

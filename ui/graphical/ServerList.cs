@@ -13,9 +13,7 @@ using LaminariaCore_Winforms.common;
 using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
-using MCSMLauncher.common.factories;
 using MCSMLauncher.common.models;
-using MCSMLauncher.common.server.starters.abstraction;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.ui.graphical
@@ -137,8 +135,11 @@ namespace MCSMLauncher.ui.graphical
                 GridServerList.Rows.Add(typeImage, info.Version, editingApi.GetServerName()); 
             }));
 
-            // Sets the server button's text to "Start" by default.
+            // Sets the server start button text to "Start" by default
             GetRowFromName(editingApi.GetServerName()).Cells[5].Value = "Start";
+            
+            // Sets the server stop button text to "Stop" by default
+            GetRowFromName(editingApi.GetServerName()).Cells[6].Value = "Stop";
         }
 
         /// <summary>
@@ -206,6 +207,8 @@ namespace MCSMLauncher.ui.graphical
             if (info.CurrentServerProcessID == -1) return;
 
             row.Cells[5].Value = "Start";
+            row.Cells[6].Value = "Stop";
+            row.Cells[6].Tag = null;
             row.Cells[3].Value = "";
             info.CurrentServerProcessID = -1;
             
@@ -308,6 +311,15 @@ namespace MCSMLauncher.ui.graphical
                     await StartButtonClick(selectedRow);
                     break;
                 }
+                
+                // In case the user clicks on... Any "Stop" or "Kill" button.
+                case 6 when e.RowIndex >= 0 && selectedRow.Cells[6].Value.ToString() == "Stop" 
+                            || selectedRow.Cells[6].Value.ToString() == "Kill":
+                {
+                    StopButtonClick(selectedRow);
+                    break;
+                }
+                
             }
         }
         
@@ -347,7 +359,7 @@ namespace MCSMLauncher.ui.graphical
         /// When the user clicks on the "Start" button, run the appropriate server starter.
         /// </summary>
         /// <param name="buttonRow">The row in which the button was clicked on</param>
-        private static async Task StartButtonClick(DataGridViewRow buttonRow)
+        private static Task StartButtonClick(DataGridViewRow buttonRow)
         {
             // Get the server's section from its name
             string serverName = buttonRow.Cells[2].Value.ToString();
@@ -357,7 +369,7 @@ namespace MCSMLauncher.ui.graphical
             {
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Starting");
                 INSTANCE.GetRowFromName(serverSection.SimpleName).Cells[3].Value = "Resolving...";
-                await new ServerAPI().Starter(serverSection.SimpleName).Run(null);
+                new ServerAPI().Starter(serverSection.SimpleName).Run(null);
             }
             
             // If an error occurs, let the user know.
@@ -368,6 +380,55 @@ namespace MCSMLauncher.ui.graphical
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Start");
+            }
+            
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// When the user clicks on the "Stop" button, it'll send a stop command to the server, and change
+        /// the button to a "Kill" button, which will kill the server's process if clicked on again.
+        /// </summary>
+        /// <param name="buttonRow"></param>
+        private void StopButtonClick(DataGridViewRow buttonRow)
+        {
+            // Get the necessary information from the row and the server's API.
+            string serverName = buttonRow.Cells[2].Value.ToString();
+            string stopMode = buttonRow.Cells[6].Tag?.ToString();
+            string serverState = buttonRow.Cells[5].Value.ToString();
+            ServerInteractions interactionsApi = new ServerAPI().Interactions(serverName);
+            
+            // If the server is not running or being stopped, ignore the button click.
+            if (serverState is not ("Running" or "Stopping")) return;
+            
+            // If the stopping button is in kill mode, kill its process immediately.
+            if (stopMode is "Kill")
+            {
+                buttonRow.Cells[6].Tag = "Wait";  // After killing, prevent button spamming.
+                interactionsApi.KillServerProcess();
+                return;
+            }
+            
+            // If the stop button is in wait mode, wait for the ServerProcessStateHandler to update.
+            if (stopMode is "Wait") return;
+            
+            try
+            {
+                // Gracefully stop the server and switch the button to kill mode.
+                buttonRow.Cells[6].Value = buttonRow.Cells[6].Tag = "Kill";
+                buttonRow.Cells[5].Value = "Stopping";
+                new ServerAPI().Interactions(serverName).WriteToServerStdin("stop");
+            }
+            
+            // If an error occurs, let the user know.
+            catch (Exception ex)
+            {
+                Logging.Logger.Error(ex);
+                MessageBox.Show($@"An error occurred whilst stopping the server.",
+                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                buttonRow.Cells[6].Value = "Stop";
+                buttonRow.Cells[6].Tag = null;
             }
         }
 

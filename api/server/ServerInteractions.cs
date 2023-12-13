@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
+using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
@@ -75,26 +77,43 @@ namespace MCSMLauncher.api.server
         public string GetLatestOutput() => this.GetOutputBuffer()?.LastOrDefault();
 
         /// <summary>
-        /// Writes a message into the server's stdin. Normally used to send commands.<br/>
+        /// Connects to the named pipe in the thread that is running the server and writes a message
+        /// into its stdin. <br/>
+        ///
+        /// This message should then be transmitted through the pipe and once received, passed into
+        /// the server's stdin.
         /// </summary>
-        /// <param name="message"></param>
-        public void WriteToServerStdin(string message)
+        /// <param name="message">The message to send to the server thread</param>
+        public async void WriteToServerStdin(string message)
         {
-            Process proc = this.GetServerProcess();
-            if (proc == null) return;
+            // Connects to the named pipe (Format: piped<server name>) 
+            using NamedPipeClientStream client = new (".","piped" + this.Editor.ServerSection.SimpleName, PipeDirection.Out);
+            await client.ConnectAsync();
             
-            using StreamWriter stdin = proc.StandardInput;
-            stdin.WriteLine(message);
+            // Writes the message into the pipe
+            using StreamWriter writer = new (client);
+            await writer.WriteLineAsync(message);
         }
-        
+
         /// <returns>
         /// Returns the server process associated with the server based on the editor instance. <br/>
         /// 
         /// This method may return a completely different process if the server is not running and the latest
         /// process id has been assigned to another process.
         /// </returns>
-        private Process GetServerProcess()
-            => ProcessUtils.GetProcessById(Editor.GetServerInformation().CurrentServerProcessID);
+        public Process GetServerProcess() 
+            => ProcessUtils.GetProcessById(this.Editor.GetServerInformation().CurrentServerProcessID);
+
+        /// <summary>
+        /// Kills the server process associated with the server based on the editor instance.
+        /// </summary>
+        public void KillServerProcess()
+        {
+            Process proc = this.GetServerProcess();
+            if (proc == null) return;
+            
+            proc.Kill();
+        }
 
     }
 }

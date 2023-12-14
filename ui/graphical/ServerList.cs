@@ -13,7 +13,9 @@ using LaminariaCore_Winforms.common;
 using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
+using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.ui.graphical
@@ -198,7 +200,7 @@ namespace MCSMLauncher.ui.graphical
             // with a set PID, specified in the server settings file, running as an mc server.
             if (info.CurrentServerProcessID != -1 && procName is "java" or "cmd")
             {
-                ForceUpdateServerState(serverName, "Running");
+                if (row.Cells[5].Value is not "Stopping") ForceUpdateServerState(serverName, "Running");
                 UpdateServerIP(editingApi.Raw());
                 return; 
             }
@@ -316,7 +318,7 @@ namespace MCSMLauncher.ui.graphical
                 case 6 when e.RowIndex >= 0 && selectedRow.Cells[6].Value.ToString() == "Stop" 
                             || selectedRow.Cells[6].Value.ToString() == "Kill":
                 {
-                    StopButtonClick(selectedRow);
+                    await StopButtonClick(selectedRow);
                     break;
                 }
                 
@@ -369,7 +371,7 @@ namespace MCSMLauncher.ui.graphical
             {
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Starting");
                 INSTANCE.GetRowFromName(serverSection.SimpleName).Cells[3].Value = "Resolving...";
-                new ServerAPI().Starter(serverSection.SimpleName).Run(null);
+                new ServerAPI().Starter(serverSection.SimpleName).Run(new MessageProcessingOutputHandler());
             }
             
             // If an error occurs, let the user know.
@@ -390,28 +392,33 @@ namespace MCSMLauncher.ui.graphical
         /// the button to a "Kill" button, which will kill the server's process if clicked on again.
         /// </summary>
         /// <param name="buttonRow"></param>
-        private void StopButtonClick(DataGridViewRow buttonRow)
+        private async Task StopButtonClick(DataGridViewRow buttonRow)
         {
-            // Get the necessary information from the row and the server's API.
-            string serverName = buttonRow.Cells[2].Value.ToString();
-            string stopMode = buttonRow.Cells[6].Tag?.ToString();
-            string serverState = buttonRow.Cells[5].Value.ToString();
-            ServerInteractions interactionsApi = new ServerAPI().Interactions(serverName);
-            
             // If the server is not running or being stopped, ignore the button click.
+            string serverState = buttonRow.Cells[5].Value.ToString();
             if (serverState is not ("Running" or "Stopping")) return;
             
+            // If the stop button is in wait mode, wait for the ServerProcessStateHandler to update.
+            string stopMode = buttonRow.Cells[6].Tag?.ToString();
+            if (stopMode is "Wait") return;
+            
+            // Get the necessary information from the row and the server's API.
+            string serverName = buttonRow.Cells[2].Value.ToString();
+
             // If the stopping button is in kill mode, kill its process immediately.
             if (stopMode is "Kill")
             {
                 buttonRow.Cells[6].Tag = "Wait";  // After killing, prevent button spamming.
-                interactionsApi.KillServerProcess();
+
+                // Wait for the settings file to be released by the server process and kill it.
+                // This prevents accidental data corruption.
+                string settingsFile = ServersSection.GetFirstDocumentNamed("server_settings.xml");
+                using var _ = await FileUtilExtensions.WaitForFileAsync(settingsFile);
+                
+                
                 return;
             }
-            
-            // If the stop button is in wait mode, wait for the ServerProcessStateHandler to update.
-            if (stopMode is "Wait") return;
-            
+
             try
             {
                 // Gracefully stop the server and switch the button to kill mode.

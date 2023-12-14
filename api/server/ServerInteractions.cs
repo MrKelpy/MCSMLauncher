@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
-using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common;
+using MCSMLauncher.common.caches;
 using static MCSMLauncher.common.Constants;
 
 namespace MCSMLauncher.api.server
@@ -20,6 +20,11 @@ namespace MCSMLauncher.api.server
         /// <summary>
         /// The server editor instance to use for the server interactions.
         /// </summary>
+        private string ServerName { get; }
+        
+        /// <summary>
+        /// The server editor instance to use for the server interactions.
+        /// </summary>
         private ServerEditor Editor { get; }
 
         /// <summary>
@@ -30,10 +35,10 @@ namespace MCSMLauncher.api.server
         private const int BufferCapacity = 1000;
 
         /// <summary>
-        /// A dictionary mapping a server to queue of messages received from the server,
+        /// A dictionary mapping a server to a list of messages received from the server, acting like a queue
         /// acting like a buffer for the server output.
         /// </summary>
-        private static Dictionary<string, Queue<string>> ServerOutput => new (BufferCapacity);
+        private static readonly Dictionary<string, List<string>> ServerOutputMappings = new ();
 
         /// <summary>
         /// Main constructor for the ServerInteractions class. Sets the server editor instance to use. <br/>
@@ -41,40 +46,53 @@ namespace MCSMLauncher.api.server
         /// <param name="serverName">The name of the server to interact with</param>
         public ServerInteractions(string serverName)
         {
-            Section serverSection = FileSystem.GetFirstSectionNamed(serverName);
-            this.Editor = new ServerEditor(serverSection);
+            this.ServerName = serverName;
+            
+            Section serverSection = FileSystem.GetFirstSectionNamed(this.ServerName);
+            this.Editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
         }
 
         /// <summary>
-        /// Adds a message into the ServerOutput buffer, to be processed later by any users of the API. <br/>
+        /// Adds a message into the ServerOutputMappings buffer, to be processed later by any users of the API. <br/>
         /// When the buffer reaches the maximum capacity, the oldest  message is removed from the buffer.
         /// </summary>
         /// <param name="message">The message to add to the buffer.</param>
         public void AddToOutputBuffer(string message)
         {
             // Remove the oldest messages from the buffer until it frees up a space for the new message.
-            if (this.GetOutputBuffer()?.Count >= BufferCapacity)
-                for(int i = -1; i < this.GetOutputBuffer().Count - BufferCapacity; i++) this.GetOutputBuffer().Dequeue();
+            if (this.GetOutputBuffer()?.Count > BufferCapacity)
+                this.GetOutputBuffer().RemoveRange(BufferCapacity-2, this.GetOutputBuffer().Count - BufferCapacity-1);
             
-            this.GetOutputBuffer()?.Enqueue(message);
+            // Add the message to the buffer, creating a new buffer if it doesn't exist.
+            if (!ServerOutputMappings.ContainsKey(this.ServerName)) ServerOutputMappings[this.ServerName] = new List<string>(BufferCapacity);
+            ServerOutputMappings[this.ServerName].Insert(0, message);
         }
 
         /// <summary>
         /// Clears the output buffer for the server by removing it from the buffer dictionary.
         /// </summary>
-        public void ClearOutputBuffer() => ServerOutput.Remove(this.Editor.ServerSection.SimpleName);
-        
+        public void ClearOutputBuffer() => ServerOutputMappings[this.ServerName].Clear();
+
         /// <returns>
-        /// Returns a copy of the output buffer based on the server name, or an empty queue if the
+        /// Returns a copy of the output buffer based on the server name, or an empty list if the
         /// server name is invalid.
         /// </returns>
-        public Queue<string> GetOutputBuffer() 
-            => new (ServerOutput[this.Editor.ServerSection.SimpleName] ?? new (100));
-        
+        public List<string> GetOutputBuffer()
+        {
+            List<string> bufferCopy = new List<string>(BufferCapacity);
+
+            if (!ServerOutputMappings.ContainsKey(this.ServerName) ||
+                ServerOutputMappings[this.ServerName] == null)
+                return bufferCopy;
+
+            bufferCopy.AddRange(ServerOutputMappings[this.ServerName]);
+            return bufferCopy;
+        }
+
         /// <returns>
         /// Returns the latest message from the output buffer, or null if the buffer is empty.
         /// </returns>
-        public string GetLatestOutput() => this.GetOutputBuffer()?.LastOrDefault();
+        public string GetLatestOutput() => this.GetOutputBuffer()?.FirstOrDefault();
 
         /// <summary>
         /// Connects to the named pipe in the thread that is running the server and writes a message
@@ -87,12 +105,13 @@ namespace MCSMLauncher.api.server
         public async void WriteToServerStdin(string message)
         {
             // Connects to the named pipe (Format: piped<server name>) 
-            using NamedPipeClientStream client = new (".","piped" + this.Editor.ServerSection.SimpleName, PipeDirection.Out);
+            using NamedPipeClientStream client = new (".","piped" + this.ServerName, PipeDirection.Out);
             await client.ConnectAsync();
             
             // Writes the message into the pipe
             using StreamWriter writer = new (client);
             await writer.WriteLineAsync(message);
+            await writer.FlushAsync();
         }
 
         /// <returns>
@@ -110,9 +129,7 @@ namespace MCSMLauncher.api.server
         public void KillServerProcess()
         {
             Process proc = this.GetServerProcess();
-            if (proc == null) return;
-            
-            proc.Kill();
+            proc?.Kill();
         }
 
     }

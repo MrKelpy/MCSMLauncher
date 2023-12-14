@@ -110,6 +110,8 @@ namespace MCSMLauncher.common.server.starters.abstraction
 
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();
+            proc.BeginErrorReadLine();
+            proc.BeginOutputReadLine();
             new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) { IsBackground = false }.Start();
             info.CurrentServerProcessID = proc.Id;
             

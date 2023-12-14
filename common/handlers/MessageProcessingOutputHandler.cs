@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using MCSMLauncher.ui.graphical;
 using MCSMLauncher.utils;
 
 namespace MCSMLauncher.common.handlers
@@ -44,11 +45,11 @@ namespace MCSMLauncher.common.handlers
         {
             switch (this.TargetSystem)
             {
-                case var _ when this.TargetSystem.GetType() == typeof(RichTextBox):
+                case var _ when this.TargetSystem?.GetType() == typeof(RichTextBox):
                     this.InternalWriteToTextBox(message, color);
                     break;
                 
-                case var _ when this.TargetSystem.GetType() == typeof(System.IO.TextWriter):
+                case var _ when this.TargetSystem?.GetType() == typeof(System.IO.TextWriter):
                     this.InternalWriteToStdout(message, color);
                     break;
                 
@@ -75,10 +76,15 @@ namespace MCSMLauncher.common.handlers
         /// <param name="color">The color to paint the message with</param>
         private void InternalWriteToTextBox(string message, Color color)
         {
-            RichTextBox output = (RichTextBox) TargetSystem;
-            output.SelectionColor = color.IsEmpty ? Color.Black : color;
-            output.AppendText(message);
-            output.SelectionColor = Color.Black;
+            void Process()
+            {
+                RichTextBox output = (RichTextBox) TargetSystem;
+                output.SelectionColor = color.IsEmpty ? Color.Black : color;
+                output.AppendText(message);
+                output.SelectionColor = Color.Black;
+            }
+
+            Mainframe.INSTANCE.Invoke((MethodInvoker) Process);
         }
     }
 }

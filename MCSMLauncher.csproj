@@ -118,6 +118,7 @@
           <DependentUpon>ServerList.cs</DependentUpon>
         </Compile>
         <Compile Include="utils\ColorUtils.cs" />
+        <Compile Include="utils\FileUtilExtensions.cs" />
         <Compile Include="utils\NetworkUtilExtensions.cs" />
         <EmbeddedResource Include="Properties\Resources.resx">
             <Generator>ResXFileCodeGenerator</Generator>

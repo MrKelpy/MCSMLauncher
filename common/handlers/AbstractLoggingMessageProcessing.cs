@@ -125,10 +125,7 @@ namespace MCSMLauncher.common.handlers
         /// <terminationCode>1 - The server.jar fired an error. If fired last, stop the build.</terminationCode>
         protected virtual void ProcessErrorMessages(string message, Process proc)
         {
-            // The processing method used to handle the incoming error message.
-            void Processor() => this.OutputSystem.Write("[ERROR] " + message + Environment.NewLine, Color.Firebrick);
-            
-            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
+            this.OutputSystem.Write("[ERROR] " + message + Environment.NewLine, Color.Firebrick);
         }
 
         /// <summary>
@@ -141,10 +138,7 @@ namespace MCSMLauncher.common.handlers
         /// <terminationCode>2 - The server.jar fired a warning</terminationCode>
         protected virtual void ProcessWarningMessages(string message, Process proc)
         {
-            // The processing method used to handle the incoming warning message.
-            void Processor() => this.OutputSystem.Write("[WARN] " + message + Environment.NewLine, Color.OrangeRed);
-
-            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor);
+            this.OutputSystem.Write("[WARN] " + message + Environment.NewLine, Color.OrangeRed);
             TerminationCode = TerminationCode != 1 ? 2 : 1;
         }
 
@@ -168,10 +162,7 @@ namespace MCSMLauncher.common.handlers
                 return;
             }
 
-            // The processing method used to handle the incoming warning.
-            void Processor() => this.OutputSystem.Write(Logging.Logger.Warn(message) + Environment.NewLine, Color.Gray);
-
-            Mainframe.INSTANCE.Invoke((MethodInvoker) Processor); 
+            this.OutputSystem.Write(Logging.Logger.Warn(message) + Environment.NewLine, Color.Gray);
             TerminationCode = TerminationCode != 1 ? 3 : 1;
         }
     }

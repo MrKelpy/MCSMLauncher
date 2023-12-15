@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LaminariaCore_General.utils;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.requests.abstraction;
@@ -44,12 +46,14 @@ namespace MCSMLauncher.common.factories
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the builder for</param>
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
         /// <returns>An instance of AbstractServerBuilder mapped to the server type</returns>
-        public AbstractServerBuilder GetBuilderFor(string serverType)
+        public AbstractServerBuilder GetBuilderFor(string serverType, MessageProcessingOutputHandler outputHandler)
         {
-            return Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractServerBuilder)Mappings[serverType.ToLower()]["builder"]
-                : null;
+            if (!Mappings.ContainsKey(serverType.ToLower())) return null;
+            
+            Type builderType = (Type) Mappings[serverType.ToLower()]["builder"];
+            return Activator.CreateInstance(builderType, outputHandler) as AbstractServerBuilder;
         }
 
         /// <summary>
@@ -57,12 +61,14 @@ namespace MCSMLauncher.common.factories
         /// return null.
         /// </summary>
         /// <param name="serverType">The server type to return the starter for</param>
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
         /// <returns>An instance of AbstractServerStarter mapped to the server typ1</returns>
-        public AbstractServerStarter GetStarterFor(string serverType)
+        public AbstractServerStarter GetStarterFor(string serverType, MessageProcessingOutputHandler outputHandler)
         {
-            return Mappings.ContainsKey(serverType.ToLower())
-                ? (AbstractServerStarter)Mappings[serverType.ToLower()]["starter"]
-                : null;
+            if (!Mappings.ContainsKey(serverType.ToLower())) return null;
+            
+            Type starterType = (Type) Mappings[serverType.ToLower()]["starter"];
+            return Activator.CreateInstance(starterType, outputHandler) as AbstractServerStarter;
         }
 
         /// <summary>
@@ -106,7 +112,7 @@ namespace MCSMLauncher.common.factories
         /// <returns>The VersionName:DownloadLink mapping</returns>
         private static Dictionary<string, string> FileToDictionary(string path)
         {
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            Dictionary<string, string> result = new ();
 
             // Iterates over each line, and breaks it by the > character, logically defines as the separator,
             // and adds the result to a dictionary.

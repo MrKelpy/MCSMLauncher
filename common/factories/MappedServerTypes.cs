@@ -8,11 +8,13 @@ using MCSMLauncher.requests.mcversions.snapshots;
 using MCSMLauncher.requests.spigot;
 using static MCSMLauncher.common.Constants;
 
+
 namespace MCSMLauncher.common.factories
 {
     /// <summary>
     /// This is a partial class of ServerTypeMappingsFactory, containing the actual mappings to be
     /// interacted with.
+    /// TODO: Turn this into an XML file-based mapping system... somehow.
     /// </summary>
     public partial class ServerTypeMappingsFactory
     {
@@ -20,15 +22,15 @@ namespace MCSMLauncher.common.factories
         /// The dictionary containing the values for every server type supported.
         /// </summary>
         private Dictionary<string, Dictionary<string, object>> Mappings { get; } =
-            new Dictionary<string, Dictionary<string, object>>
+            new ()
             {
                 {
                     "vanilla", new Dictionary<string, object>
                     {
                         { "handler", new MCVRequestHandler() },
-                        { "parser", new MCVRequestParser() },
-                        { "builder", new MCVBuilder() },
-                        { "starter", new MCVServerStarter() },
+                        { "parser", new McvRequestParser() },
+                        { "builder", typeof(McvBuilder) },
+                        { "starter", typeof(McvServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_releases.cache") }
                     }
                 },
@@ -36,9 +38,9 @@ namespace MCSMLauncher.common.factories
                     "vanilla snapshots", new Dictionary<string, object>
                     {
                         { "handler", new MCVSnapshotsRequestHandler() },
-                        { "parser", new MCVRequestParser() },
-                        { "builder", new MCVBuilder() },
-                        { "starter", new MCVServerStarter() },
+                        { "parser", new McvRequestParser() },
+                        { "builder", typeof(McvBuilder) },
+                        { "starter", typeof(McvServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("vanilla_snapshots.cache") }
                     }
                 },
@@ -47,8 +49,8 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new SpigotRequestHandler() },
                         { "parser", new SpigotRequestParser() },
-                        { "builder", new SpigotBuilder() },
-                        { "starter", new SpigotServerStarter() },
+                        { "builder",  typeof(SpigotBuilder) },
+                        { "starter", typeof(SpigotServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("spigot_releases.cache") }
                     }
                 },
@@ -57,8 +59,8 @@ namespace MCSMLauncher.common.factories
                     {
                         { "handler", new ForgeRequestHandler() },
                         { "parser", new ForgeRequestParser() },
-                        { "builder", new ForgeBuilder() },
-                        { "starter", new ForgeServerStarter() },
+                        { "builder", typeof(ForgeBuilder) },
+                        { "starter", typeof(ForgeServerStarter) },
                         { "cache_file", FileSystem.AddSection("versioncache").AddDocument("forge_releases.cache") }
                     }
                 },
@@ -68,7 +70,7 @@ namespace MCSMLauncher.common.factories
                         { "handler", null },
                         { "parser", null },
                         { "builder", null },
-                        { "starter", new MCVServerStarter() },
+                        { "starter", typeof(McvServerStarter) },
                         { "cache_file", null }
                     }
                 }

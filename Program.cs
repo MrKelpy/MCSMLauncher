@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using MCSMLauncher.common;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 
 namespace MCSMLauncher
 {
@@ -16,7 +16,7 @@ namespace MCSMLauncher
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Logging.LOGGER.LoggingFilePath = Path.Combine(Constants.FileSystem.AddSection("logs").SectionFullPath, Logging.LOGGER.LoggingSession + ".log");
+            Logging.Logger.LoggingFilePath = Path.Combine(Constants.FileSystem.AddSection("logs").SectionFullPath, Logging.Logger.LoggingSession + ".log");
 
             try
             {
@@ -28,8 +28,8 @@ namespace MCSMLauncher
             // Logs whatever fatal issue happens as a last resource.
             catch (Exception e)
             {
-                Logging.LOGGER.Fatal(@"An unexpected error occured and the program was forced to exit.");
-                Logging.LOGGER.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.FILE);
+                Logging.Logger.Fatal(@"An unexpected error occured and the program was forced to exit.");
+                Logging.Logger.Fatal(e.Message + "\n" + e.StackTrace, LoggingType.File);
             }
         }
     }

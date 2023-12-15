@@ -7,8 +7,7 @@ using System.Linq;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.models;
-using MCSMLauncher.gui;
-using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
+using MCSMLauncher.ui.graphical;
 
 namespace MCSMLauncher.common
 {
@@ -72,7 +71,7 @@ namespace MCSMLauncher.common
                 // If the key doesn't exist in either of the buffers, then it might just be a new key for the properties file.
                 else
                 {
-                    Logging.LOGGER.Warn($"Tried to update non-existent key: '{item.Key}' - Adding to the properties.");
+                    Logging.Logger.Warn($"Tried to update non-existent key: '{item.Key}' - Adding to the properties.");
                     PropertiesBuffer.Add(item.Key, item.Value);
                 }
         }
@@ -170,7 +169,7 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the key:val's of the properties file</returns>
         private Dictionary<string, string> LoadProperties()
         {
-            Logging.LOGGER.Info($"Loading properties for {ServerSection.SimpleName}");
+            Logging.Logger.Info($"Loading properties for {ServerSection.SimpleName}");
             
             // Creates a new dictionary to store the properties.
             Dictionary<string, string> propertiesDictionary = new () { { "server-port", "25565" } };
@@ -202,7 +201,7 @@ namespace MCSMLauncher.common
         /// <returns>A dictionary containing the deserialized server_settings.xml</returns>
         private Dictionary<string, string> LoadSettings()
         {
-            Logging.LOGGER.Info($"Loading settings for {ServerSection.SimpleName}");
+            Logging.Logger.Info($"Loading settings for {ServerSection.SimpleName}");
 
             // Gets the path to the server_settings.xml file.
             string settingsPath = ServerSection.GetFirstDocumentNamed("server_settings.xml");
@@ -222,7 +221,7 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         private void DumpToProperties()
         {
-            Logging.LOGGER.Info($"Updating properties for {ServerSection.SimpleName}");
+            Logging.Logger.Info($"Updating properties for {ServerSection.SimpleName}");
             
             // Gets the path to the server.properties file.
             string propertiesFilepath = Path.Combine(ServerSection.SectionFullPath, "server.properties");
@@ -250,7 +249,7 @@ namespace MCSMLauncher.common
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         private void DumpToSettings()
         {
-            Logging.LOGGER.Info($"Updating settings for {ServerSection.SimpleName}");
+            Logging.Logger.Info($"Updating settings for {ServerSection.SimpleName}");
             
             // Get the path to the server_settings.xml file.
             string settingsFilepath = Path.Combine(ServerSection.SectionFullPath, "server_settings.xml");

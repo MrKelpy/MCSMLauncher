@@ -6,12 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.builders.abstraction;
 using MCSMLauncher.extensions;
-using MCSMLauncher.gui;
+using MCSMLauncher.ui.graphical;
 using static MCSMLauncher.common.Constants;
-using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -25,8 +26,11 @@ namespace MCSMLauncher.common.server.builders
         /// <summary>
         /// Main constructor for the ForgeBuilder class. Defines the start-up arguments for the server.
         /// </summary>
-        public ForgeBuilder() : base("-jar -Xmx1024M -Xms1024M %SERVER_JAR% nogui")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public ForgeBuilder(MessageProcessingOutputHandler outputHandler) : base(
+            "-jar -Xmx1024M -Xms1024M %SERVER_JAR% nogui", outputHandler)
         {
+            
         }
 
         /// <summary>
@@ -43,12 +47,12 @@ namespace MCSMLauncher.common.server.builders
             Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + serverName);
 
             // Creates the process that will build the server
-            Process forgeBuildingProcess = ProcessUtils.CreateProcess($"\"{NewServer.INSTANCE.ComboBoxJavaVersion.Text}\\bin\\java\"",
+            Process forgeBuildingProcess = ProcessUtils.CreateProcess($"\"{NewServer.Instance.ComboBoxJavaVersion.Text}\\bin\\java\"",
                     $" -jar {serverInstallerPath} --installServer", serverSection.SectionFullPath);
 
             // Set the output and error data handlers
-            forgeBuildingProcess.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
-            forgeBuildingProcess.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, forgeBuildingProcess);
+            forgeBuildingProcess.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, forgeBuildingProcess, serverName);
+            forgeBuildingProcess.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, forgeBuildingProcess, serverName);
             TerminationCode = 0;
 
             // Start the process
@@ -102,7 +106,7 @@ namespace MCSMLauncher.common.server.builders
             if (message.ToLower().Contains("preparing level") || message.ToLower().Contains("agree to the eula"))
                 ProcessUtils.KillProcessAndChildren(proc);
 
-            Logging.LOGGER.Info(message);
+            Logging.Logger.Info(message);
         }
 
         /// <summary>
@@ -111,16 +115,16 @@ namespace MCSMLauncher.common.server.builders
         /// This method aims to initialise and build all of the server files in one go.
         /// </summary>
         /// <param name="serverJarPath">The path of the server file to run</param>
-        /// <param name="editor">The ServerEditor instance to use with this run</param>
+        /// <param name="editingApi">The ServerEditingAPI instance bound to the server to use with this run</param>
         /// <returns>A Task with a code letting the user know if an error happened</returns>
-        protected override async Task<int> FirstSetupRun(ServerEditor editor, string serverJarPath)
+        protected override async Task<int> FirstSetupRun(ServerEditing editingApi, string serverJarPath)
         {
             // Due to how forge works, we need to generate a run.bat file to run the forge.
             Section serverSection = GetSectionFromFile(serverJarPath);
             serverSection.AddDocument("server.properties"); // Adds the server properties just in case
 
             // Gets the java runtime and creates the run command from it
-            ServerInformation info = editor.GetServerInformation();
+            ServerInformation info = editingApi.GetServerInformation();
             string runCommand = $"\"{info.JavaRuntimePath}\\bin\\java\" {StartupArguments}";
 
             // Creates the run.bat file if it doesn't already exist, with simple running params
@@ -155,15 +159,15 @@ namespace MCSMLauncher.common.server.builders
             Process proc = ProcessUtils.CreateProcess("cmd.exe", $"/c {runFilepath}", serverSection.SectionFullPath);
 
             // Gets an available port starting on the one specified, and changes the properties file accordingly
-            if (editor.HandlePortForServer() == 1)
+            if (editingApi.Raw().HandlePortForServer() == 1)
             {
                 ProcessErrorMessages("Could not find a port to start the server with! Please change the port in the server properties or free up ports to use.", proc);
                 return 1;
             }
 
             // Handles the processing of the STDOUT and STDERR outputs, changing the termination code accordingly.
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, editingApi.GetServerName());
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, editingApi.GetServerName());
 
             // Waits for the termination of the process by the OutputDataReceived event or ErrorDataReceived event.
             proc.Start();
@@ -180,7 +184,7 @@ namespace MCSMLauncher.common.server.builders
             if (TerminationCode * TerminationCode == 1) return 1;
 
             // Completes the run, resetting the termination code
-            OutputConsole.AppendText(Logging.LOGGER.Info("Silent run completed.") + Environment.NewLine);
+            OutputSystem.Write(Logging.Logger.Info("Silent run completed.") + Environment.NewLine);
             TerminationCode = -1;
             
             // Sneakily re-formats the -Xmx and -Xms arguments to be in a template format

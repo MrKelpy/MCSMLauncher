@@ -9,13 +9,13 @@ using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.interfaces;
 using MCSMLauncher.common.models;
-using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 
 namespace MCSMLauncher.common.background
 {
     /// <summary>
     /// Handles the backup creation for a given running server. This thread will bind itself to a running
     /// process, and frequently check for its status, stopping only when the process does.
+    /// TODO: Make it so the user can set the limit of backups, that will delete the oldest ones.
     /// </summary>
     public class ServerBackupHandler : IBackgroundRunner
     {
@@ -52,7 +52,7 @@ namespace MCSMLauncher.common.background
         public void RunTask()
         {
             // Logs and starts the backup thread.
-            Logging.LOGGER.Info($"Starting backup thread for server: '{ServerSection.SimpleName}'");
+            Logging.Logger.Info($"Starting backup thread for server: '{ServerSection.SimpleName}'");
             ServerInformation info = Editor.GetServerInformation();
 
             // Loads the settings from the server section.
@@ -104,14 +104,14 @@ namespace MCSMLauncher.common.background
 
                 // Zips the server section into the backups folder.
                 ZipDirectory(serverSection.SectionFullPath, Path.Combine(backupsPath, backupName));
-                Logging.LOGGER.Info($"Backed up {serverSection.SimpleName} Server to {backupsPath}");
+                Logging.Logger.Info($"Backed up {serverSection.SimpleName} Server to {backupsPath}");
                 
                 CleanBackups(backupsPath);
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Info("Failed to create server backup for server: " + serverSection.SimpleName);
-                Logging.LOGGER.Error(e);
+                Logging.Logger.Info("Failed to create server backup for server: " + serverSection.SimpleName);
+                Logging.Logger.Error(e);
             }
         }
 
@@ -142,15 +142,15 @@ namespace MCSMLauncher.common.background
                     string backupFilePath = Path.Combine(backupsPath, backupFileName);
 
                     ZipDirectory(section.SectionFullPath, backupFilePath);
-                    Logging.LOGGER.Info($"Backed up {serverSection.SimpleName}.{section.SimpleName} Playerdata to {backupsPath}");
+                    Logging.Logger.Info($"Backed up {serverSection.SimpleName}.{section.SimpleName} Playerdata to {backupsPath}");
                 }
                 
                 CleanBackups(backupsPath);
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Error($"Failed to create playerdata backup for server: {serverSection.Name}");
-                Logging.LOGGER.Error(e);
+                Logging.Logger.Error($"Failed to create playerdata backup for server: {serverSection.Name}");
+                Logging.Logger.Error(e);
             }
         }
 
@@ -195,8 +195,8 @@ namespace MCSMLauncher.common.background
             // If the cleanup fails, log the error.
             catch (Exception e)
             {
-                Logging.LOGGER.Error("Failed to clean the backups folder.");
-                Logging.LOGGER.Error(e);
+                Logging.Logger.Error("Failed to clean the backups folder.");
+                Logging.Logger.Error(e);
             }
         }
     }

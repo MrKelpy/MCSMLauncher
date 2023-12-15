@@ -6,13 +6,16 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
+using MCSMLauncher.api.server.enumeration;
 using MCSMLauncher.common;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This form aims to provide an interface to edit the settings of a server.
@@ -20,34 +23,28 @@ namespace MCSMLauncher.gui
     public partial class ServerEditPrompt : Form
     {
         /// <summary>
-        /// The server directory to edit. This is purely here for clarity.
+        /// The server API instance to use with this editing prompt.
         /// </summary>
-        private Section ServerSection { get; set; }
-        
-        /// <summary>
-        /// The ServerEditor instance to use with this editing prompt.
-        /// </summary>
-        private ServerEditor Editor { get; }
+        private ServerEditing EditingAPI { get; set; }
 
         /// <summary>
         /// Main constructor for the ServerEditPrompt form. Initialises the form and loads the
         /// information from the server.properties file into the form.
         /// </summary>
-        /// <param name="editor">The ServerEditor instance to use with this editing prompt</param>
-        public ServerEditPrompt(ServerEditor editor)
+        /// <param name="serverSection">The Server Section to use to edit the data.</param>
+        public ServerEditPrompt(Section serverSection)
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
-            ServerSection = editor.ServerSection;
-            Editor = editor;
-
+            EditingAPI = new ServerAPI().Editor(serverSection.SimpleName);
+            
             // Loads the properties and settings into the form
-            LoadToForm(editor.GetBuffersCopy());
+            LoadToForm(EditingAPI.GetCurrentServerSettings());
 
             // Edits some values in the form that have to be manually placed
-            CheckBoxCracked.Checked = !editor.GetFromBuffers<bool>("online-mode");
-            CheckBoxSpawnProtection.Checked = editor.BuffersContain("spawn-protection") && editor.GetFromBuffers<int>("spawn-protection") > 0;
-            TextBoxServerName.Text = ServerSection.SimpleName;
+            CheckBoxCracked.Checked = EditingAPI.Check(ServerLogicChecks.IsCracked);
+            CheckBoxSpawnProtection.Checked = EditingAPI.Check(ServerLogicChecks.IsSpawnProtectionEnabled);
+            TextBoxServerName.Text = EditingAPI.GetServerName();
 
             // Loads the icons for the folder browsing buttons
             ButtonFolderBrowsing.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
@@ -77,7 +74,7 @@ namespace MCSMLauncher.gui
         /// <returns>List(String) of all the tags in lowercase</returns>
         public static List<string> GetTags()
         {
-            List<string> tags = new();
+            List<string> tags = new ();
 
             // Gets all the tags from the fields in the ServerEditPrompt class filtering out empty ones
             foreach (FieldInfo field in typeof(ServerEditPrompt).GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
@@ -108,7 +105,7 @@ namespace MCSMLauncher.gui
         /// <returns>A dictionary containing all of the settings in the form as a dictionary</returns>
         private Dictionary<string, string> FormToDictionary()
         {
-            Dictionary<string, string> formInformation = new();
+            Dictionary<string, string> formInformation = new ();
 
             // Gets the information from the valid controls, excluding the buttons and the checkboxes,
             // and adds it them to the dictionary
@@ -162,7 +159,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void ButtonOpenServerFolder_Click(object sender, EventArgs e)
         {
-            Process.Start(ServerSection.SectionFullPath);
+            Process.Start(EditingAPI.GetServerSection().SectionFullPath);
         }
 
         /// <summary>
@@ -173,14 +170,10 @@ namespace MCSMLauncher.gui
         private void ButtonSave_Click(object sender, EventArgs e)
         {
             // Gets the necessary resources to edit save the server's properties and settings
-            string newServerSectionPath = Path.GetDirectoryName(ServerSection.SectionFullPath) + "/" + TextBoxServerName.Text;
+            string newServerSectionPath = Path.GetDirectoryName(EditingAPI.GetServerSection().SectionFullPath) + "/" + TextBoxServerName.Text;
 
-            try
-            {
-                // Updates and flushes the buffers
-                Editor.UpdateBuffers(FormToDictionary());
-                Editor.FlushBuffers();
-            }
+            try { EditingAPI.UpdateServerSettings(FormToDictionary()); }
+            
             catch (SystemException)
             {
                 MessageBox.Show(@"One or more fields are incorrectly filled. Please correct them and try again.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -188,19 +181,16 @@ namespace MCSMLauncher.gui
             }
 
             // Renames the server's folder to the new name if it changed.
-            if (!ServerSection.SectionFullPath.EqualsPath(newServerSectionPath))
+            if (!EditingAPI.GetServerSection().SectionFullPath.EqualsPath(newServerSectionPath))
             {
-                ServerList.INSTANCE.RemoveFromList(ServerSection.Name);
-                Directory.Move(ServerSection.SectionFullPath, newServerSectionPath);
-
-                // Updates the ServerSection property to the new path.
-                ServerSection = FileSystem.AddSection("servers/" + TextBoxServerName.Text);
-                ServerList.INSTANCE.AddServerToList(Editor);
+                ServerList.INSTANCE.RemoveFromList(EditingAPI.GetServerName());
+                EditingAPI.ChangeServerName(TextBoxServerName.Text);
+                ServerList.INSTANCE.AddServerToList(EditingAPI.GetServerSection());
             }
 
             Close();
         }
-
+ 
         /// <summary>
         /// Turns the spawn protection numeric box on and off depending on the state of the checkbox.
         /// </summary>
@@ -226,8 +216,8 @@ namespace MCSMLauncher.gui
             try
             {
                 // Removes the server from the list, deletes the directory and closes the form.
-                Directory.Delete(ServerSection.SectionFullPath, true);
-                ServerList.INSTANCE.RemoveFromList(ServerSection.SimpleName);
+                ServerList.INSTANCE.RemoveFromList(EditingAPI.GetServerName());
+                EditingAPI.DeleteServer();
                 Close();
             }
             catch (Exception exception)

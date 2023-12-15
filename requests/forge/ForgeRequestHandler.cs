@@ -31,8 +31,8 @@ namespace MCSMLauncher.requests.forge
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Info("An error happened whilst trying to retrieve the forge versions.");
-                Logging.LOGGER.Error(e.Message + "\n" + e.StackTrace);
+                Logging.Logger.Info("An error happened whilst trying to retrieve the forge versions.");
+                Logging.Logger.Error(e.Message + "\n" + e.StackTrace);
                 return null;
             }
         }

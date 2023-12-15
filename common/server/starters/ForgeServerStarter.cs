@@ -4,9 +4,9 @@ using System.IO;
 using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
 using MCSMLauncher.common.server.starters.abstraction;
-using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
 
 namespace MCSMLauncher.common.server.starters
 {
@@ -19,7 +19,8 @@ namespace MCSMLauncher.common.server.starters
         /// Main constructor for the ForgeServerStarter class. Defines the start-up arguments for the server, as well
         /// as the "other arguments" that are passed to the server.
         /// </summary>
-        public ForgeServerStarter() : base(" ", "-jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public ForgeServerStarter(MessageProcessingOutputHandler outputHandler) : base(" ", "-jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"", outputHandler)
         {
         }
 
@@ -27,10 +28,10 @@ namespace MCSMLauncher.common.server.starters
         /// Overriden method from the AbstractServerStarter class. Runs the server with the given startup arguments, under
         /// the "run.bat" file.
         /// </summary>
-        /// <param name="serverSection">The section of the server to be run</param>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public override async Task Run(Section serverSection, ServerEditor editor)
+        public override async Task<Process> Run(ServerEditor editor)
         {
+            Section serverSection = editor.ServerSection;
             string runBatFilepath = PathUtils.NormalizePath(serverSection.GetFirstDocumentNamed("run.bat"));
             ServerInformation info = editor.GetServerInformation();
             
@@ -40,11 +41,12 @@ namespace MCSMLauncher.common.server.starters
             
             // Creates the process through the extracted arguments
             Process proc = ProcessUtils.CreateProcess($"\"{info.JavaRuntimePath}\\bin\\java\"", startupArguments, serverSection.SectionFullPath);
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
 
             // Finds the port and IP to start the server with, and starts the server.
             await StartServer(serverSection, proc, editor);
+            return proc;
         }
 
         /// <summary>

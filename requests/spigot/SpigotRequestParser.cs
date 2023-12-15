@@ -25,7 +25,7 @@ namespace MCSMLauncher.requests.spigot
         {
             try
             {
-                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 10));
+                using CancellationTokenSource ct = new(new TimeSpan(0, 0, 0, 10));
 
                 HtmlDocument doc = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token)
                     .ConfigureAwait(false);
@@ -54,7 +54,7 @@ namespace MCSMLauncher.requests.spigot
         /// <returns>A Dictionary(string,string) containing the mappings</returns>
         public override Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
         {
-            Dictionary<string, string> mappings = new Dictionary<string, string>();
+            Dictionary<string, string> mappings = new ();
 
             IEnumerable<HtmlNode> downloadPanels = from div in doc.Descendants("div")
                 where div.HasClass("download-pane")

@@ -1,4 +1,5 @@
-﻿using MCSMLauncher.common.server.starters.abstraction;
+﻿using MCSMLauncher.common.handlers;
+using MCSMLauncher.common.server.starters.abstraction;
 
 namespace MCSMLauncher.common.server.starters
 {
@@ -11,8 +12,9 @@ namespace MCSMLauncher.common.server.starters
         /// Main constructor for the SpigotServerStarter class. Defines the start-up arguments for the server, as well
         /// as the "other arguments" that are passed to the server.
         /// </summary>
-        public SpigotServerStarter() : base(" ",
-            "-DIReallyKnowWhatIAmDoingISwear=true -jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public SpigotServerStarter(MessageProcessingOutputHandler outputHandler) : base(" ",
+            "-DIReallyKnowWhatIAmDoingISwear=true -jar %RAM_ARGUMENTS% \"%SERVER_JAR%\"", outputHandler)
         {
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.server.builders.abstraction;
 
 namespace MCSMLauncher.common.server.builders
@@ -6,12 +7,13 @@ namespace MCSMLauncher.common.server.builders
     /// <summary>
     /// This class implements the server building methods for the vanilla releases and snapshots.
     /// </summary>
-    public class MCVBuilder : AbstractServerBuilder
+    public class McvBuilder : AbstractServerBuilder
     {
         /// <summary>
         /// Main constructor for the ForgeBuilder class. Defines the start-up arguments for the server.
         /// </summary>
-        public MCVBuilder() : base("-jar %SERVER_JAR% nogui")
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        public McvBuilder(MessageProcessingOutputHandler outputHandler) : base("-jar %SERVER_JAR% nogui", outputHandler)
         {
         }
 

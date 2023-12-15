@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 using MCSMLauncher.common.background;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
-using MCSMLauncher.common.processes;
-using MCSMLauncher.gui;
-using NetworkUtils = MCSMLauncher.utils.NetworkUtils;
-using ProcessUtils = MCSMLauncher.utils.ProcessUtils;
+using MCSMLauncher.ui.graphical;
+using MCSMLauncher.utils;
 
 namespace MCSMLauncher.common.server.starters.abstraction
 {
@@ -27,7 +26,8 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// </summary>
         /// <param name="otherArguments">Extra arguments to be added into the run command</param>
         /// <param name="startupArguments">The startup arguments for the server</param>
-        protected AbstractServerStarter(string otherArguments, string startupArguments)
+        /// <param name="outputHandler">The output system to use while logging the messages.</param>
+        protected AbstractServerStarter(string otherArguments, string startupArguments, MessageProcessingOutputHandler outputHandler) : base(outputHandler)
         {
             StartupArguments = otherArguments + startupArguments;
         }
@@ -40,11 +40,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <summary>
         /// Runs the server with the given startup arguments.
         /// </summary>
-        /// <param name="serverSection">The section to get the resources from</param>
         /// <param name="editor">The ServerEditor instance to use</param>
-        public virtual async Task Run(Section serverSection, ServerEditor editor)
+        /// <returns>The process that was just created</returns>
+        public virtual async Task<Process> Run(ServerEditor editor)
         {
             // Get the server.jar and server.properties paths.
+            Section serverSection = editor.ServerSection;
             string serverJarPath = serverSection.GetFirstDocumentNamed("server.jar");
             ServerInformation info = editor.GetServerInformation();
             
@@ -61,11 +62,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Creates the process and starts it.
             Process proc = ProcessUtils.CreateProcess(javaPath, StartupArguments, serverSection.SectionFullPath);
 
-            proc.OutputDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
-            proc.ErrorDataReceived += (sender, e) => ProcessMergedData(sender, e, proc);
+            proc.OutputDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
+            proc.ErrorDataReceived += (sender, e) => RedirectMessageProcessing(sender, e, proc, serverSection.SimpleName);
 
             // Finds the port and IP to start the server with, and starts the server.
             await StartServer(serverSection, proc, editor);
+            return proc;
         }
 
         /// <summary>
@@ -77,12 +79,12 @@ namespace MCSMLauncher.common.server.starters.abstraction
         /// <param name="editor">The editor instance to use to interact with the files</param>
         protected async Task StartServer(Section serverSection, Process proc, ServerEditor editor)
         {
-            Logging.LOGGER.Info($"Starting the {serverSection.SimpleName} server...");
+            Logging.Logger.Info($"Starting the {serverSection.SimpleName} server...");
 
             // Gets an available port starting on the one specified, automatically update and flush the buffers.
             if (editor.HandlePortForServer() == 1)
             {
-                string errorMessage = Logging.LOGGER.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
+                string errorMessage = Logging.Logger.Error("Could not find a port to start the server with. Please change the port in the server properties or free up ports to use.");
                 ProcessErrorMessages(errorMessage, proc);
                 ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Start");
                 return;
@@ -95,7 +97,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             */
             ServerInformation info = editor.GetServerInformation();
 
-            if (info.UPnPOn && await NetworkUtils.TryCreatePortMapping(info.Port, info.Port))
+            if (info.UPnPOn && await NetworkUtilExtensions.TryCreatePortMapping(info.Port, info.Port))
                 info.IPAddress = NetworkUtils.GetExternalIPAddress();
 
             else info.IPAddress = NetworkUtils.GetLocalIPAddress();
@@ -103,9 +105,13 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Sets up the process to be hidden and not create a window.
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.RedirectStandardInput = true;
+            proc.StartInfo.UseShellExecute = false;
 
             // Starts both the process, and the backup handler attached to it, and records the process ID.
             proc.Start();
+            proc.BeginErrorReadLine();
+            proc.BeginOutputReadLine();
             new Thread(new ServerBackupHandler(editor, proc.Id).RunTask) { IsBackground = false }.Start();
             info.CurrentServerProcessID = proc.Id;
             
@@ -116,7 +122,7 @@ namespace MCSMLauncher.common.server.starters.abstraction
             // Updates the visual elements of the server and logs the start.
             ServerList.INSTANCE.UpdateServerIP(editor);
             ServerList.INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Running");
-            Logging.LOGGER.Info($"Running {serverSection.SimpleName} on {info.IPAddress}:{info.Port}.");
+            Logging.Logger.Info($"Running {serverSection.SimpleName} on {info.IPAddress}:{info.Port}.");
         }
     }
 }

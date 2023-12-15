@@ -11,6 +11,6 @@ namespace MCSMLauncher.common
         /// The FileManager instance to use across the project in order to interact with the
         /// files.
         /// </summary>
-        public static FileManager FileSystem { get; set; } = new ();
+        public static FileManager FileSystem { get; } = new ();
     }
 }

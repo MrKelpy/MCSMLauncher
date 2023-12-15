@@ -8,22 +8,28 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
-using MCSMLauncher.common.factories;
+using MCSMLauncher.common.handlers;
 using MCSMLauncher.common.models;
-using MCSMLauncher.common.server.starters.abstraction;
 using MCSMLauncher.utils;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This form handles all operations related to launching and playing on created servers.
     /// </summary>
     public partial class ServerList : Form
     {
+        
+        /// <summary>
+        /// The servers section, containing all of the servers.
+        /// </summary>
+        private Section ServersSection { get; }
 
         /// <summary>
         /// Main constructor for the ServerList form. Private to enforce the singleton model.
@@ -31,6 +37,7 @@ namespace MCSMLauncher.gui
         private ServerList()
         {
             InitializeComponent();
+            this.ServersSection = FileSystem.GetFirstSectionNamed("servers");
 
             // Sets the info layout pictures
             foreach (Label label in ServerListLayout.Controls.OfType<Label>().Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
@@ -57,16 +64,12 @@ namespace MCSMLauncher.gui
             // Iterates over every server in the servers section and creates an addition task for them
             GridServerList.Rows.Clear();
             
-            // Gets the global editors cache
-            GlobalEditorsCache cache = GlobalEditorsCache.INSTANCE;
-
-            // Creates a list of sorted editors to work with, to then create a task list
-            List<ServerEditor> editors = FileSystem.AddSection("servers").GetAllTopLevelSections().Select(cache.GetOrCreate).ToList();
-            List<Task> taskList = editors.Select(AddServerToListAsync).ToList();
+            // Creates a list of tasks to run, adding each server to the grid
+            List<Task> taskList = ServersSection.GetAllTopLevelSections().Select(AddServerToListAsync).ToList();
 
             // Waits for all of the tasks to complete
             await Task.WhenAll(taskList);
-            Logging.LOGGER.Info("Refreshed the server list.");
+            Logging.Logger.Info("Refreshed the server list.");
 
             // Sort the servers by version
             SortGrid();
@@ -111,14 +114,16 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// Adds a server to the server list given the server section.
         /// </summary>
-        /// <param name="editor">The editor to work with</param>
-        public void AddServerToList(ServerEditor editor)
+        /// <param name="serverSection">The server's section in the file system</param>
+        public void AddServerToList(Section serverSection)
         {
+            ServerEditing editingApi = new ServerAPI().Editor(serverSection.SimpleName);
+            
             // Prevents server duplicates from being displayed
-            if (GetRowFromName(editor.ServerSection.SimpleName) != null) return;
+            if (GetRowFromName(editingApi.GetServerName()) != null) return;
 
             // Deserializes the server settings file to access the server information.
-            ServerInformation info = editor.GetServerInformation();
+            ServerInformation info = editingApi.GetServerInformation();
 
             // Gets the image path for the server type, and adds the server to the list.
             // We have to parse the type to get the first word, since there could be snapshots of the type,
@@ -129,20 +134,23 @@ namespace MCSMLauncher.gui
             Mainframe.INSTANCE.Invoke(new MethodInvoker(() =>
             {
                 Image typeImage = Image.FromFile(typeImagePath);
-                GridServerList.Rows.Add(typeImage, info.Version, editor.ServerSection.SimpleName); 
+                GridServerList.Rows.Add(typeImage, info.Version, editingApi.GetServerName()); 
             }));
 
-            // Sets the server button's text to "Start" by default.
-            GetRowFromName(editor.ServerSection.SimpleName).Cells[5].Value = "Start";
+            // Sets the server start button text to "Start" by default
+            GetRowFromName(editingApi.GetServerName()).Cells[5].Value = "Start";
+            
+            // Sets the server stop button text to "Stop" by default
+            GetRowFromName(editingApi.GetServerName()).Cells[6].Value = "Stop";
         }
 
         /// <summary>
         /// Performs an addition to the server list asynchronously.
         /// </summary>
-        /// <param name="editor">The editor to work with</param>
-        public async Task AddServerToListAsync(ServerEditor editor)
+        /// <param name="serverSection">The server's section in the filesystem</param>
+        public async Task AddServerToListAsync(Section serverSection)
         {
-            await Task.Run(() => AddServerToList(editor));
+            await Task.Run(() => AddServerToList(serverSection));
         }
 
         /// <summary>
@@ -175,14 +183,14 @@ namespace MCSMLauncher.gui
         /// Updates a given server's play button state to either "Start" or "Running" depending on whether
         /// the server is running or not.
         /// </summary>
-        /// <param name="editor">The server editor to work with</param>
+        /// <param name="serverName">The server name to use towards the API</param>
         [SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-        private void UpdateServerButtonState(ServerEditor editor)
+        private void UpdateServerButtonState(string serverName)
         {
             // Gets the necessary information to update the server button state.
-            ServerInformation info = editor.GetServerInformation();
+            ServerEditing editingApi = new ServerAPI().Editor(serverName);
+            ServerInformation info = editingApi.GetServerInformation();
             string procName = ProcessUtils.GetProcessById(info.CurrentServerProcessID)?.ProcessName;
-            string serverName = editor.ServerSection.SimpleName;
 
             // Makes sure that the row exists before trying to update it.
             DataGridViewRow row = GetRowFromName(serverName);
@@ -192,8 +200,8 @@ namespace MCSMLauncher.gui
             // with a set PID, specified in the server settings file, running as an mc server.
             if (info.CurrentServerProcessID != -1 && procName is "java" or "cmd")
             {
-                ForceUpdateServerState(serverName, "Running");
-                UpdateServerIP(editor);
+                if (row.Cells[5].Value is not "Stopping") ForceUpdateServerState(serverName, "Running");
+                UpdateServerIP(editingApi.Raw());
                 return; 
             }
             
@@ -201,12 +209,13 @@ namespace MCSMLauncher.gui
             if (info.CurrentServerProcessID == -1) return;
 
             row.Cells[5].Value = "Start";
+            row.Cells[6].Value = "Stop";
+            row.Cells[6].Tag = null;
             row.Cells[3].Value = "";
             info.CurrentServerProcessID = -1;
             
             // Updates and flushes the buffers with the new information.
-            editor.UpdateBuffers(info.ToDictionary());
-            editor.FlushBuffers();
+            editingApi.UpdateServerSettings(info.ToDictionary());
         }
 
         /// <summary>
@@ -224,10 +233,10 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// Performs an update to the server's play button state asynchronously.
         /// </summary>
-        /// <param name="editor">The editor to work with</param>
-        public async Task UpdateServerButtonStateAsync(ServerEditor editor)
+        /// <param name="serverName">The server name to work with</param>
+        public async Task UpdateServerButtonStateAsync(string serverName)
         {
-            await Task.Run(() => UpdateServerButtonState(editor));
+            await Task.Run(() => UpdateServerButtonState(serverName));
         }
 
 
@@ -237,13 +246,8 @@ namespace MCSMLauncher.gui
         /// </summary>
         public async Task UpdateAllButtonStatesAsync()
         {
-            // Iterates through all the listed servers and adds a task to update their state if they're running
             foreach (DataGridViewRow row in GridServerList.Rows)
-            {
-                Section serverSection = FileSystem.GetFirstSectionNamed("servers/" + row.Cells[2].Value);
-                ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-                await UpdateServerButtonStateAsync(editor);
-            }
+                await UpdateServerButtonStateAsync(row.Cells[2].Value.ToString());
         }
 
         /// <summary>
@@ -309,6 +313,15 @@ namespace MCSMLauncher.gui
                     await StartButtonClick(selectedRow);
                     break;
                 }
+                
+                // In case the user clicks on... Any "Stop" or "Kill" button.
+                case 6 when e.RowIndex >= 0 && selectedRow.Cells[6].Value.ToString() == "Stop" 
+                            || selectedRow.Cells[6].Value.ToString() == "Kill":
+                {
+                    await StopButtonClick(selectedRow);
+                    break;
+                }
+                
             }
         }
         
@@ -340,8 +353,7 @@ namespace MCSMLauncher.gui
             Section serverSection = FileSystem.AddSection($"servers/{serverName}");
             
             // Create and show the edit prompt.
-            ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-            ServerEditPrompt editPrompt = new (editor);
+            ServerEditPrompt editPrompt = new (serverSection);
             editPrompt.ShowDialog();
         }
         
@@ -349,7 +361,7 @@ namespace MCSMLauncher.gui
         /// When the user clicks on the "Start" button, run the appropriate server starter.
         /// </summary>
         /// <param name="buttonRow">The row in which the button was clicked on</param>
-        private static async Task StartButtonClick(DataGridViewRow buttonRow)
+        private static Task StartButtonClick(DataGridViewRow buttonRow)
         {
             // Get the server's section from its name
             string serverName = buttonRow.Cells[2].Value.ToString();
@@ -357,25 +369,73 @@ namespace MCSMLauncher.gui
             
             try
             {
-                // Get the server's type and starter
-                ServerEditor editor = GlobalEditorsCache.INSTANCE.GetOrCreate(serverSection);
-                string serverType = editor.GetServerInformation().Type;
-                AbstractServerStarter serverStarter = new ServerTypeMappingsFactory().GetStarterFor(serverType);
-
-                // Start the server
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Starting");
                 INSTANCE.GetRowFromName(serverSection.SimpleName).Cells[3].Value = "Resolving...";
-                await serverStarter.Run(serverSection, editor);
+                new ServerAPI().Starter(serverSection.SimpleName).Run(new MessageProcessingOutputHandler());
             }
             
             // If an error occurs, let the user know.
             catch (Exception ex)
             {
-                Logging.LOGGER.Error(ex);
+                Logging.Logger.Error(ex);
                 MessageBox.Show($@"An error occurred whilst starting the server. {Environment.NewLine}Please check the integrity of the server files.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 
                 INSTANCE.ForceUpdateServerState(serverSection.SimpleName, "Start");
+            }
+            
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// When the user clicks on the "Stop" button, it'll send a stop command to the server, and change
+        /// the button to a "Kill" button, which will kill the server's process if clicked on again.
+        /// </summary>
+        /// <param name="buttonRow"></param>
+        private async Task StopButtonClick(DataGridViewRow buttonRow)
+        {
+            // If the server is not running or being stopped, ignore the button click.
+            string serverState = buttonRow.Cells[5].Value.ToString();
+            if (serverState is not ("Running" or "Stopping")) return;
+            
+            // If the stop button is in wait mode, wait for the ServerProcessStateHandler to update.
+            string stopMode = buttonRow.Cells[6].Tag?.ToString();
+            if (stopMode is "Wait") return;
+            
+            // Get the necessary information from the row and the server's API.
+            string serverName = buttonRow.Cells[2].Value.ToString();
+
+            // If the stopping button is in kill mode, kill its process immediately.
+            if (stopMode is "Kill")
+            {
+                buttonRow.Cells[6].Tag = "Wait";  // After killing, prevent button spamming.
+
+                // Wait for the settings file to be released by the server process and kill it.
+                // This prevents accidental data corruption.
+                string settingsFile = ServersSection.GetFirstDocumentNamed("server_settings.xml");
+                using var _ = await FileUtilExtensions.WaitForFileAsync(settingsFile);
+                
+                
+                return;
+            }
+
+            try
+            {
+                // Gracefully stop the server and switch the button to kill mode.
+                buttonRow.Cells[6].Value = buttonRow.Cells[6].Tag = "Kill";
+                buttonRow.Cells[5].Value = "Stopping";
+                new ServerAPI().Interactions(serverName).WriteToServerStdin("stop");
+            }
+            
+            // If an error occurs, let the user know.
+            catch (Exception ex)
+            {
+                Logging.Logger.Error(ex);
+                MessageBox.Show($@"An error occurred whilst stopping the server.",
+                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                buttonRow.Cells[6].Value = "Stop";
+                buttonRow.Cells[6].Tag = null;
             }
         }
 

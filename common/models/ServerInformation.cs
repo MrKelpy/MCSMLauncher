@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.utils;
 
 namespace MCSMLauncher.common.models
 {

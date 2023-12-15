@@ -36,12 +36,12 @@ namespace MCSMLauncher.requests.mcversions.full
                     where div.HasClass("items")
                     select div;
 
-                return new MCVRequestParser().GetVersionUrlMap(BaseUrl, itemsDiv.ElementAt(0));
+                return new McvRequestParser().GetVersionUrlMap(BaseUrl, itemsDiv.ElementAt(0));
             }
             catch (Exception e)
             {
-                Logging.LOGGER.Info("An error happened whilst trying to retrieve the vanilla versions.");
-                Logging.LOGGER.Error(e, LoggingType.FILE);
+                Logging.Logger.Info("An error happened whilst trying to retrieve the vanilla versions.");
+                Logging.Logger.Error(e, LoggingType.File);
                 return null;
             }
         }

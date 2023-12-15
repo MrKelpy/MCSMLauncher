@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MCSMLauncher.common.processes
+namespace MCSMLauncher.common.handlers
 {
     /// <summary>
     /// This class implements an enumerable collection of strings representing error patterns
@@ -13,7 +13,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// The core of the class, an internal list containing all of the error message patterns.
         /// </summary>
-        private List<string> InternalErrorCollection { get; } = new List<string>();
+        private List<string> InternalErrorCollection { get; } = new ();
 
         /// <summary>
         /// The amount of items inside the Error Collection
@@ -23,7 +23,7 @@ namespace MCSMLauncher.common.processes
         /// <summary>
         /// Whether the Error Collection is ReadOnly or not
         /// </summary>
-        public bool IsReadOnly { get; } = false;
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// These two methods return the InternalErrorCollection's enumerator for iteration

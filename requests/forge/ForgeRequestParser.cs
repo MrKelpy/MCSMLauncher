@@ -26,7 +26,7 @@ namespace MCSMLauncher.requests.forge
         {
             try
             {
-                using CancellationTokenSource ct = new CancellationTokenSource(new TimeSpan(0, 0, 0, 30));
+                using CancellationTokenSource ct = new(new TimeSpan(0, 0, 0, 30));
                 HtmlDocument document = await AbstractBaseRequestHandler.Handler.LoadFromWebAsync(url, ct.Token);
 
                 // Gets the recommended forge version from the website
@@ -70,7 +70,7 @@ namespace MCSMLauncher.requests.forge
         /// <returns>A Dictionary(string,string) containing the mappings</returns>
         public override Dictionary<string, string> GetVersionUrlMap(string baseUrl, HtmlNode doc)
         {
-            Dictionary<string, string> mappings = new Dictionary<string, string>();
+            Dictionary<string, string> mappings = new ();
 
             // Gets the lists that have hrefs in them and are under the nav-collapsible lists. 
             IEnumerable<HtmlNode> lists = from li in doc.SelectNodes("//li")

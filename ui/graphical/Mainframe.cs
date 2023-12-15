@@ -9,7 +9,7 @@ using MCSMLauncher.common.background;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This is the main class of the program, a form containing the main layout, where all of the
@@ -18,19 +18,19 @@ namespace MCSMLauncher.gui
     public partial class Mainframe : Form
     {
         /// <summary>
+        /// The singleton instance of the Mainframe.
+        /// </summary>
+        public static Mainframe INSTANCE { get; } = new ();
+        
+        /// <summary>
         /// Main constructor for the Mainframe. Loads up the server list. Private to enforce the
         /// singleton pattern.
         /// </summary>
         private Mainframe()
         {
             InitializeComponent();
-            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            MainLayout.SetAllFrom(NewServer.Instance.GetLayout());
         }
-
-        /// <summary>
-        /// The singleton instance of the Mainframe.
-        /// </summary>
-        public static Mainframe INSTANCE { get; } = new ();
 
         /// <summary>
         /// Loads up anything that needs to be loaded after the mainframe handle is created.
@@ -55,8 +55,8 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void NewServerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MainLayout.Contains(NewServer.INSTANCE.RichTextBoxConsoleOutput)) return;
-            MainLayout.SetAllFrom(NewServer.INSTANCE.GetLayout());
+            if (MainLayout.Contains(NewServer.Instance.RichTextBoxConsoleOutput)) return;
+            MainLayout.SetAllFrom(NewServer.Instance.GetLayout());
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace MCSMLauncher.gui
         /// <param name="e">The event arguments</param>
         private void Mainframe_SizeChanged(object sender, EventArgs e)
         {
-            NewServer.INSTANCE.Size = ServerList.INSTANCE.Size = Size;
+            NewServer.Instance.Size = ServerList.INSTANCE.Size = Size;
         }
 
         /// <summary>

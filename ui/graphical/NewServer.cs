@@ -8,21 +8,27 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Forms;
+using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
+using MCSMLauncher.api.server;
 using MCSMLauncher.common;
 using MCSMLauncher.common.caches;
 using MCSMLauncher.common.factories;
-using MCSMLauncher.common.server.builders.abstraction;
-using MCSMLauncher.utils;
+using MCSMLauncher.common.handlers;
 using static MCSMLauncher.common.Constants;
 
-namespace MCSMLauncher.gui
+namespace MCSMLauncher.ui.graphical
 {
     /// <summary>
     /// This singleton form handles any operations related to the creation of a new server.
     /// </summary>
     public partial class NewServer : Form
     {
+        /// <summary>
+        /// The API instance to interact with the servers.
+        /// </summary>
+        private ServerAPI ServerAPI { get; } = new ();
+        
         /// <summary>
         /// Main constructor for the NewServer form. Private in order to enforce the usage
         /// of the instance declared above.
@@ -31,14 +37,20 @@ namespace MCSMLauncher.gui
         {
             InitializeComponent();
 
-            // Loads the images for the form
-            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Gif.Loader"))));
-            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser"))));
+            // Loads the images for the form from the assets folder
+            string loadingGif = ConfigurationManager.AppSettings.Get("Asset.Gif.Loader");
+            string folderBrowser = ConfigurationManager.AppSettings.Get("Asset.Icon.FolderBrowser");
+            string tooltipImage = ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip");
+            
+            PictureBoxLoading.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(loadingGif)));
+            ButtonFolderBrowser.Image = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(folderBrowser)));
+            Image tooltip = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(tooltipImage)));
 
+            // Iterates through all the labels in the form and sets the tooltip image if they're marked as such
             foreach (Label label in NewServerLayout.Controls.OfType<Label>()
                          .Where(x => x.Tag != null && x.Tag.ToString().Equals("tooltip")).ToList())
             {
-                label.BackgroundImage = Image.FromFile(FileSystem.GetFirstDocumentNamed(Path.GetFileName(ConfigurationManager.AppSettings.Get("Asset.Icon.Tooltip"))));
+                label.BackgroundImage = tooltip;
                 label.BackgroundImageLayout = ImageLayout.Zoom;
             }
 
@@ -47,10 +59,8 @@ namespace MCSMLauncher.gui
                 .Select(x => CultureInfo.CurrentCulture.TextInfo.ToTitleCase(x)).ToArray<object>());
 
             // Checks all the java versions available in Program Files and sets them in the java version box
-            string programFilesJavaPath =
-                Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
-            string programFilesX86JavaPath =
-                Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
+            string programFilesJavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramW6432%"), "Java");
+            string programFilesX86JavaPath = Path.Combine(Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%"), "Java");
 
             if (Directory.Exists(programFilesJavaPath))
                 ComboBoxJavaVersion.Items.AddRange(
@@ -67,38 +77,24 @@ namespace MCSMLauncher.gui
         /// <summary>
         /// The instance of the class to use, matching the singleton model.
         /// </summary>
-        public static NewServer INSTANCE { get; } = new NewServer();
-
-        /// <summary>
-        /// The list of invalid server names, used to check if the server name is valid.
-        /// These names are reserved by Windows for special folders.
-        /// </summary>
-        private List<string> InvalidServerNames { get; } = new List<string>
-        {
-            "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6",
-            "COM7", "COM8", "COM9", "COM0", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5",
-            "LPT6", "LPT7", "LPT8", "LPT9", "LPT0"
-        };
+        public static NewServer Instance { get; } = new ();
 
         /// <summary>
         /// Returns the layout of the current form, so that it can be added to another form.
         /// </summary>
         /// <returns>A Panel representing this form's layout.</returns>
-        public Panel GetLayout()
-        {
-            return NewServerLayout;
-        }
+        public Panel GetLayout() =>  NewServerLayout;
 
         /// <summary>
         /// Toggles the state of the controls on the form, switching between the loading state, where
         /// the user can't interact with the form, and the normal state, where the user can.
         /// </summary>
         /// <param name="enabled">Whether or not the user can interact with the controls.</param>
-        public void ToggleControlsState(bool enabled)
+        private void ToggleControlsState(bool enabled)
         {
             TextBoxServerName.Enabled = ComboServerVersion.Enabled = ComboBoxServerType.Enabled
-                = ComboBoxJavaVersion.Enabled =
-                    ButtonFolderBrowser.Enabled = ButtonBuild.Visible = enabled;
+                = ComboBoxJavaVersion.Enabled = ButtonFolderBrowser.Enabled = ButtonBuild.Visible = enabled;
+            
             PictureBoxLoading.Visible = !enabled;
         }
 
@@ -132,8 +128,9 @@ namespace MCSMLauncher.gui
             // In that case, block the version selection with a message.
             catch (NullReferenceException)
             {
-                Logging.LOGGER.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.",
-                    LoggingType.FILE);
+                Logging.Logger.Warn($"Couldn't load any versions for the {ComboBoxServerType.Text} server type.",
+                    LoggingType.File);
+                
                 ComboServerVersion.Items.Add(@"Couldn't load any versions for this server type.");
                 ComboServerVersion.ForeColor = Color.Firebrick;
                 ComboServerVersion.SelectedIndex = 0;
@@ -149,79 +146,56 @@ namespace MCSMLauncher.gui
         [SuppressMessage("ReSharper", "LocalizableElement")]
         private async void ButtonBuild_Click(object sender, EventArgs e)
         {
-            Section serversSection = FileSystem.AddSection("servers");
             LabelServerNameError.Visible = false;
-            RichTextBoxConsoleOutput.Clear();
-            RichTextBoxConsoleOutput.ForeColor = Color.Black;
-
-            // Prevents invalid characters in the server name
-            if (TextBoxServerName.Text.ToList().Any(Path.GetInvalidPathChars().Contains) ||
-                TextBoxServerName.Text.Contains(' '))
-            {
-                LabelServerNameError.Text = @"Invalid characters in server name.";
-                LabelServerNameError.Visible = true;
-                return;
-            }
-
-            // Prevents invalid server names
-            if (InvalidServerNames.Any(x => x.ToUpper().Equals(TextBoxServerName.Text.ToUpper())))
-            {
-                LabelServerNameError.Text = @"Invalid server name.";
-                LabelServerNameError.Visible = true;
-                return;
-            }
-
-            // Prevent two servers from having the same name
-            if (serversSection.GetAllSections().Any(x => x.SimpleName.ToLower().Equals(TextBoxServerName.Text.ToLower())))
-            {
-                LabelServerNameError.Text = @"A server with that name already exists.";
-                LabelServerNameError.Visible = true;
-                return;
-            }
-
-            // Starts to build the server, first disabling the controls so the user can't interact with them,
-            // then building the server, and finally re-enabling the controls.
-            ToggleControlsState(false);
+            RichTextBoxConsoleOutput.Clear(); RichTextBoxConsoleOutput.ForeColor = Color.Black;
 
             try
             {
-                AbstractServerBuilder builder = new ServerTypeMappingsFactory().GetBuilderFor(ComboBoxServerType.Text);
-                await builder.Build(TextBoxServerName.Text, ComboBoxServerType.Text, ComboServerVersion.Text);
+                ServerBuilder builder = ServerAPI.Builder(TextBoxServerName.Text, ComboBoxServerType.Text,
+                    ComboServerVersion.Text);
+                
+                builder.VerifyInformation();
+                
+                // Starts to build the server, first disabling the controls so the user can't interact with them,
+                // then building the server, and finally re-enabling the controls.
+                ToggleControlsState(false);
+
+                // Runs the server builder with the output handler set to the console text box
+                MessageProcessingOutputHandler outputSystem = new (RichTextBoxConsoleOutput);
+                await builder.Run(outputSystem);
+            }
+            
+            // If the server name is invalid, log it and tell the user that the server name is invalid
+            catch (ArgumentException err)
+            {
+                Logging.Logger.Error(err.StackTrace);
+                MessageBox.Show(err.Message, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             // If a timeout exception happened, log it and tell the user that a timeout happened
             catch (TimeoutException err)
             {
-                Logging.LOGGER.Error(err.StackTrace);
+                Logging.Logger.Error(err.StackTrace);
                 MessageBox.Show($"The time limit for the downloads has exceeded. (Request timed out) {Environment.NewLine}Please try again later.", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
-                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             // If a network error happened, log it and tell the user that a network error happened
             catch (HttpRequestException err)
             {
-                Logging.LOGGER.Error(err);
+                Logging.Logger.Error(err);
                 string errorMessage = !NetworkUtils.IsWifiConnected()
                     ? $"A network error happened while building the server. {Environment.NewLine}Please check your internet connection and try again."
                     : $"Could not establish a connection to the download servers. {Environment.NewLine}Please try again later, the download servers for this type and version might be down!";
 
                 MessageBox.Show(errorMessage, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
-                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             // If an unknown exception was raised, log it as such and tell the user that an error occured
             catch (Exception err)
             {
-                Logging.LOGGER.Error(err);
+                Logging.Logger.Error(err);
                 MessageBox.Show($"An error occurred while building the server. {Environment.NewLine}Please try again.",
                     @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                
-                GlobalEditorsCache.INSTANCE.Remove(TextBoxServerName.Text);
-                serversSection.RemoveSection(TextBoxServerName.Text);
             }
 
             ToggleControlsState(true);

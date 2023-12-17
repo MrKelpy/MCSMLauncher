@@ -9,7 +9,8 @@ namespace MCSMLauncher.common.models
 {
     /// <summary>
     /// This is a serializable class that acts as a model to store information about a server, and
-    /// is able to be serialized to XML.
+    /// is able to be serialized to XML. <br/>
+    /// To reference server properties throughout the program, use the names provided in this class.
     /// </summary>
     [SuppressMessage("ReSharper", "CommentTypo")]
     [SuppressMessage("ReSharper", "IdentifierTypo")]

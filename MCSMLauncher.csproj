@@ -24,6 +24,7 @@
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <DocumentationFile>docs.xml</DocumentationFile>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
@@ -64,6 +65,7 @@
         <Compile Include="common\interfaces\IBackgroundRunner.cs" />
         <Compile Include="common\Logging.cs" />
         <Compile Include="common\MinecraftVersion.cs" />
+        <Compile Include="common\models\ConsoleCommand.cs" />
         <Compile Include="common\models\ServerInformation.cs" />
         <Compile Include="common\handlers\AbstractLoggingMessageProcessing.cs" />
         <Compile Include="common\handlers\ErrorCollection.cs" />

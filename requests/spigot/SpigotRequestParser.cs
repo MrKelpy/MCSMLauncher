@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using MCSMLauncher.common;
-using MCSMLauncher.requests.abstraction;
+using mcsm.common;
+using mcsm.requests.abstraction;
 
-namespace MCSMLauncher.requests.spigot
+namespace mcsm.requests.spigot
 {
     /// <summary>
     /// This class takes in a certain scope of html nodes and parses out the information

@@ -1,4 +1,4 @@
-﻿namespace MCSMLauncher.api.server.enumeration
+﻿namespace mcsm.api.server.enumeration
 {
     /// <summary>
     /// This enum is responsible for defining a few different logical expressions that can be checked for a server.

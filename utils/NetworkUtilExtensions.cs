@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
-using MCSMLauncher.common;
+using mcsm.common;
 using Open.Nat;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.utils
+namespace mcsm.utils
 {
     /// <summary>
     /// This class contains a bunch of useful methods for interacting with the network
@@ -52,7 +52,7 @@ namespace MCSMLauncher.utils
                 {
                     Logging.Logger.Info(@$"Creating a new TCP port mapping for I{internalPort}@E{externalPort}...");
                     await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, internalPort, externalPort,
-                        $"TCP-MCSMLauncher@{internalPort}"));
+                        $"TCP-MCSM@{internalPort}"));
                 }
                 // If the port mapping already exists, ignore it.
                 catch (MappingException) { Logging.Logger.Warn(@$"The I{internalPort}@E{externalPort} TCP port mapping already exists. Ignoring..."); }

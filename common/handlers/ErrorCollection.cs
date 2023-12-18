@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MCSMLauncher.common.handlers
+namespace mcsm.common.handlers
 {
     /// <summary>
     /// This class implements an enumerable collection of strings representing error patterns

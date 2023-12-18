@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MCSMLauncher.extensions
+namespace mcsm.extensions
 {
     /// <summary>
     /// This class contains extension methods for the Process class.

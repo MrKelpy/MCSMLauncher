@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace MCSMLauncher.utils
+namespace mcsm.utils
 {
     public class ColorUtils
     {

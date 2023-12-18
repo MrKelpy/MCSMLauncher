@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using MCSMLauncher.common;
-using MCSMLauncher.requests.abstraction;
+using mcsm.common;
+using mcsm.requests.abstraction;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.requests.mcversions.snapshots
+namespace mcsm.requests.mcversions.snapshots
 {
     /// <summary>
     /// This class handles every request to the mcversions.net website, and works

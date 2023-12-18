@@ -4,11 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.models;
-using MCSMLauncher.common.server.starters.abstraction;
+using mcsm.common.handlers;
+using mcsm.common.models;
 
-namespace MCSMLauncher.common.server.starters
+namespace mcsm.common.server.starters
 {
     /// <summary>
     /// This class handles everything related to starting Forge servers.

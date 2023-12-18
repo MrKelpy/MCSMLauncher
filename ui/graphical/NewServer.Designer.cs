@@ -1,4 +1,4 @@
-﻿namespace MCSMLauncher.ui.graphical
+﻿namespace mcsm.ui.graphical
 {
     partial class NewServer
     {

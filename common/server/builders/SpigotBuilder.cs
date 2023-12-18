@@ -4,12 +4,12 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.server.builders.abstraction;
-using MCSMLauncher.ui.graphical;
+using mcsm.common.handlers;
+using mcsm.common.server.builders.abstraction;
+using mcsm.ui.graphical;
 using Open.Nat;
 
-namespace MCSMLauncher.common.server.builders
+namespace mcsm.common.server.builders
 {
     /// <summary>
     /// This class implements the server building methods for the spigot releases.

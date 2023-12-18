@@ -6,17 +6,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.api.server;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.models;
-using MCSMLauncher.common.server.builders.abstraction;
-using MCSMLauncher.extensions;
-using MCSMLauncher.ui.graphical;
-using static MCSMLauncher.common.Constants;
+using mcsm.api.server;
+using mcsm.common.handlers;
+using mcsm.common.models;
+using mcsm.common.server.builders.abstraction;
+using mcsm.extensions;
+using mcsm.ui.graphical;
+using static mcsm.common.Constants;
 
 // ReSharper disable AccessToDisposedClosure
 
-namespace MCSMLauncher.common.server.builders
+namespace mcsm.common.server.builders
 {
     /// <summary>
     /// This class implements the server building methods for the forge releases.

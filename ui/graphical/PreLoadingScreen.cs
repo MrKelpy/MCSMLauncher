@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using MCSMLauncher.api;
-using MCSMLauncher.common;
+using mcsm.api;
+using mcsm.common;
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     /// <summary>
     /// This form is meant to be displayed before the loading screen, to let the user know that some assets

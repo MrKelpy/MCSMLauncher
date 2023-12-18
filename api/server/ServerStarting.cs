@@ -1,14 +1,13 @@
 ﻿using System.Threading.Tasks;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common;
-using MCSMLauncher.common.caches;
-using MCSMLauncher.common.factories;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.server.starters.abstraction;
-using MCSMLauncher.common.server.starters.threads;
-using static MCSMLauncher.common.Constants;
+using mcsm.common;
+using mcsm.common.caches;
+using mcsm.common.factories;
+using mcsm.common.handlers;
+using mcsm.common.server.starters.threads;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.api.server
+namespace mcsm.api.server
 {
     /// <summary>
     /// This class is responsible for providing an API used to start every supported server type.

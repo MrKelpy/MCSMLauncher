@@ -1,6 +1,6 @@
-﻿using MCSMLauncher.common.models;
+﻿using mcsm.common.models;
 
-namespace MCSMLauncher.ui.console
+namespace mcsm.ui.console
 {
     /// <summary>
     /// This class is responsible for parsing out the commands send from the console

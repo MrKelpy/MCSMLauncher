@@ -7,10 +7,10 @@ using System.Threading;
 using Ionic.Zip;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common.interfaces;
-using MCSMLauncher.common.models;
+using mcsm.common.interfaces;
+using mcsm.common.models;
 
-namespace MCSMLauncher.common.background
+namespace mcsm.common.background
 {
     /// <summary>
     /// Handles the backup creation for a given running server. This thread will bind itself to a running

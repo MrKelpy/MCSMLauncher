@@ -1,9 +1,11 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Forms;
-using MCSMLauncher.ui.graphical;
-using MCSMLauncher.utils;
+using mcsm.ui.graphical;
+using mcsm.utils;
 
-namespace MCSMLauncher.common.handlers
+namespace mcsm.common.handlers
 {
     /// <summary>
     /// This class is responsible for acting as a driver between any passed output systems
@@ -48,16 +50,16 @@ namespace MCSMLauncher.common.handlers
                 case var _ when this.TargetSystem?.GetType() == typeof(RichTextBox):
                     this.InternalWriteToTextBox(message, color);
                     break;
-                
-                case var _ when this.TargetSystem?.GetType() == typeof(System.IO.TextWriter):
-                    this.InternalWriteToStdout(message, color);
-                    break;
-                
+
                 // Explicitly ignore null cases (no target system) for clarity
                 case null: break;
+                
+                default:
+                    this.InternalWriteToStdout(message, color);
+                    break;
             }
         }
-        
+
         /// <summary>
         /// Writes the message to STDOUT respecting the color.
         /// </summary>
@@ -65,9 +67,11 @@ namespace MCSMLauncher.common.handlers
         /// <param name="color">The color to paint the message with</param>
         private void InternalWriteToStdout(string message, Color color)
         {
-            System.IO.TextWriter output = (System.IO.TextWriter) TargetSystem;
-            output.WriteLine(message, color.IsEmpty ? Color.White : ColorUtils.ClosestConsoleColor(color));
+            Console.ForegroundColor = color.IsEmpty ? ConsoleColor.White : ColorUtils.ClosestConsoleColor(color);
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
+        
 
         /// <summary>
         /// Writes the message to a RichTextBox respecting the color.

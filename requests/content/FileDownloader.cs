@@ -2,9 +2,9 @@
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using MCSMLauncher.common;
+using mcsm.common;
 
-namespace MCSMLauncher.requests.content
+namespace mcsm.requests.content
 {
     /// <summary>
     /// This class implements every method related to downloading files asynchronously from the

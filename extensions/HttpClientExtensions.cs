@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MCSMLauncher.extensions
+namespace mcsm.extensions
 {
     /// <summary>
     /// This class implements a bunch of extension methods for the HttpClient class

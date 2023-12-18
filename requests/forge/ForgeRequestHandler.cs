@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using MCSMLauncher.common;
-using MCSMLauncher.requests.abstraction;
+using mcsm.common;
+using mcsm.requests.abstraction;
 
-namespace MCSMLauncher.requests.forge
+namespace mcsm.requests.forge
 {
     /// <summary>
     /// This class handles all requests sent into the minecraftforge website, in order to retrieve all

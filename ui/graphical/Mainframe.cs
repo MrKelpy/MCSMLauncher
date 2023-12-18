@@ -5,11 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_Winforms.forms.extensions;
-using MCSMLauncher.common.background;
+using mcsm.common.background;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     /// <summary>
     /// This is the main class of the program, a form containing the main layout, where all of the
@@ -97,7 +97,7 @@ namespace MCSMLauncher.ui.graphical
         /// <param name="e">The event arguments</param>
         private void WikiToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/MrKelpy/MCSMLauncher/wiki");
+            Process.Start("https://github.com/MrKelpy/MCSM/wiki");
         }
     }
 }

@@ -4,13 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common.background;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.models;
-using MCSMLauncher.ui.graphical;
-using MCSMLauncher.utils;
+using mcsm.common.background;
+using mcsm.common.handlers;
+using mcsm.common.models;
+using mcsm.ui.graphical;
+using mcsm.utils;
 
-namespace MCSMLauncher.common.server.starters.abstraction
+namespace mcsm.common.server.starters
 {
     /// <summary>
     /// This abstract class implement the common methods and properties for starting a server across

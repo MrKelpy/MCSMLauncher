@@ -7,13 +7,12 @@ using System.Security.AccessControl;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MCSMLauncher.api.server;
-using MCSMLauncher.common.factories;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.server.starters.abstraction;
-using MCSMLauncher.extensions;
+using mcsm.api.server;
+using mcsm.common.factories;
+using mcsm.common.handlers;
+using mcsm.extensions;
 
-namespace MCSMLauncher.common.server.starters.threads
+namespace mcsm.common.server.starters.threads
 {
     /// <summary>
     /// This class is responsible for providing a NamedPipe server that allows processes to communicate directly

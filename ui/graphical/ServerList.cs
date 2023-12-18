@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.api.server;
-using MCSMLauncher.common;
-using MCSMLauncher.common.caches;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.models;
-using MCSMLauncher.utils;
-using static MCSMLauncher.common.Constants;
+using mcsm.api.server;
+using mcsm.common;
+using mcsm.common.caches;
+using mcsm.common.handlers;
+using mcsm.common.models;
+using mcsm.utils;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     /// <summary>
     /// This form handles all operations related to launching and playing on created servers.

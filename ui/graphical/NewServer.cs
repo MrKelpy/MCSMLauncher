@@ -10,14 +10,14 @@ using System.Net.Http;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.api.server;
-using MCSMLauncher.common;
-using MCSMLauncher.common.caches;
-using MCSMLauncher.common.factories;
-using MCSMLauncher.common.handlers;
-using static MCSMLauncher.common.Constants;
+using mcsm.api.server;
+using mcsm.common;
+using mcsm.common.caches;
+using mcsm.common.factories;
+using mcsm.common.handlers;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     /// <summary>
     /// This singleton form handles any operations related to the creation of a new server.

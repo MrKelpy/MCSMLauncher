@@ -5,7 +5,7 @@ using System.Reflection;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
 
-namespace MCSMLauncher.common.models
+namespace mcsm.common.models
 {
     /// <summary>
     /// This is a serializable class that acts as a model to store information about a server, and

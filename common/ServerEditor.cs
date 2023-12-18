@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common.models;
-using MCSMLauncher.ui.graphical;
+using mcsm.common.models;
+using mcsm.ui.graphical;
 
-namespace MCSMLauncher.common
+namespace mcsm.common
 {
     /// <summary>
     /// Implements a bunch of methods to edit the server files. Specifically the server.properties and

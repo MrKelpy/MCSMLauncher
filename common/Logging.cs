@@ -2,7 +2,7 @@
 using System.IO;
 using LaminariaCore_General.utils;
 
-namespace MCSMLauncher.common
+namespace mcsm.common
 {
     /// <summary>
     /// The logging type to be used in the logging methods.

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using MCSMLauncher.common.server.builders;
-using MCSMLauncher.common.server.starters;
-using MCSMLauncher.requests.forge;
-using MCSMLauncher.requests.mcversions;
-using MCSMLauncher.requests.mcversions.full;
-using MCSMLauncher.requests.mcversions.snapshots;
-using MCSMLauncher.requests.spigot;
-using static MCSMLauncher.common.Constants;
+using mcsm.common.server.builders;
+using mcsm.common.server.starters;
+using mcsm.requests.forge;
+using mcsm.requests.mcversions;
+using mcsm.requests.mcversions.full;
+using mcsm.requests.mcversions.snapshots;
+using mcsm.requests.spigot;
+using static mcsm.common.Constants;
 
 
-namespace MCSMLauncher.common.factories
+namespace mcsm.common.factories
 {
     /// <summary>
     /// This is a partial class of ServerTypeMappingsFactory, containing the actual mappings to be

@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 // ReSharper disable InvalidXmlDocComment
 
-namespace MCSMLauncher.common
+namespace mcsm.common
 {
     /// <summary>
     /// This class represents a Minecraft version. Contains methods related to parsing and sorting the version

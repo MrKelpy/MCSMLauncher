@@ -1,6 +1,6 @@
-﻿using MCSMLauncher.common;
+﻿using mcsm.common;
 
-namespace MCSMLauncher.api.server
+namespace mcsm.api.server
 {
     /// <summary>
     /// This class is responsible for providing an API for various types of server-related operations. <br></br>

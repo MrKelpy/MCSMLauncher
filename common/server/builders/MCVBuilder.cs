@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.server.builders.abstraction;
+using mcsm.common.handlers;
+using mcsm.common.server.builders.abstraction;
 
-namespace MCSMLauncher.common.server.builders
+namespace mcsm.common.server.builders
 {
     /// <summary>
     /// This class implements the server building methods for the vanilla releases and snapshots.

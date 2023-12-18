@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     sealed partial class LoadingScreen
     {

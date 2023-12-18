@@ -1,4 +1,4 @@
-﻿namespace MCSMLauncher.common.interfaces
+﻿namespace mcsm.common.interfaces
 {
     /// <summary>
     /// Implements a single contractual method "RunTask" that runs a task in the background.

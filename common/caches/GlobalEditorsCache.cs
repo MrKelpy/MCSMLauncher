@@ -5,7 +5,7 @@ using LaminariaCore_Winforms.common;
 
 // ReSharper disable InconsistentNaming
 
-namespace MCSMLauncher.common.caches
+namespace mcsm.common.caches
 {
     /// <summary>
     /// This singleton class implements a global ServerEditors cache, used to avoid having to re-fetch

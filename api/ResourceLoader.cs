@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common;
-using MCSMLauncher.common.factories;
-using MCSMLauncher.requests.content;
-using MCSMLauncher.utils;
-using static MCSMLauncher.common.Constants;
+using mcsm.common;
+using mcsm.common.factories;
+using mcsm.requests.content;
+using mcsm.utils;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.api
+namespace mcsm.api
 {
     /// <summary>
     /// This class is responsible for providing methods for all the program loading operations. <br></br>

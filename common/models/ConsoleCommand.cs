@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace MCSMLauncher.common.models
+namespace mcsm.common.models
 {
     /// <summary>
     /// This class is responsible for holding the information about a console command.  

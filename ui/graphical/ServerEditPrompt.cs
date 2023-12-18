@@ -10,12 +10,12 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.api.server;
-using MCSMLauncher.api.server.enumeration;
-using MCSMLauncher.common;
-using static MCSMLauncher.common.Constants;
+using mcsm.api.server;
+using mcsm.api.server.enumeration;
+using mcsm.common;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     /// <summary>
     /// This form aims to provide an interface to edit the settings of a server.

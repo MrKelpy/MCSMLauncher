@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using LaminariaCore_General.utils;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.server.builders.abstraction;
-using MCSMLauncher.common.server.starters.abstraction;
-using MCSMLauncher.requests.abstraction;
+using mcsm.common.handlers;
+using mcsm.common.server.builders.abstraction;
+using mcsm.common.server.starters;
+using mcsm.requests.abstraction;
 
-namespace MCSMLauncher.common.factories
+namespace mcsm.common.factories
 {
     /// <summary>
     /// This factory class aims to provide every handler, parser and cache file path for every

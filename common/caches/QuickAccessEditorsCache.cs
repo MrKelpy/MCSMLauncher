@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MCSMLauncher.common.caches
+namespace mcsm.common.caches
 {
     /// <summary>
     /// This class is meant to implement a cache to quickly access the server editors through string keys. It

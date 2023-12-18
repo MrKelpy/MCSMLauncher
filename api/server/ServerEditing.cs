@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.api.server.enumeration;
-using MCSMLauncher.common;
-using MCSMLauncher.common.caches;
-using MCSMLauncher.common.models;
-using static MCSMLauncher.common.Constants;
+using mcsm.api.server.enumeration;
+using mcsm.common;
+using mcsm.common.caches;
+using mcsm.common.models;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.api.server
+namespace mcsm.api.server
 {
     /// <summary>
     /// This class is responsible for providing an API for editing server information. (This is made really

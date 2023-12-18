@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common.caches;
-using MCSMLauncher.common.interfaces;
-using MCSMLauncher.ui.graphical;
+using mcsm.common.caches;
+using mcsm.common.interfaces;
+using mcsm.ui.graphical;
 
-namespace MCSMLauncher.common.background
+namespace mcsm.common.background
 {
     /// <summary>
     /// This class implements a background process for checking the state of every server every second, and

@@ -1,7 +1,6 @@
-﻿using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.server.starters.abstraction;
+﻿using mcsm.common.handlers;
 
-namespace MCSMLauncher.common.server.starters
+namespace mcsm.common.server.starters
 {
     /// <summary>
     /// This class handles everything related to starting spigot servers.

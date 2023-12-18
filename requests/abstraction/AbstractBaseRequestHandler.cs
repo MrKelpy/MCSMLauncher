@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace MCSMLauncher.requests.abstraction
+namespace mcsm.requests.abstraction
 {
     /// <summary>
     /// This abstract class implements all the basic functionality to be used by the special website request handlers

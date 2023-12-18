@@ -5,13 +5,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using MCSMLauncher.api;
-using MCSMLauncher.common;
-using MCSMLauncher.common.factories;
-using MCSMLauncher.utils;
-using static MCSMLauncher.common.Constants;
+using mcsm.api;
+using mcsm.common;
+using mcsm.common.factories;
+using mcsm.utils;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.ui.graphical
+namespace mcsm.ui.graphical
 {
     /// <summary>
     /// This form serves as a loading screen for the launcher, which gets displayed as the launcher prepares

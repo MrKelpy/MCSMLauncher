@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using LaminariaCore_General.utils;
-using MCSMLauncher.api.server;
-using MCSMLauncher.ui.graphical;
+using mcsm.api.server;
+using mcsm.ui.graphical;
 
-namespace MCSMLauncher.common.handlers
+namespace mcsm.common.handlers
 {
     /// <summary>
     /// This class implements all the base methods for command processing events

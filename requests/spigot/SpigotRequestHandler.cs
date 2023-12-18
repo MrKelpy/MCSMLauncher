@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using MCSMLauncher.common;
-using MCSMLauncher.requests.abstraction;
+using mcsm.common;
+using mcsm.requests.abstraction;
 
-namespace MCSMLauncher.requests.spigot
+namespace mcsm.requests.spigot
 {
     /// <summary>
     /// This class handles all requests sent to the getbukkit website, in order to retrieve the

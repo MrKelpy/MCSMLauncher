@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using MCSMLauncher.common;
-using MCSMLauncher.common.handlers;
-using MCSMLauncher.common.models;
+using mcsm.common;
+using mcsm.common.handlers;
+using mcsm.common.models;
 using Medallion.Shell;
 
-namespace MCSMLauncher.ui.console
+namespace mcsm.ui.console
 {
     /// <summary>
     /// This class is responsible for taking commands through its methods and executing API calls
@@ -18,11 +19,7 @@ namespace MCSMLauncher.ui.console
     /// </summary>
     public class ConsoleCommandExecutor
     {
-        /// <summary>
-        /// The output handler to use when executing commands.
-        /// </summary>
-        private readonly MessageProcessingOutputHandler OutputHandler = new (Console.Out);
-        
+
         /// <summary>
         /// Using reflection, accesses all the methods within this class and tries to run the one matching
         /// the command name.
@@ -30,8 +27,6 @@ namespace MCSMLauncher.ui.console
         /// </summary>
         public void ExecuteCommand(ConsoleCommand command)
         {
-            Logging.Logger.Info($"Executing command {command.Command} with arguments {command.Arguments}");
-            
             try
             { 
                 // Makes the first letter of the command name a capital letter to force-comply with the naming convention.
@@ -48,7 +43,7 @@ namespace MCSMLauncher.ui.console
                 }
                 
                 // If the method does not exist, write the help message.
-                OutputHandler.Write($"Command '{command.Command}' not found. Use 'help' for a list of possible commands.");
+                Console.WriteLine($@"Command '{command.Command}' not found. Use 'help' for a list of possible commands.");
             }
             
             // If the method throws an exception, try to expose the inner exception.
@@ -60,12 +55,12 @@ namespace MCSMLauncher.ui.console
         }
 
         /// <summary>
-        /// Shows a list of all the commands available, alongside their description and usage.
+        /// Using reflection, accesses all the methods within this class and writes their name, description and usage.
         /// </summary>
         private void Command_Help(ConsoleCommand command)
         {
             MethodInfo[] methods = this.GetType().GetMethods();
-            OutputHandler.Write("MCSM Help Menu:");
+            Console.WriteLine("MCSM Help Menu:");
             
             foreach (MethodInfo method in methods)
             {
@@ -79,8 +74,8 @@ namespace MCSMLauncher.ui.console
                 
                 // Writes the command name, description and usage.
                 string descriptionSpacing = new string(' ', 30 - commandName.Length);
-                OutputHandler.Write($"- {commandName}{descriptionSpacing}{description}");
-                OutputHandler.Write($"Usage: {usage}" + Environment.NewLine);
+                Console.WriteLine($"- {commandName}{descriptionSpacing}{description}");
+                Console.WriteLine($"Usage: {usage}" + Environment.NewLine);
             }
         }
 

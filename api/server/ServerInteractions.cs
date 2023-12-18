@@ -5,11 +5,11 @@ using System.IO.Pipes;
 using System.Linq;
 using LaminariaCore_General.utils;
 using LaminariaCore_Winforms.common;
-using MCSMLauncher.common;
-using MCSMLauncher.common.caches;
-using static MCSMLauncher.common.Constants;
+using mcsm.common;
+using mcsm.common.caches;
+using static mcsm.common.Constants;
 
-namespace MCSMLauncher.api.server
+namespace mcsm.api.server
 {
     /// <summary>
     /// This class implements a bunch of methods aimed at interacting with the server, be it

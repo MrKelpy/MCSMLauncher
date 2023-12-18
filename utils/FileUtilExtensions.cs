@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MCSMLauncher.utils
+namespace mcsm.utils
 {
     /// <summary>
     /// Temporary class for extension methods for FileUtil until I decide to update the library.
